@@ -4,7 +4,7 @@ export default function Register() {
   const router = useRouter();
 
   const handleRegister = () => {
-    // Navigation zur neuen Registrierungsseite
+    // Navigiert zur neuen Registrierungsseite
     router.push("/registration-process");
   };
 
@@ -14,7 +14,7 @@ export default function Register() {
         <h1 className="text-3xl font-bold text-white mb-6 text-center">Registrieren</h1>
         <form
           className="flex flex-col gap-4"
-          onSubmit={(e) => e.preventDefault()} // verhindert, dass das Formular den Reload auslöst
+          onSubmit={(e) => e.preventDefault()} // verhindert Reload
         >
           <input
             type="text"
@@ -33,7 +33,7 @@ export default function Register() {
           />
           <button
             type="button"
-            onClick={handleRegister} // navigiert zur neuen Registrierungsseite
+            onClick={handleRegister} // ruft Router auf
             className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
           >
             Registrieren
@@ -48,6 +48,4 @@ export default function Register() {
           </button>
         </div>
       </div>
-    </div>
-  );
-}
+    </div
