@@ -16,15 +16,18 @@ export default function Login() {
             placeholder="Passwort"
             className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
           />
-          <button
-            type="submit"
-            className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
-          >
-            Anmelden
-          </button>
+          {/* Navigation direkt auf Home-Seite */}
+          <Link href="/Home">
+            <button
+              type="button"
+              className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
+            >
+              Anmelden
+            </button>
+          </Link>
         </form>
         <div className="mt-4 text-center">
-          <Link href="/register">
+          <Link href="/Register">
             <button className="text-lightgreen hover:text-green-300 font-medium">
               Registrieren
             </button>
