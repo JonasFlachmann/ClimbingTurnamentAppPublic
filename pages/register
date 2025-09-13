@@ -4,8 +4,8 @@ export default function Register() {
   const router = useRouter();
 
   const handleRegister = () => {
-    // Navigation zur Home-Seite
-    router.push("/home");
+    // Navigation zur neuen Registrierungsseite
+    router.push("/registration-process");
   };
 
   return (
@@ -33,7 +33,7 @@ export default function Register() {
           />
           <button
             type="button"
-            onClick={handleRegister} // wichtig: Button klickt auf die Router-Navigation
+            onClick={handleRegister} // navigiert zur neuen Registrierungsseite
             className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
           >
             Registrieren
