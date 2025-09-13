@@ -3,9 +3,8 @@ import { useRouter } from "next/router";
 export default function RegistrationProcess() {
   const router = useRouter();
 
-  const handleRegister = () => {
-    // Später hier Registrierung verarbeiten
-    router.push("/home"); // Navigation zum Homescreen
+  const handleSubmit = () => {
+    router.push("/home");
   };
 
   return (
@@ -16,13 +15,13 @@ export default function RegistrationProcess() {
         </h1>
         <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
           <input
-            type="email"
-            placeholder="E-Mail"
+            type="text"
+            placeholder="Voller Name"
             className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
           />
           <input
-            type="text"
-            placeholder="Voller Name"
+            type="email"
+            placeholder="Email"
             className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
           />
           <input
@@ -32,10 +31,10 @@ export default function RegistrationProcess() {
           />
           <button
             type="button"
-            onClick={handleRegister}
+            onClick={handleSubmit}
             className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
           >
-            Registrieren
+            Registrierung abschließen
           </button>
         </form>
         <div className="mt-4 text-center">
