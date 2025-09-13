@@ -2,13 +2,35 @@ import Link from "next/link";
 
 export default function Login() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center">
-      <h1 className="text-3xl mb-6 text-accent">Boulder Tournament</h1>
-      <input className="p-2 mb-2 rounded text-black" placeholder="E-Mail" />
-      <input className="p-2 mb-4 rounded text-black" type="password" placeholder="Passwort" />
-      <Link href="/home" className="bg-accent text-black px-4 py-2 rounded">
-        Login
-      </Link>
+    <div className="min-h-screen flex items-center justify-center bg-darkgreen p-4">
+      <div className="bg-darkgreen rounded-lg shadow-lg p-8 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-white mb-6 text-center">Login</h1>
+        <form className="flex flex-col gap-4">
+          <input
+            type="email"
+            placeholder="Email"
+            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
+          />
+          <input
+            type="password"
+            placeholder="Passwort"
+            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
+          />
+          <button
+            type="submit"
+            className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
+          >
+            Anmelden
+          </button>
+        </form>
+        <div className="mt-4 text-center">
+          <Link href="/register">
+            <button className="text-lightgreen hover:text-green-300 font-medium">
+              Registrieren
+            </button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
