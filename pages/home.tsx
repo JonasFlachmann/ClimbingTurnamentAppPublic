@@ -1,24 +1,30 @@
-import Link from "next/link";
+import { useRouter } from "next/router";
 
 const cards = [
-  { title: "Turnier anlegen", img: "/placeholder.png", href: "/tournament-create" },
-  { title: "Boulder hinzufügen", img: "/placeholder.png", href: "/boulder-add" },
-  { title: "Ergebnisse eintragen", img: "/placeholder.png", href: "/results" },
-  { title: "Ranking", img: "/placeholder.png", href: "/ranking" },
+  { title: "Turnier anlegen", href: "/tournament-create" },
+  { title: "Boulder hinzufügen", href: "/boulder-add" },
+  { title: "Ergebnisse eintragen", href: "/results" },
+  { title: "Ranking", href: "/ranking" },
 ];
 
 export default function Home() {
+  const router = useRouter();
+
   return (
-    <div className="min-h-screen bg-darkgreen p-4">
-      <h1 className="text-3xl text-white font-bold mb-6 text-center">Willkommen</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {cards.map((card, index) => (
-          <Link key={index} href={card.href}>
-            <div className="bg-darkgreen border border-lightgreen rounded-lg shadow-lg p-4 flex flex-col items-center hover:bg-green-800 transition-transform transform hover:scale-105 cursor-pointer">
-              <img src={card.img} alt={card.title} className="w-20 h-20 mb-4" />
-              <h2 className="text-white font-semibold">{card.title}</h2>
+    <div className="min-h-screen bg-darkgreen p-6">
+      <h1 className="text-3xl font-bold text-white mb-8 text-center">Willkommen</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {cards.map((card, idx) => (
+          <div
+            key={idx}
+            onClick={() => router.push(card.href)}
+            className="bg-darkgreen border border-lightgreen rounded-xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-green-800 transition"
+          >
+            <div className="w-16 h-16 bg-lightgreen rounded-full mb-4 flex items-center justify-center text-darkgreen font-bold text-lg">
+              {card.title[0]}
             </div>
-          </Link>
+            <h2 className="text-white font-semibold text-center">{card.title}</h2>
+          </div>
         ))}
       </div>
     </div>
