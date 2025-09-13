@@ -13,33 +13,16 @@ export default function Register() {
         <h1 className="text-3xl font-bold text-white mb-6 text-center">
           Registrieren
         </h1>
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={(e) => e.preventDefault()}
+        <p className="text-gray-300 mb-4 text-center">
+          Bitte vervollständige deine Registrierung.
+        </p>
+        <button
+          type="button"
+          onClick={handleRegister}
+          className="w-full bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
         >
-          <input
-            type="text"
-            placeholder="Name"
-            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
-          />
-          <input
-            type="password"
-            placeholder="Passwort"
-            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
-          />
-          <button
-            type="button"
-            onClick={handleRegister}
-            className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
-          >
-            Registrieren
-          </button>
-        </form>
+          Weiter zur Registrierung
+        </button>
         <div className="mt-4 text-center">
           <button
             onClick={() => router.push("/")}
