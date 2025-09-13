@@ -26,4 +26,15 @@ export default function Register() {
 
           <input
             type="email"
-            placeholder="Em
+            placeholder="Email"
+            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
+          />
+
+          <input
+            type="password"
+            placeholder="Passwort"
+            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
+          />
+
+          <button
+            type="but
