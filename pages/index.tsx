@@ -3,24 +3,13 @@ import { useRouter } from "next/router";
 export default function Login() {
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.push("/home");
-  };
-
-  const handleRegisterRedirect = () => {
-    router.push("/register");
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-darkgreen p-4">
-      <div className="bg-darkgreen rounded-lg shadow-lg p-8 w-full max-w-md">
+      <div className="bg-darkgreen rounded-xl shadow-lg p-8 w-full max-w-md">
         <h1 className="text-3xl font-bold text-white mb-6 text-center">
           Login
         </h1>
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={(e) => e.preventDefault()}
-        >
+        <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
           <input
             type="email"
             placeholder="Email"
@@ -33,15 +22,15 @@ export default function Login() {
           />
           <button
             type="button"
-            onClick={handleLogin}
-            className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
+            onClick={() => router.push("/home")}
+            className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-500 transition"
           >
             Anmelden
           </button>
         </form>
         <div className="mt-4 text-center">
           <button
-            onClick={handleRegisterRedirect}
+            onClick={() => router.push("/register")}
             className="text-lightgreen hover:text-green-300 font-medium"
           >
             Registrieren
