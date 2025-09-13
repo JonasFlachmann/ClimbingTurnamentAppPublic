@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const cards = [
-  { title: "Turnier anlegen", img: "/placeholder.png", href: "/DummyTurnier" },
-  { title: "Boulder hinzufügen", img: "/placeholder.png", href: "/DummyBoulder" },
-  { title: "Ergebnisse eintragen", img: "/placeholder.png", href: "/DummyErgebnisse" },
-  { title: "Ranking", img: "/placeholder.png", href: "/DummyRanking" },
+  { title: "Turnier anlegen", img: "/placeholder.png", href: "/tournament-create" },
+  { title: "Boulder hinzufügen", img: "/placeholder.png", href: "/boulder-add" },
+  { title: "Ergebnisse eintragen", img: "/placeholder.png", href: "/results" },
+  { title: "Ranking", img: "/placeholder.png", href: "/ranking" },
 ];
 
 export default function Home() {
