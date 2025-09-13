@@ -32,7 +32,7 @@ export default function Register() {
           </Link>
         </form>
         <div className="mt-4 text-center">
-          <Link href="/">
+          <Link href="/home">
             <button className="text-lightgreen hover:text-green-300 font-medium">
               Zurück zum Login
             </button>
