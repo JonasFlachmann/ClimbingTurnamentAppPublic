@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const cards = [
-  { title: "Turnier anlegen", img: "/placeholder.png", href: "#" },
-  { title: "Boulder hinzufügen", img: "/placeholder.png", href: "#" },
-  { title: "Ergebnisse eintragen", img: "/placeholder.png", href: "#" },
-  { title: "Ranking", img: "/placeholder.png", href: "#" },
+  { title: "Turnier anlegen", img: "/placeholder.png", href: "/DummyTurnier" },
+  { title: "Boulder hinzufügen", img: "/placeholder.png", href: "/DummyBoulder" },
+  { title: "Ergebnisse eintragen", img: "/placeholder.png", href: "/DummyErgebnisse" },
+  { title: "Ranking", img: "/placeholder.png", href: "/DummyRanking" },
 ];
 
 export default function Home() {
@@ -14,7 +14,7 @@ export default function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {cards.map((card, index) => (
           <Link key={index} href={card.href}>
-            <div className="bg-darkgreen border border-lightgreen rounded-lg shadow-lg p-4 flex flex-col items-center hover:bg-green-800 transition cursor-pointer">
+            <div className="bg-darkgreen border border-lightgreen rounded-lg shadow-lg p-4 flex flex-col items-center hover:bg-green-800 transition-transform transform hover:scale-105 cursor-pointer">
               <img src={card.img} alt={card.title} className="w-20 h-20 mb-4" />
               <h2 className="text-white font-semibold">{card.title}</h2>
             </div>
