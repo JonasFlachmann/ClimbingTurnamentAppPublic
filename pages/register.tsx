@@ -4,7 +4,6 @@ export default function Register() {
   const router = useRouter();
 
   const handleRegister = () => {
-    // Navigiert zur neuen Registrierungsseite
     router.push("/registration-process");
   };
 
@@ -14,7 +13,7 @@ export default function Register() {
         <h1 className="text-3xl font-bold text-white mb-6 text-center">Registrieren</h1>
         <form
           className="flex flex-col gap-4"
-          onSubmit={(e) => e.preventDefault()} // verhindert Seitenreload
+          onSubmit={(e) => e.preventDefault()}
         >
           <input
             type="text"
@@ -22,3 +21,16 @@ export default function Register() {
             className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
           />
           <input
+            type="email"
+            placeholder="Email"
+            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
+          />
+          <input
+            type="password"
+            placeholder="Passwort"
+            className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
+          />
+          <button
+            type="button"
+            onClick={handleRegister}
+            className="bg-light
