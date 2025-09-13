@@ -20,7 +20,7 @@ export default function Home() {
           <div
             key={idx}
             onClick={() => router.push(card.href)}
-            className="bg-darkgreen border border-lightgreen rounded-xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-green-800 transition"
+            className="bg-darkgreen border border-lightgreen rounded-xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-green-800 hover:scale-105 transform transition"
           >
             <div className="w-16 h-16 bg-lightgreen rounded-full mb-4 flex items-center justify-center text-darkgreen font-bold text-2xl">
               {card.icon}
