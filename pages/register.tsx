@@ -13,7 +13,6 @@ export default function Register() {
         <h1 className="text-3xl font-bold text-white mb-6 text-center">
           Registrieren
         </h1>
-
         <form
           className="flex flex-col gap-4"
           onSubmit={(e) => e.preventDefault()}
@@ -23,18 +22,33 @@ export default function Register() {
             placeholder="Name"
             className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
           />
-
           <input
             type="email"
             placeholder="Email"
             className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
           />
-
           <input
             type="password"
             placeholder="Passwort"
             className="p-3 rounded-md bg-darkgreen border border-lightgreen text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-lightgreen"
           />
-
           <button
-            type="but
+            type="button"
+            onClick={handleRegister}
+            className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
+          >
+            Registrieren
+          </button>
+        </form>
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => router.push("/")}
+            className="text-lightgreen hover:text-green-300 font-medium"
+          >
+            Zurück zum Login
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
