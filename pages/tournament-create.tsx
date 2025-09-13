@@ -1,15 +1,14 @@
-import NavBar from "../components/NavBar";
+import Link from "next/link";
 
 export default function TournamentCreate() {
   return (
-    <div>
-      <NavBar />
-      <div className="p-6">
-        <h2 className="text-2xl mb-4">Turnier anlegen</h2>
-        <input className="p-2 mb-2 text-black rounded" placeholder="Turniername" />
-        <input className="p-2 mb-2 text-black rounded" placeholder="Datum" />
-        <button className="bg-accent text-black px-4 py-2 rounded">Erstellen</button>
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-darkgreen p-4">
+      <h1 className="text-3xl text-white mb-6">Turnier anlegen</h1>
+      <Link href="/Home">
+        <button className="bg-lightgreen text-darkgreen font-bold py-3 px-6 rounded-md hover:bg-green-400 transition">
+          Zurück zur Startseite
+        </button>
+      </Link>
     </div>
   );
 }
