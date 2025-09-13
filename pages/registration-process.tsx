@@ -3,13 +3,9 @@ import { useRouter } from "next/router";
 export default function RegistrationProcess() {
   const router = useRouter();
 
-  const handleSubmit = () => {
-    router.push("/home");
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-darkgreen p-4">
-      <div className="bg-darkgreen rounded-lg shadow-lg p-8 w-full max-w-md">
+      <div className="bg-darkgreen rounded-xl shadow-lg p-8 w-full max-w-md">
         <h1 className="text-3xl font-bold text-white mb-6 text-center">
           Registrierung
         </h1>
@@ -31,8 +27,8 @@ export default function RegistrationProcess() {
           />
           <button
             type="button"
-            onClick={handleSubmit}
-            className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-400 transition"
+            onClick={() => router.push("/home")}
+            className="bg-lightgreen text-darkgreen font-bold py-3 rounded-md hover:bg-green-500 transition"
           >
             Registrierung abschließen
           </button>
