@@ -1,30 +1,14 @@
-import NavBar from "../components/NavBar";
+import Link from "next/link";
 
 export default function Ranking() {
   return (
-    <div>
-      <NavBar />
-      <div className="p-6">
-        <h2 className="text-2xl mb-4">Ranking</h2>
-        <table className="min-w-full text-black bg-white rounded">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">Name</th>
-              <th className="border px-4 py-2">Punkte</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border px-4 py-2">Anna</td>
-              <td className="border px-4 py-2">50</td>
-            </tr>
-            <tr>
-              <td className="border px-4 py-2">Ben</td>
-              <td className="border px-4 py-2">40</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-darkgreen p-4">
+      <h1 className="text-3xl text-white mb-6">Ranking</h1>
+      <Link href="/Home">
+        <button className="bg-lightgreen text-darkgreen font-bold py-3 px-6 rounded-md hover:bg-green-400 transition">
+          Zurück zur Startseite
+        </button>
+      </Link>
     </div>
   );
 }
