@@ -5,9 +5,16 @@ import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const RegisterPage: React.FC = () => {
   const [value, setValue] = React.useState(0);
+  const router = useRouter();
+
+  const handleRegister = () => {
+    // Hier würde die Registrierung stattfinden
+    router.push("/home");
+  };
 
   return (
     <>
@@ -19,7 +26,14 @@ const RegisterPage: React.FC = () => {
           <TextField label="Name" fullWidth sx={{ mb: 2 }} />
           <TextField label="E-Mail" fullWidth sx={{ mb: 2 }} />
           <TextField label="Passwort" type="password" fullWidth sx={{ mb: 2 }} />
-          <Button variant="contained" color="primary" startIcon={<PersonAddIcon />} fullWidth sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<PersonAddIcon />}
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={handleRegister}
+          >
             Registrieren
           </Button>
         </Paper>
