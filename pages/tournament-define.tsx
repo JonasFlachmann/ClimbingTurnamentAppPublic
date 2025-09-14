@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 
-export default function TournamentNew() {
+export default function TournamentDefine() {
   const router = useRouter();
 
   const handleSubmit = () => {
-    alert("Turnier erstellt (noch Dummy).");
-    router.push("/tournament-create"); // nach dem Erstellen zurück zur Übersicht
+    // Nach dem Erstellen direkt zur "Turnier befüllen" Seite
+    router.push("/tournament-fill");
   };
 
   return (
