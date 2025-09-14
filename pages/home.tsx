@@ -3,6 +3,7 @@ import { Box, Typography, Button, Paper, BottomNavigation, BottomNavigationActio
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Link from "next/link";
 
 const Home: React.FC = () => {
@@ -96,6 +97,29 @@ const Home: React.FC = () => {
             }}
           >
             Ranking
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            size="large"
+            startIcon={<AddCircleIcon />}
+            component={Link}
+            href="/tournament-create"
+            sx={{
+              borderRadius: 3,
+              boxShadow: 3,
+              minWidth: 180,
+              my: 1,
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: 6,
+              },
+            }}
+          >
+            Turnier erstellen
           </Button>
         </Box>
       </Box>
