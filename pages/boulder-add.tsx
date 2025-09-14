@@ -5,9 +5,16 @@ import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const BoulderAddPage: React.FC = () => {
   const [value, setValue] = React.useState(2);
+  const router = useRouter();
+
+  const handleAddBoulder = () => {
+    // Boulder speichern...
+    router.push("/tournament-overview");
+  };
 
   return (
     <>
@@ -19,7 +26,14 @@ const BoulderAddPage: React.FC = () => {
           <TextField label="Bezeichnung" fullWidth sx={{ mb: 2 }} />
           <TextField label="Schwierigkeit" fullWidth sx={{ mb: 2 }} />
           <TextField label="Beschreibung" multiline rows={2} fullWidth sx={{ mb: 2 }} />
-          <Button variant="contained" color="primary" startIcon={<AddBoxIcon />} fullWidth sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddBoxIcon />}
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={handleAddBoulder}
+          >
             Boulder anlegen
           </Button>
         </Paper>
