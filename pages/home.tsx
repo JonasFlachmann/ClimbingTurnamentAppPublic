@@ -1,34 +1,142 @@
-import { useRouter } from "next/router";
+import React from "react";
+import { Box, Typography, Button, Paper, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import MapIcon from "@mui/icons-material/Map";
+import SportsHandballIcon from "@mui/icons-material/SportsHandball";
+import Link from "next/link";
 
-const cards = [
-  { title: "Turnier anlegen", href: "/tournament-create", icon: "🎯" },
-  { title: "Boulder hinzufügen", href: "/boulder-add", icon: "🪨" },
-  { title: "Ergebnisse eintragen", href: "/results", icon: "📝" },
-  { title: "Ranking", href: "/ranking", icon: "🏆" },
-];
-
-export default function Home() {
-  const router = useRouter();
+const Home: React.FC = () => {
+  const [value, setValue] = React.useState(0);
 
   return (
-    <div className="min-h-screen bg-darkgreen p-6">
-      <h1 className="text-3xl font-bold text-white mb-8 text-center">
-        Willkommen
-      </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {cards.map((card, idx) => (
-          <div
-            key={idx}
-            onClick={() => router.push(card.href)}
-            className="bg-darkgreen border border-lightgreen rounded-xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-green-800 hover:scale-105 transform transition"
+    <>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          bgcolor: "background.default",
+          px: 2,
+          pb: 10,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h3" gutterBottom sx={{ mt: 5, fontWeight: "bold", textAlign: "center" }}>
+          Boulder Turnier App
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 4, textAlign: "center" }}>
+          Willkommen zur Boulder Turnier App! Hier findest du aktuelle Turniere, Kartenansichten und Rankings für alle Boulder-Begeisterten.
+        </Typography>
+        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "center" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            startIcon={<SportsHandballIcon />}
+            component={Link}
+            href="/tournament-overview"
+            sx={{
+              borderRadius: 3,
+              boxShadow: 3,
+              minWidth: 180,
+              my: 1,
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: 6,
+              },
+            }}
           >
-            <div className="w-16 h-16 bg-lightgreen rounded-full mb-4 flex items-center justify-center text-darkgreen font-bold text-2xl">
-              {card.icon}
-            </div>
-            <h2 className="text-white font-semibold text-center">{card.title}</h2>
-          </div>
-        ))}
-      </div>
-    </div>
+            Turniere
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            startIcon={<MapIcon />}
+            component={Link}
+            href="/map"
+            sx={{
+              borderRadius: 3,
+              boxShadow: 3,
+              minWidth: 180,
+              my: 1,
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: 6,
+              },
+            }}
+          >
+            Karte
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="large"
+            startIcon={<HomeIcon />}
+            component={Link}
+            href="/ranking"
+            sx={{
+              borderRadius: 3,
+              boxShadow: 1,
+              minWidth: 180,
+              my: 1,
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: 4,
+              },
+            }}
+          >
+            Ranking
+          </Button>
+        </Box>
+      </Box>
+      {/* Footer Navigation */}
+      <Paper
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+        }}
+        elevation={3}
+      >
+        <BottomNavigation
+          showLabels
+          value={value}
+          onChange={(_, newValue) => setValue(newValue)}
+        >
+          <BottomNavigationAction
+            label="Home"
+            icon={<HomeIcon />}
+            component={Link}
+            href="/home"
+          />
+          <BottomNavigationAction
+            label="Karte"
+            icon={<MapIcon />}
+            component={Link}
+            href="/map"
+          />
+          <BottomNavigationAction
+            label="Turniere"
+            icon={<SportsHandballIcon />}
+            component={Link}
+            href="/tournament-overview"
+          />
+        </BottomNavigation>
+      </Paper>
+    </>
   );
-}
+};
+
+export default Home;
