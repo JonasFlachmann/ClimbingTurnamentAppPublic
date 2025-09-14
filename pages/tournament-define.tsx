@@ -5,9 +5,16 @@ import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
 import EditIcon from "@mui/icons-material/Edit";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const TournamentDefinePage: React.FC = () => {
   const [value, setValue] = React.useState(2);
+  const router = useRouter();
+
+  const handleSave = () => {
+    // Turnier-Details speichern...
+    router.push("/tournament-fill");
+  };
 
   return (
     <>
@@ -24,7 +31,14 @@ const TournamentDefinePage: React.FC = () => {
           </Box>
           <TextField label="Max. Teilnehmer" type="number" fullWidth sx={{ mb: 2 }} />
           <TextField label="Boulder-Anzahl" type="number" fullWidth sx={{ mb: 2 }} />
-          <Button variant="contained" color="primary" startIcon={<EditIcon />} fullWidth sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<EditIcon />}
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={handleSave}
+          >
             Speichern
           </Button>
         </Paper>
