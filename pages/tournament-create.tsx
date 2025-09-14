@@ -18,7 +18,7 @@ export default function TournamentCreate() {
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8 w-full max-w-2xl">
         <button
-          onClick={() => alert("Neues Turnier erstellen (noch Dummy)")}
+          onClick={() => router.push("/tournament-define")}
           className="flex-1 bg-lightgreen text-darkgreen font-bold py-3 rounded-lg hover:bg-green-500 transition transform hover:scale-105"
         >
           Neues Turnier erstellen
@@ -55,13 +55,13 @@ export default function TournamentCreate() {
           Zurück zum Homescreen
         </button>
         <button
-          onClick={() => alert('Zur Karte (noch Dummy)')}
+          onClick={() => alert("Zur Karte (noch Dummy)")}
           className="flex-1 bg-lightgreen text-darkgreen font-bold py-3 rounded-lg hover:bg-green-500 transition"
         >
           Karte
         </button>
         <button
-          onClick={() => alert('Zu bestehenden Turnieren (noch Dummy)')}
+          onClick={() => alert("Zu bestehenden Turnieren (noch Dummy)")}
           className="flex-1 bg-lightgreen text-darkgreen font-bold py-3 rounded-lg hover:bg-green-500 transition"
         >
           Bestehende Turniere
