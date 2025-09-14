@@ -5,9 +5,16 @@ import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const TournamentFillPage: React.FC = () => {
   const [value, setValue] = React.useState(2);
+  const router = useRouter();
+
+  const handleAdd = () => {
+    // Teilnehmer hinzufügen...
+    router.push("/tournament-overview");
+  };
 
   return (
     <>
@@ -18,7 +25,14 @@ const TournamentFillPage: React.FC = () => {
         <Paper elevation={2} sx={{ borderRadius: 4, p: 3, mb: 4, width: "100%", maxWidth: 400 }}>
           <TextField label="Name des Teilnehmers" fullWidth sx={{ mb: 2 }} />
           <TextField label="Kategorie" fullWidth sx={{ mb: 2 }} />
-          <Button variant="contained" color="primary" startIcon={<PlaylistAddCheckIcon />} fullWidth sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<PlaylistAddCheckIcon />}
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={handleAdd}
+          >
             Hinzufügen
           </Button>
         </Paper>
