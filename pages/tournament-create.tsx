@@ -1,72 +1,39 @@
-import { useRouter } from "next/router";
+import React from "react";
+import { Box, Typography, TextField, Button, Paper, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import MapIcon from "@mui/icons-material/Map";
+import SportsHandballIcon from "@mui/icons-material/SportsHandball";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import Link from "next/link";
 
-export default function TournamentCreate() {
-  const router = useRouter();
-
-  const dummyTournaments = [
-    { name: "Boulder Cup 2025", location: "München" },
-    { name: "Climbing Masters", location: "Berlin" },
-    { name: "Urban Rock Challenge", location: "Hamburg" },
-  ];
+const TournamentCreatePage: React.FC = () => {
+  const [value, setValue] = React.useState(2);
 
   return (
-    <div className="min-h-screen bg-darkgreen p-6 flex flex-col items-center">
-      <h1 className="text-3xl font-bold text-white mb-6 text-center">
-        Turniere verwalten
-      </h1>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8 w-full max-w-2xl">
-        <button
-          onClick={() => router.push("/tournament-define")}
-          className="flex-1 bg-lightgreen text-darkgreen font-bold py-3 rounded-lg hover:bg-green-500 transition transform hover:scale-105"
-        >
-          Neues Turnier erstellen
-        </button>
-        <button
-          onClick={() => alert("Turnier duplizieren (noch Dummy)")}
-          className="flex-1 bg-lightgreen text-darkgreen font-bold py-3 rounded-lg hover:bg-green-500 transition transform hover:scale-105"
-        >
-          Bestehendes Turnier duplizieren
-        </button>
-      </div>
-
-      {/* Turnierliste */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl mb-10">
-        {dummyTournaments.map((tournament, idx) => (
-          <div
-            key={idx}
-            className="bg-darkgreen border border-lightgreen rounded-xl shadow-lg p-6 flex flex-col hover:bg-green-800 cursor-pointer transition transform hover:scale-105"
-          >
-            <h2 className="text-white font-semibold text-lg mb-2">
-              {tournament.name}
-            </h2>
-            <p className="text-gray-300">📍 {tournament.location}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Footer Navigation */}
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-2xl">
-        <button
-          onClick={() => router.push("/home")}
-          className="flex-1 bg-lightgreen text-darkgreen font-bold py-3 rounded-lg hover:bg-green-500 transition"
-        >
-          Zurück zum Homescreen
-        </button>
-        <button
-          onClick={() => alert("Zur Karte (noch Dummy)")}
-          className="flex-1 bg-lightgreen text-darkgreen font-bold py-3 rounded-lg hover:bg-green-500 transition"
-        >
-          Karte
-        </button>
-        <button
-          onClick={() => alert("Zu bestehenden Turnieren (noch Dummy)")}
-          className="flex-1 bg-lightgreen text-darkgreen font-bold py-3 rounded-lg hover:bg-green-500 transition"
-        >
-          Bestehende Turniere
-        </button>
-      </div>
-    </div>
+    <>
+      <Box sx={{ minHeight: "100vh", bgcolor: "background.default", px: 2, pb: 10, pt: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
+          Turnier erstellen
+        </Typography>
+        <Paper elevation={2} sx={{ borderRadius: 4, p: 3, mb: 4, width: "100%", maxWidth: 400 }}>
+          <TextField label="Turniername" fullWidth sx={{ mb: 2 }} />
+          <TextField label="Ort" fullWidth sx={{ mb: 2 }} />
+          <TextField label="Datum" type="date" fullWidth sx={{ mb: 2 }} InputLabelProps={{ shrink: true }} />
+          <TextField label="Beschreibung" multiline rows={3} fullWidth sx={{ mb: 2 }} />
+          <Button variant="contained" color="primary" startIcon={<EventAvailableIcon />} fullWidth sx={{ mt: 2 }}>
+            Turnier anlegen
+          </Button>
+        </Paper>
+      </Box>
+      <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100 }} elevation={3}>
+        <BottomNavigation showLabels value={value} onChange={(_, newValue) => setValue(newValue)}>
+          <BottomNavigationAction label="Home" icon={<HomeIcon />} component={Link} href="/home" />
+          <BottomNavigationAction label="Karte" icon={<MapIcon />} component={Link} href="/map" />
+          <BottomNavigationAction label="Turniere" icon={<SportsHandballIcon />} component={Link} href="/tournament-overview" />
+        </BottomNavigation>
+      </Paper>
+    </>
   );
-}
+};
+
+export default TournamentCreatePage;
