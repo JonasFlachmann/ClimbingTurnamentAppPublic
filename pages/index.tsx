@@ -4,6 +4,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -13,6 +14,10 @@ const IndexPage: React.FC = () => {
 
   const handleStart = () => {
     router.push("/home");
+  };
+
+  const handleRegister = () => {
+    router.push("/register");
   };
 
   return (
@@ -62,6 +67,7 @@ const IndexPage: React.FC = () => {
               fontSize: "1.15rem",
               boxShadow: 3,
               transition: "transform 0.2s, box-shadow 0.2s",
+              mb: 2,
               "&:hover": {
                 transform: "scale(1.05)",
                 boxShadow: 6,
@@ -69,6 +75,28 @@ const IndexPage: React.FC = () => {
             }}
           >
             Loslegen
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="large"
+            startIcon={<PersonAddIcon />}
+            onClick={handleRegister}
+            sx={{
+              borderRadius: 3,
+              px: 4,
+              py: 1,
+              fontWeight: "bold",
+              fontSize: "1.10rem",
+              boxShadow: 2,
+              transition: "transform 0.2s, box-shadow 0.2s",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: 5,
+              },
+            }}
+          >
+            Registrieren
           </Button>
         </Paper>
       </Box>
