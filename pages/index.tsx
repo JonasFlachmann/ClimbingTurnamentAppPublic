@@ -1,18 +1,22 @@
-import React from "react";
-import { Box, Typography, Button, Paper, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, TextField, Button, Paper, BottomNavigation, BottomNavigationAction } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import LoginIcon from "@mui/icons-material/Login";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 const IndexPage: React.FC = () => {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleStart = () => {
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Hier könntest du später die Login-Logik ergänzen
     router.push("/home");
   };
 
@@ -47,51 +51,71 @@ const IndexPage: React.FC = () => {
             boxShadow: 6,
           }}
         >
-          <EmojiEventsIcon color="primary" sx={{ fontSize: 60, mb: 2 }} />
           <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
             Boulder Turnier App
           </Typography>
           <Typography variant="body1" sx={{ mb: 3 }}>
-            Die moderne Plattform für Boulder-Turniere. Finde Events, Rankings und Hallen – direkt auf deinem Smartphone.
+            Logge dich ein, um Boulder-Turniere zu entdecken und teilzunehmen.
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={handleStart}
-            sx={{
-              borderRadius: 3,
-              px: 4,
-              py: 1,
-              fontWeight: "bold",
-              fontSize: "1.15rem",
-              boxShadow: 3,
-              transition: "transform 0.2s, box-shadow 0.2s",
-              mb: 2,
-              "&:hover": {
-                transform: "scale(1.05)",
-                boxShadow: 6,
-              },
-            }}
-          >
-            Loslegen
-          </Button>
+          <form onSubmit={handleLogin} style={{ width: "100%" }}>
+            <TextField
+              label="Benutzername"
+              variant="outlined"
+              fullWidth
+              sx={{ mb: 2 }}
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              autoComplete="username"
+            />
+            <TextField
+              label="Passwort"
+              variant="outlined"
+              type="password"
+              fullWidth
+              sx={{ mb: 2 }}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              startIcon={<LoginIcon />}
+              fullWidth
+              sx={{
+                borderRadius: 3,
+                py: 1,
+                fontWeight: "bold",
+                fontSize: "1.15rem",
+                boxShadow: 3,
+                mb: 2,
+                transition: "transform 0.2s, box-shadow 0.2s",
+                "&:hover": {
+                  transform: "scale(1.04)",
+                  boxShadow: 6,
+                },
+              }}
+            >
+              Einloggen
+            </Button>
+          </form>
           <Button
             variant="outlined"
             color="primary"
             size="large"
             startIcon={<PersonAddIcon />}
             onClick={handleRegister}
+            fullWidth
             sx={{
               borderRadius: 3,
-              px: 4,
               py: 1,
               fontWeight: "bold",
               fontSize: "1.10rem",
               boxShadow: 2,
               transition: "transform 0.2s, box-shadow 0.2s",
               "&:hover": {
-                transform: "scale(1.05)",
+                transform: "scale(1.04)",
                 boxShadow: 5,
               },
             }}
