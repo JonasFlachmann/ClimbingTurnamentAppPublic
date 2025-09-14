@@ -1,5 +1,9 @@
 import React from "react";
-import { Card, CardContent, Typography, Grid, Box } from "@mui/material";
+import { Card, CardContent, Typography, Grid, Box, BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import MapIcon from "@mui/icons-material/Map";
+import SportsHandballIcon from "@mui/icons-material/SportsHandball";
+import Link from "next/link";
 
 // Mock-Daten für Turniere
 const currentTournaments = [
@@ -56,38 +60,73 @@ const TournamentCard = ({ tournament }: { tournament: any }) => (
 );
 
 const TournamentOverview: React.FC = () => {
+  const [value, setValue] = React.useState(2);
+
   return (
-    <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Turnier-Übersicht
-      </Typography>
-
-      <Box sx={{ marginTop: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Laufende Turniere
+    <>
+      <Box sx={{ padding: 3, paddingBottom: 10 }}>
+        <Typography variant="h4" gutterBottom>
+          Turnier-Übersicht
         </Typography>
-        <Grid container spacing={2}>
-          {currentTournaments.map((tournament) => (
-            <Grid item xs={12} sm={6} md={4} key={tournament.id}>
-              <TournamentCard tournament={tournament} />
-            </Grid>
-          ))}
-        </Grid>
+
+        <Box sx={{ marginTop: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Laufende Turniere
+          </Typography>
+          <Grid container spacing={2}>
+            {currentTournaments.map((tournament) => (
+              <Grid item xs={12} sm={6} md={4} key={tournament.id}>
+                <TournamentCard tournament={tournament} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        <Box sx={{ marginTop: 6 }}>
+          <Typography variant="h5" gutterBottom>
+            Turniere in deiner Nähe
+          </Typography>
+          <Grid container spacing={2}>
+            {nearbyTournaments.map((tournament) => (
+              <Grid item xs={12} sm={6} md={4} key={tournament.id}>
+                <TournamentCard tournament={tournament} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </Box>
 
-      <Box sx={{ marginTop: 6 }}>
-        <Typography variant="h5" gutterBottom>
-          Turniere in deiner Nähe
-        </Typography>
-        <Grid container spacing={2}>
-          {nearbyTournaments.map((tournament) => (
-            <Grid item xs={12} sm={6} md={4} key={tournament.id}>
-              <TournamentCard tournament={tournament} />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-    </Box>
+      {/* Footer Navigation */}
+      <Paper
+        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+        elevation={3}
+      >
+        <BottomNavigation
+          showLabels
+          value={value}
+          onChange={(_, newValue) => setValue(newValue)}
+        >
+          <BottomNavigationAction
+            label="Home"
+            icon={<HomeIcon />}
+            component={Link}
+            href="/"
+          />
+          <BottomNavigationAction
+            label="Karte"
+            icon={<MapIcon />}
+            component={Link}
+            href="/map"
+          />
+          <BottomNavigationAction
+            label="Turniere"
+            icon={<SportsHandballIcon />}
+            component={Link}
+            href="/tournament-overview"
+          />
+        </BottomNavigation>
+      </Paper>
+    </>
   );
 };
 
