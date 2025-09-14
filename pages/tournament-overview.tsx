@@ -40,9 +40,19 @@ const nearbyTournaments = [
   },
 ];
 
-// Card-Komponente für Turnier
+// Card-Komponente für Turnier mit Hover-Effekt
 const TournamentCard = ({ tournament }: { tournament: any }) => (
-  <Card sx={{ marginBottom: 2 }}>
+  <Card
+    sx={{
+      marginBottom: 2,
+      transition: "transform 0.2s, box-shadow 0.2s",
+      '&:hover': {
+        transform: "scale(1.03)",
+        boxShadow: 6,
+        cursor: "pointer",
+      }
+    }}
+  >
     <CardContent>
       <Typography variant="h6">{tournament.name}</Typography>
       <Typography color="text.secondary">{tournament.location}</Typography>
