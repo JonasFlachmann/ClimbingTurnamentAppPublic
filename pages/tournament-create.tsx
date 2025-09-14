@@ -5,9 +5,16 @@ import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const TournamentCreatePage: React.FC = () => {
   const [value, setValue] = React.useState(2);
+  const router = useRouter();
+
+  const handleCreate = () => {
+    // Turnierdaten speichern...
+    router.push("/tournament-define");
+  };
 
   return (
     <>
@@ -20,7 +27,14 @@ const TournamentCreatePage: React.FC = () => {
           <TextField label="Ort" fullWidth sx={{ mb: 2 }} />
           <TextField label="Datum" type="date" fullWidth sx={{ mb: 2 }} InputLabelProps={{ shrink: true }} />
           <TextField label="Beschreibung" multiline rows={3} fullWidth sx={{ mb: 2 }} />
-          <Button variant="contained" color="primary" startIcon={<EventAvailableIcon />} fullWidth sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<EventAvailableIcon />}
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={handleCreate}
+          >
             Turnier anlegen
           </Button>
         </Paper>
