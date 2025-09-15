@@ -31,6 +31,33 @@ const tournaments = [
     start: "2025-08-10",
     ende: "2025-08-11",
   },
+  {
+    id: 4,
+    name: "City Boulder Cup",
+    status: "Aktiv",
+    stadt: "Hamburg",
+    ort: "Urban Boulderhalle",
+    start: "2025-09-15",
+    ende: "2025-09-15",
+  },
+  {
+    id: 5,
+    name: "Alpen Climb Fest",
+    status: "Ausstehend",
+    stadt: "Garmisch",
+    ort: "Klettergebiet Zugspitze",
+    start: "2025-10-10",
+    ende: "2025-10-12",
+  },
+  {
+    id: 6,
+    name: "Boulder Jam",
+    status: "Abgeschlossen",
+    stadt: "Leipzig",
+    ort: "Boulderhalle BlocNoir",
+    start: "2025-08-20",
+    ende: "2025-08-20",
+  },
 ];
 
 const statusColor = (status: string) => {
@@ -46,16 +73,16 @@ const statusColor = (status: string) => {
   }
 };
 
+const formatDateRange = (start: string, end: string) => {
+  return start === end ? start : `${start} – ${end}`;
+};
+
 const TournamentOverviewPage: React.FC = () => {
   const router = useRouter();
 
   const handleTournamentClick = (id: number) => {
     // Später z.B. router.push(`/tournament/${id}`);
     router.push("/tournament");
-  };
-
-  const handleHomeClick = () => {
-    router.push("/home");
   };
 
   return (
@@ -94,7 +121,13 @@ const TournamentOverviewPage: React.FC = () => {
               Veranstaltungsort: <strong>{turnier.ort}</strong>
             </Typography>
             <Typography sx={{ color: "text.secondary" }}>
-              Zeitraum: <strong>{turnier.start} – {turnier.ende}</strong>
+              {turnier.start === turnier.ende
+                ? (
+                  <>Datum: <strong>{turnier.start}</strong></>
+                ) : (
+                  <>Zeitraum: <strong>{turnier.start} – {turnier.ende}</strong></>
+                )
+              }
             </Typography>
           </Paper>
         ))}
@@ -115,15 +148,32 @@ const TournamentOverviewPage: React.FC = () => {
           px: 2,
           display: "flex",
           justifyContent: "center",
+          gap: 2,
         }}
       >
         <Button
           variant="contained"
           color="primary"
-          onClick={handleHomeClick}
+          onClick={() => router.push("/home")}
           sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
         >
           Home
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => router.push("/tournament-overview")}
+          sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
+        >
+          Turniere
+        </Button>
+        <Button
+          variant="contained"
+          color="info"
+          onClick={() => router.push("/profile")}
+          sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
+        >
+          Profil
         </Button>
       </Box>
     </Box>
