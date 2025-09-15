@@ -1,5 +1,8 @@
 import React from "react";
-import { Box, Paper, Typography, Button, Stack, Chip } from "@mui/material";
+import { Box, Paper, Typography, Stack, Chip, IconButton } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import MapIcon from "@mui/icons-material/Map";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useRouter } from "next/router";
 
 // Dummy-Daten für Turniere
@@ -7,7 +10,7 @@ const tournaments = [
   {
     id: 1,
     name: "Boulder Masters 2025",
-    status: "Aktiv", // "Ausstehend", "Abgeschlossen"
+    status: "Aktiv",
     stadt: "Berlin",
     ort: "Boulderhalle Ostbloc",
     start: "2025-09-20",
@@ -73,10 +76,6 @@ const statusColor = (status: string) => {
   }
 };
 
-const formatDateRange = (start: string, end: string) => {
-  return start === end ? start : `${start} – ${end}`;
-};
-
 const TournamentOverviewPage: React.FC = () => {
   const router = useRouter();
 
@@ -85,8 +84,11 @@ const TournamentOverviewPage: React.FC = () => {
     router.push("/tournament");
   };
 
+  // Für das Footer-Highlighting
+  const currentPath = router.pathname;
+
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 8 }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
       <Typography variant="h4" sx={{ p: 3, fontWeight: "bold", textAlign: "center" }}>
         Turnierübersicht
       </Typography>
@@ -133,7 +135,7 @@ const TournamentOverviewPage: React.FC = () => {
         ))}
       </Stack>
 
-      {/* Footer */}
+      {/* Footer wie auf home.tsx */}
       <Box
         component="footer"
         sx={{
@@ -144,37 +146,49 @@ const TournamentOverviewPage: React.FC = () => {
           bgcolor: "background.paper",
           borderTop: 1,
           borderColor: "divider",
-          py: 2,
-          px: 2,
+          py: 1,
           display: "flex",
-          justifyContent: "center",
-          gap: 2,
+          justifyContent: "space-around",
+          alignItems: "center",
+          zIndex: 100,
         }}
       >
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => router.push("/home")}
-          sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
-        >
-          Home
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => router.push("/tournament-overview")}
-          sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
-        >
-          Turniere
-        </Button>
-        <Button
-          variant="contained"
-          color="info"
-          onClick={() => router.push("/profile")}
-          sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
-        >
-          Profil
-        </Button>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <IconButton
+            size="large"
+            color={currentPath === "/home" ? "primary" : "default"}
+            onClick={() => router.push("/home")}
+          >
+            <HomeIcon />
+          </IconButton>
+          <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
+            Home
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <IconButton
+            size="large"
+            color={currentPath === "/map" ? "primary" : "default"}
+            onClick={() => router.push("/map")}
+          >
+            <MapIcon />
+          </IconButton>
+          <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
+            Karte
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <IconButton
+            size="large"
+            color={currentPath === "/tournament-overview" ? "primary" : "default"}
+            onClick={() => router.push("/tournament-overview")}
+          >
+            <EmojiEventsIcon />
+          </IconButton>
+          <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}>
+            Turniere
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );
