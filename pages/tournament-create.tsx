@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { Box, Paper, Typography, Button, Collapse, Stack, Divider } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { Box, Paper, Typography, Stack, Divider, IconButton, Button, Collapse } from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import HomeIcon from "@mui/icons-material/Home";
+import MapIcon from "@mui/icons-material/Map";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useRouter } from "next/router";
 
 const dummyTournaments = [
   {
@@ -46,6 +50,8 @@ const dummyTournaments = [
 
 const TournamentCreatePage: React.FC = () => {
   const [openDetails, setOpenDetails] = useState<{ [key: number]: boolean }>({});
+  const router = useRouter();
+  const currentPath = router.pathname;
 
   const handleOpenDetails = (id: number) => {
     setOpenDetails((prev) => ({
@@ -54,8 +60,13 @@ const TournamentCreatePage: React.FC = () => {
     }));
   };
 
+  const handleAddClick = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    router.push("/tournament-define");
+  };
+
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 8 }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
       <Box sx={{ maxWidth: 600, mx: "auto", pt: 5 }}>
         <Button
           variant="contained"
@@ -71,53 +82,5 @@ const TournamentCreatePage: React.FC = () => {
         </Typography>
         <Stack spacing={3}>
           {dummyTournaments.map((tournament) => (
-            <Paper key={tournament.id} elevation={3} sx={{ p: 2, borderRadius: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 1 }}>
-                <Button
-                  startIcon={<AddCircleOutlineIcon />}
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => handleOpenDetails(tournament.id)}
-                  sx={{ minWidth: 0, fontWeight: "bold", fontSize: "1rem" }}
-                >
-                  Turnier duplizieren
-                </Button>
-                <Typography variant="subtitle1" sx={{ fontWeight: "bold", ml: 2 }}>
-                  {tournament.name}
-                </Typography>
-                <Typography sx={{ ml: 2 }}>
-                  {tournament.start === tournament.end
-                    ? `Datum: ${tournament.start}`
-                    : `Zeitraum: ${tournament.start} – ${tournament.end}`}
-                </Typography>
-                <Typography sx={{ ml: 2 }}>
-                  Ort: {tournament.venue}
-                </Typography>
-              </Stack>
-              <Collapse in={openDetails[tournament.id] || false}>
-                <Divider sx={{ mb: 2 }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-                  Routen:
-                </Typography>
-                <Stack direction="row" spacing={3} sx={{ mb: 1 }}>
-                  {tournament.routes.map((route, idx) => (
-                    <Paper key={idx} sx={{ p: 1.5, borderRadius: 2, minWidth: 120 }}>
-                      <Typography sx={{ fontWeight: "bold" }}>{route.name}</Typography>
-                      <Typography sx={{ color: "text.secondary" }}>Farbe: {route.color}</Typography>
-                      <Typography sx={{ color: "text.secondary" }}>Schwierigkeit: {route.difficulty}</Typography>
-                    </Paper>
-                  ))}
-                </Stack>
-                <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-                  Teilnehmeranzahl: <span style={{ fontWeight: 400 }}>{tournament.participants}</span>
-                </Typography>
-              </Collapse>
-            </Paper>
-          ))}
-        </Stack>
-      </Box>
-    </Box>
-  );
-};
-
-export default TournamentCreatePage;
+            <Box key={tournament.id}>
+              {/* Turnierfeld klick
