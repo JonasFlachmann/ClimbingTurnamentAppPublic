@@ -5,13 +5,9 @@ import {
   Typography,
   Button,
   TextField,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Switch,
-  FormControlLabel,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
@@ -35,10 +31,9 @@ const TournamentDefinePage: React.FC = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState("");
 
-  const handleCreate = () => {
-    // TODO: Turnier-Logik einbauen
-    alert("Turnier erfolgreich erstellt!");
-    router.push("/tournament-overview");
+  const handleContinue = () => {
+    // Optional: Hier könntest du die Daten speichern/übergeben
+    router.push("/tournament-fill");
   };
 
   return (
@@ -57,18 +52,20 @@ const TournamentDefinePage: React.FC = () => {
               fullWidth
               required
             />
-            <FormControl fullWidth>
-              <InputLabel id="indoor-outdoor-label">Halle/Outdoor</InputLabel>
-              <Select
-                labelId="indoor-outdoor-label"
+
+            <Stack>
+              <Typography sx={{ mb: 1 }}>Halle / Outdoor</Typography>
+              <ToggleButtonGroup
+                exclusive
                 value={indoorOutdoor}
-                label="Halle/Outdoor"
-                onChange={e => setIndoorOutdoor(e.target.value)}
+                onChange={(_, value) => value && setIndoorOutdoor(value)}
+                sx={{ mb: 1 }}
               >
-                <MenuItem value="Halle">Halle</MenuItem>
-                <MenuItem value="Outdoor">Outdoor</MenuItem>
-              </Select>
-            </FormControl>
+                <ToggleButton value="Halle" sx={{ px: 3 }}>Halle</ToggleButton>
+                <ToggleButton value="Outdoor" sx={{ px: 3 }}>Outdoor</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+
             <TextField
               label="Stadt"
               variant="outlined"
@@ -85,18 +82,20 @@ const TournamentDefinePage: React.FC = () => {
               fullWidth
               required
             />
-            <FormControl fullWidth>
-              <InputLabel id="sport-label">Sportart</InputLabel>
-              <Select
-                labelId="sport-label"
+
+            <Stack>
+              <Typography sx={{ mb: 1 }}>Sportart</Typography>
+              <ToggleButtonGroup
+                exclusive
                 value={sport}
-                label="Sportart"
-                onChange={e => setSport(e.target.value)}
+                onChange={(_, value) => value && setSport(value)}
+                sx={{ mb: 1 }}
               >
-                <MenuItem value="Bouldern">Bouldern</MenuItem>
-                <MenuItem value="Klettern">Klettern</MenuItem>
-              </Select>
-            </FormControl>
+                <ToggleButton value="Bouldern" sx={{ px: 3 }}>Bouldern</ToggleButton>
+                <ToggleButton value="Klettern" sx={{ px: 3 }}>Klettern</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+
             <TextField
               label="Schwierigkeit"
               variant="outlined"
@@ -113,6 +112,7 @@ const TournamentDefinePage: React.FC = () => {
               fullWidth
               required
             />
+
             <Stack direction="row" spacing={2}>
               <TextField
                 label="Startdatum"
@@ -133,16 +133,22 @@ const TournamentDefinePage: React.FC = () => {
                 sx={{ width: "50%" }}
               />
             </Stack>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={isPublic}
-                  onChange={e => setIsPublic(e.target.checked)}
-                  color="primary"
-                />
-              }
-              label={isPublic ? "Öffentlich" : "Privat"}
-            />
+
+            <Stack>
+              <Typography sx={{ mb: 1 }}>Öffentlich / Privat</Typography>
+              <ToggleButtonGroup
+                exclusive
+                value={isPublic ? "Öffentlich" : "Privat"}
+                onChange={(_, value) => {
+                  if (value) setIsPublic(value === "Öffentlich");
+                }}
+                sx={{ mb: 1 }}
+              >
+                <ToggleButton value="Öffentlich" sx={{ px: 3 }}>Öffentlich</ToggleButton>
+                <ToggleButton value="Privat" sx={{ px: 3 }}>Privat</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+
             <TextField
               label="Turnierbeschreibung (optional)"
               variant="outlined"
@@ -157,10 +163,10 @@ const TournamentDefinePage: React.FC = () => {
               color="primary"
               size="large"
               sx={{ fontWeight: "bold", mt: 2 }}
-              onClick={handleCreate}
+              onClick={handleContinue}
               fullWidth
             >
-              Turnier erstellen
+              Weiter
             </Button>
           </Stack>
         </Paper>
