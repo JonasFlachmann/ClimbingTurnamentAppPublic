@@ -12,7 +12,6 @@ const RegisterPage: React.FC = () => {
     passwort: "",
     passwortWiederholen: "",
   });
-  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
@@ -23,16 +22,7 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    if (!form.vorname || !form.nachname || !form.email || !form.benutzername || !form.passwort || !form.passwortWiederholen) {
-      setError("Bitte fülle alle Felder aus.");
-      return;
-    }
-    if (form.passwort !== form.passwortWiederholen) {
-      setError("Die Passwörter stimmen nicht überein.");
-      return;
-    }
-    // Hier später Supabase-Integration
+    // Keine Validierung mehr, alles optional!
     router.push("/home");
   };
 
@@ -100,11 +90,6 @@ const RegisterPage: React.FC = () => {
             sx={{ mb: 2 }}
             autoComplete="new-password"
           />
-          {error && (
-            <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
-              {error}
-            </Typography>
-          )}
           <Button
             variant="contained"
             color="primary"
