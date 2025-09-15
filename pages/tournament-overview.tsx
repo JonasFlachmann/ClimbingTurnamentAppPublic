@@ -1,143 +1,133 @@
 import React from "react";
-import { Card, CardContent, Typography, Grid, Box, BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import MapIcon from "@mui/icons-material/Map";
-import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import Link from "next/link";
+import { Box, Paper, Typography, Button, Stack, Chip } from "@mui/material";
+import { useRouter } from "next/router";
 
-// Mock-Daten für Turniere
-const currentTournaments = [
+// Dummy-Daten für Turniere
+const tournaments = [
   {
     id: 1,
-    name: "Herbst Boulder Cup",
-    location: "München",
-    date: "2025-09-20",
-    status: "Laufend",
+    name: "Boulder Masters 2025",
+    status: "Aktiv", // "Ausstehend", "Abgeschlossen"
+    stadt: "Berlin",
+    ort: "Boulderhalle Ostbloc",
+    start: "2025-09-20",
+    ende: "2025-09-21",
   },
   {
     id: 2,
-    name: "Nordwand Challenge",
-    location: "Hamburg",
-    date: "2025-09-22",
-    status: "Laufend",
+    name: "Climbing Open",
+    status: "Ausstehend",
+    stadt: "München",
+    ort: "Kletterhalle Highrise",
+    start: "2025-10-05",
+    ende: "2025-10-05",
   },
-];
-
-const nearbyTournaments = [
   {
     id: 3,
-    name: "Süddeutscher Boulder Meister",
-    location: "Stuttgart",
-    date: "2025-10-02",
-    status: "Vorschau",
-  },
-  {
-    id: 4,
-    name: "Alpen Boulder Open",
-    location: "Garmisch-Partenkirchen",
-    date: "2025-10-10",
-    status: "Vorschau",
+    name: "Outdoor Challenge",
+    status: "Abgeschlossen",
+    stadt: "Stuttgart",
+    ort: "Klettergebiet Felswand",
+    start: "2025-08-10",
+    ende: "2025-08-11",
   },
 ];
 
-// Card-Komponente für Turnier mit Hover-Effekt
-const TournamentCard = ({ tournament }: { tournament: any }) => (
-  <Card
-    sx={{
-      marginBottom: 2,
-      transition: "transform 0.2s, box-shadow 0.2s",
-      '&:hover': {
-        transform: "scale(1.03)",
-        boxShadow: 6,
-        cursor: "pointer",
-      }
-    }}
-  >
-    <CardContent>
-      <Typography variant="h6">{tournament.name}</Typography>
-      <Typography color="text.secondary">{tournament.location}</Typography>
-      <Typography color="text.secondary">{tournament.date}</Typography>
-      <Typography
-        sx={{
-          fontWeight: "bold",
-          color: tournament.status === "Laufend" ? "green" : "orange",
-        }}
-      >
-        {tournament.status}
-      </Typography>
-    </CardContent>
-  </Card>
-);
+const statusColor = (status: string) => {
+  switch (status) {
+    case "Aktiv":
+      return "success";
+    case "Ausstehend":
+      return "warning";
+    case "Abgeschlossen":
+      return "default";
+    default:
+      return "primary";
+  }
+};
 
-const TournamentOverview: React.FC = () => {
-  const [value, setValue] = React.useState(2);
+const TournamentOverviewPage: React.FC = () => {
+  const router = useRouter();
+
+  const handleTournamentClick = (id: number) => {
+    // Später z.B. router.push(`/tournament/${id}`);
+    router.push("/tournament");
+  };
+
+  const handleHomeClick = () => {
+    router.push("/home");
+  };
 
   return (
-    <>
-      <Box sx={{ padding: 3, paddingBottom: 10 }}>
-        <Typography variant="h4" gutterBottom>
-          Turnier-Übersicht
-        </Typography>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 8 }}>
+      <Typography variant="h4" sx={{ p: 3, fontWeight: "bold", textAlign: "center" }}>
+        Turnierübersicht
+      </Typography>
+      <Stack spacing={3} sx={{ px: { xs: 2, md: 8 }, maxWidth: 700, mx: "auto" }}>
+        {tournaments.map((turnier) => (
+          <Paper
+            key={turnier.id}
+            elevation={3}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              cursor: "pointer",
+              transition: "box-shadow 0.2s",
+              "&:hover": { boxShadow: 8 },
+            }}
+            onClick={() => handleTournamentClick(turnier.id)}
+          >
+            <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold", flexGrow: 1 }}>
+                {turnier.name}
+              </Typography>
+              <Chip
+                label={turnier.status}
+                color={statusColor(turnier.status)}
+                sx={{ fontWeight: "bold", fontSize: "0.95rem" }}
+              />
+            </Stack>
+            <Typography sx={{ color: "text.secondary", mb: 0.5 }}>
+              Stadt: <strong>{turnier.stadt}</strong>
+            </Typography>
+            <Typography sx={{ color: "text.secondary", mb: 0.5 }}>
+              Veranstaltungsort: <strong>{turnier.ort}</strong>
+            </Typography>
+            <Typography sx={{ color: "text.secondary" }}>
+              Zeitraum: <strong>{turnier.start} – {turnier.ende}</strong>
+            </Typography>
+          </Paper>
+        ))}
+      </Stack>
 
-        <Box sx={{ marginTop: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            Laufende Turniere
-          </Typography>
-          <Grid container spacing={2}>
-            {currentTournaments.map((tournament) => (
-              <Grid item xs={12} sm={6} md={4} key={tournament.id}>
-                <TournamentCard tournament={tournament} />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        <Box sx={{ marginTop: 6 }}>
-          <Typography variant="h5" gutterBottom>
-            Turniere in deiner Nähe
-          </Typography>
-          <Grid container spacing={2}>
-            {nearbyTournaments.map((tournament) => (
-              <Grid item xs={12} sm={6} md={4} key={tournament.id}>
-                <TournamentCard tournament={tournament} />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </Box>
-
-      {/* Footer Navigation */}
-      <Paper
-        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
-        elevation={3}
+      {/* Footer */}
+      <Box
+        component="footer"
+        sx={{
+          position: "fixed",
+          left: 0,
+          bottom: 0,
+          width: "100%",
+          bgcolor: "background.paper",
+          borderTop: 1,
+          borderColor: "divider",
+          py: 2,
+          px: 2,
+          display: "flex",
+          justifyContent: "center",
+        }}
       >
-        <BottomNavigation
-          showLabels
-          value={value}
-          onChange={(_, newValue) => setValue(newValue)}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleHomeClick}
+          sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
         >
-          <BottomNavigationAction
-            label="Home"
-            icon={<HomeIcon />}
-            component={Link}
-            href="/"
-          />
-          <BottomNavigationAction
-            label="Karte"
-            icon={<MapIcon />}
-            component={Link}
-            href="/map"
-          />
-          <BottomNavigationAction
-            label="Turniere"
-            icon={<SportsHandballIcon />}
-            component={Link}
-            href="/tournament-overview"
-          />
-        </BottomNavigation>
-      </Paper>
-    </>
+          Home
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
-export default TournamentOverview;
+export default TournamentOverviewPage;
