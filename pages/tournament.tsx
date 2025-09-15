@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Box, Paper, Typography, Stack, Chip, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Paper, Typography, Stack, Chip, Button, ToggleButton, ToggleButtonGroup, Avatar, Dialog, DialogContent, IconButton } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import { useRouter } from "next/router";
 
-// Dummy-Turnierdaten (erstes Turnier aus tournament-overview)
+// Dummy-Turnierdaten
 const turnier = {
   name: "Boulder Masters 2025",
   status: "Aktiv",
@@ -28,33 +29,49 @@ const statusColor = (status: string) => {
   }
 };
 
-// Dummy-Routen
+// Dummy-Routen mit Bild-URL und Dummy-Statistik
 const dummyRoutes = [
-  { id: 1, name: "Wand 1", color: "Rot", difficulty: "5a" },
-  { id: 2, name: "Überhang", color: "Blau", difficulty: "6b" },
-  { id: 3, name: "Platte", color: "Gelb", difficulty: "6a+" },
-  { id: 4, name: "Sloper", color: "Grün", difficulty: "7a" },
-  { id: 5, name: "Dach", color: "Schwarz", difficulty: "6c" },
-  { id: 6, name: "Kante", color: "Violett", difficulty: "5c" },
+  { id: 1, name: "Wand 1", color: "Rot", difficulty: "5a", img: "/route1.jpg", results: { Zone: 2, Top: 1, Flash: 1 } },
+  { id: 2, name: "Überhang", color: "Blau", difficulty: "6b", img: "/route2.jpg", results: { Zone: 1, Top: 2, Flash: 1 } },
+  { id: 3, name: "Platte", color: "Gelb", difficulty: "6a+", img: "/route3.jpg", results: { Zone: 3, Top: 1, Flash: 0 } },
+  { id: 4, name: "Sloper", color: "Grün", difficulty: "7a", img: "/route4.jpg", results: { Zone: 2, Top: 1, Flash: 1 } },
+  { id: 5, name: "Dach", color: "Schwarz", difficulty: "6c", img: "/route5.jpg", results: { Zone: 1, Top: 1, Flash: 2 } },
+  { id: 6, name: "Kante", color: "Violett", difficulty: "5c", img: "/route6.jpg", results: { Zone: 0, Top: 2, Flash: 2 } },
+];
+
+// Dummy-Teilnehmer, sortiert nach Ranking/Punkte
+const dummyParticipants = [
+  { rank: 1, username: "BoulderQueen", points: 560 },
+  { rank: 2, username: "ClimbHero", points: 520 },
+  { rank: 3, username: "JonasFlachmann", points: 470 },
+  { rank: 4, username: "StoneHopper", points: 430 },
 ];
 
 const TournamentPage: React.FC = () => {
   const router = useRouter();
   // Ergebnisse je Route: { [routeId]: "Zone" | "Top" | "Flash" | null }
   const [results, setResults] = useState<{ [key: number]: string | null }>({});
+  // Für große Bildansicht
+  const [imgOpen, setImgOpen] = useState(false);
+  const [imgSrc, setImgSrc] = useState<string>("");
 
   const handleResultChange = (routeId: number, result: string) => {
     setResults((prev) => ({
       ...prev,
-      [routeId]: prev[routeId] === result ? null : result, // deselect on click again
+      [routeId]: prev[routeId] === result ? null : result,
     }));
+  };
+
+  const handleImgClick = (src: string) => {
+    setImgSrc(src);
+    setImgOpen(true);
   };
 
   // Für das Footer-Highlighting
   const currentPath = router.pathname;
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 12 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 4, maxWidth: 700, mx: "auto", mt: 4, mb: 4 }}>
         <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
           <Typography variant="h5" sx={{ fontWeight: "bold", flexGrow: 1 }}>
@@ -90,6 +107,23 @@ const TournamentPage: React.FC = () => {
         {dummyRoutes.map((route) => (
           <Paper key={route.id} sx={{ p: 2, borderRadius: 3 }}>
             <Stack direction="row" alignItems="center" spacing={2} justifyContent="space-between">
+              {/* Bild mit Klickfunktion */}
+              <Box sx={{ position: "relative" }}>
+                <Avatar
+                  variant="rounded"
+                  src={route.img}
+                  alt={route.name}
+                  sx={{ width: 56, height: 56, mr: 1, cursor: "pointer", border: "2px solid #eee" }}
+                  onClick={() => handleImgClick(route.img)}
+                />
+                <IconButton
+                  sx={{ position: "absolute", right: 0, bottom: 0, bgcolor: "background.paper", p: 0.5 }}
+                  onClick={() => handleImgClick(route.img)}
+                  size="small"
+                >
+                  <ZoomInIcon fontSize="small" />
+                </IconButton>
+              </Box>
               <Typography sx={{ minWidth: 100, fontWeight: "bold" }}>{route.name}</Typography>
               <Typography sx={{ minWidth: 60 }}>{route.color}</Typography>
               <Typography sx={{ minWidth: 70 }}>{route.difficulty}</Typography>
@@ -99,14 +133,49 @@ const TournamentPage: React.FC = () => {
                 onChange={(_, value) => value && handleResultChange(route.id, value)}
                 sx={{ ml: 2 }}
               >
-                <ToggleButton value="Zone" sx={{ px: 2 }}>Zone</ToggleButton>
-                <ToggleButton value="Top" sx={{ px: 2 }}>Top</ToggleButton>
-                <ToggleButton value="Flash" sx={{ px: 2 }}>Flash</ToggleButton>
+                <ToggleButton value="Zone" sx={{ px: 2, display: "flex", flexDirection: "column" }}>
+                  Zone
+                  <Typography variant="caption" sx={{ mt: 0.5 }}>{route.results.Zone}</Typography>
+                </ToggleButton>
+                <ToggleButton value="Top" sx={{ px: 2, display: "flex", flexDirection: "column" }}>
+                  Top
+                  <Typography variant="caption" sx={{ mt: 0.5 }}>{route.results.Top}</Typography>
+                </ToggleButton>
+                <ToggleButton value="Flash" sx={{ px: 2, display: "flex", flexDirection: "column" }}>
+                  Flash
+                  <Typography variant="caption" sx={{ mt: 0.5 }}>{route.results.Flash}</Typography>
+                </ToggleButton>
               </ToggleButtonGroup>
             </Stack>
           </Paper>
         ))}
       </Stack>
+
+      {/* Bild-Dialog */}
+      <Dialog open={imgOpen} onClose={() => setImgOpen(false)} maxWidth="md">
+        <DialogContent sx={{ textAlign: "center", background: "#222" }}>
+          <img src={imgSrc} alt="Route Preview" style={{ maxWidth: "100%", maxHeight: "80vh" }} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Teilnehmerliste (Ranking) */}
+      <Paper elevation={2} sx={{ mt: 4, mb: 10, mx: "auto", maxWidth: 700, p: 2, borderRadius: 3 }}>
+        <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+          Teilnehmerliste & Ranking
+        </Typography>
+        <Stack direction="row" sx={{ fontWeight: "bold", mb: 1, px: 1 }}>
+          <Typography sx={{ flex: "0 0 50px" }}>Platz</Typography>
+          <Typography sx={{ flex: "1 0 120px" }}>Benutzername</Typography>
+          <Typography sx={{ flex: "0 0 90px" }}>Punkte</Typography>
+        </Stack>
+        {dummyParticipants.map((p) => (
+          <Stack direction="row" alignItems="center" key={p.rank} sx={{ px: 1, py: 0.5 }}>
+            <Typography sx={{ flex: "0 0 50px" }}>{p.rank}</Typography>
+            <Typography sx={{ flex: "1 0 120px" }}>{p.username}</Typography>
+            <Typography sx={{ flex: "0 0 90px" }}>{p.points}</Typography>
+          </Stack>
+        ))}
+      </Paper>
 
       {/* Footer wie home.tsx */}
       <Box
