@@ -141,4 +141,63 @@ const TournamentCreatePage: React.FC = () => {
           ))}
         </Stack>
       </Box>
-      {/* Footer identisch zu home
+      {/* Footer identisch zu home.tsx */}
+      <Box
+        component="footer"
+        sx={{
+          position: "fixed",
+          left: 0,
+          bottom: 0,
+          width: "100%",
+          bgcolor: "background.paper",
+          borderTop: 1,
+          borderColor: "divider",
+          py: 1,
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          zIndex: 100,
+        }}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/home" ? "primary" : "inherit"}
+            onClick={() => router.push("/home")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <HomeIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
+              Home
+            </Typography>
+          </Button>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/map" ? "primary" : "inherit"}
+            onClick={() => router.push("/map")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <MapIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
+              Karte
+            </Typography>
+          </Button>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/tournament-overview" ? "primary" : "inherit"}
+            onClick={() => router.push("/tournament-overview")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <EmojiEventsIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}>
+              Turniere
+            </Typography>
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default TournamentCreatePage;
