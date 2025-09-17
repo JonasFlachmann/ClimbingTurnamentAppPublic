@@ -16,8 +16,40 @@ const HomePage: React.FC = () => {
   const currentPath = router.pathname;
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
-      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        pb: 10,
+        backgroundImage: "url('/background-plants.jpg')", // hier dein Bild ins public/ legen
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <Box
+        sx={{
+          maxWidth: "95%",
+          mx: "auto",
+          pt: 5,
+        }}
+      >
+        {/* Button: Neues Turnier */}
+        <Button
+          variant="contained"
+          color="success"
+          size="large"
+          fullWidth
+          sx={{
+            mb: 4,
+            fontWeight: "bold",
+            fontSize: "1.1rem",
+            borderRadius: 3,
+            boxShadow: 4,
+          }}
+          onClick={() => router.push("/tournament-create")}
+        >
+          Neues Turnier erstellen
+        </Button>
+
         {/* News-Box */}
         <Paper
           elevation={3}
@@ -25,13 +57,13 @@ const HomePage: React.FC = () => {
             p: 2,
             borderRadius: 3,
             mb: 3,
-            bgcolor: "#bdbdbd", // helleres Grau
+            bgcolor: "rgba(189, 189, 189, 0.9)", // helleres Grau mit Transparenz
           }}
         >
-          <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
             News
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" sx={{ color: "text.primary" }}>
             Dies ist eine Test-Version der App.
           </Typography>
         </Paper>
@@ -39,7 +71,7 @@ const HomePage: React.FC = () => {
         {/* Turniere in der Nähe */}
         <Typography
           variant="h6"
-          sx={{ fontWeight: "bold", mb: 2, color: "text.primary" }}
+          sx={{ fontWeight: "bold", mb: 2, color: "success.dark" }}
         >
           Turniere in deiner Nähe
         </Typography>
@@ -53,15 +85,17 @@ const HomePage: React.FC = () => {
                 p: 2,
                 borderRadius: 3,
                 cursor: "pointer",
-                bgcolor: "#e0e0e0", // noch helleres Grau für Karten
-                "&:hover": { boxShadow: 6, bgcolor: "#d6d6d6" },
+                bgcolor: "rgba(224, 224, 224, 0.95)", // noch helleres Grau
+                "&:hover": { boxShadow: 6, bgcolor: "rgba(200,200,200,0.95)" },
               }}
               onClick={() => router.push("/tournament-overview")}
             >
-              <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
                 {`Turnier ${index + 1}`}
               </Typography>
-              <Typography variant="body2">Ort: {city}</Typography>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                Ort: {city}
+              </Typography>
             </Paper>
           ))}
         </Stack>
@@ -75,7 +109,7 @@ const HomePage: React.FC = () => {
           left: 0,
           bottom: 0,
           width: "100%",
-          bgcolor: "#e0e0e0", // Footer heller gemacht
+          bgcolor: "rgba(245, 245, 245, 0.95)",
           borderTop: 1,
           borderColor: "divider",
           py: 1,
@@ -83,11 +117,12 @@ const HomePage: React.FC = () => {
           justifyContent: "space-around",
           alignItems: "center",
           zIndex: 100,
+          backdropFilter: "blur(6px)", // leichter Glas-Effekt
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
-            color={currentPath === "/home" ? "primary" : "inherit"}
+            color={currentPath === "/home" ? "success" : "inherit"}
             onClick={() => router.push("/home")}
             sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
@@ -99,7 +134,7 @@ const HomePage: React.FC = () => {
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
-            color={currentPath === "/map" ? "primary" : "inherit"}
+            color={currentPath === "/map" ? "success" : "inherit"}
             onClick={() => router.push("/map")}
             sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
@@ -111,7 +146,7 @@ const HomePage: React.FC = () => {
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
-            color={currentPath === "/tournament-overview" ? "primary" : "inherit"}
+            color={currentPath === "/tournament-overview" ? "success" : "inherit"}
             onClick={() => router.push("/tournament-overview")}
             sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
