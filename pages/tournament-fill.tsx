@@ -4,8 +4,6 @@ import {
   Typography,
   Button,
   Paper,
-  TextField,
-  IconButton,
   BottomNavigation,
   BottomNavigationAction,
 } from "@mui/material";
@@ -16,7 +14,6 @@ import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ImageIcon from "@mui/icons-material/Image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 const TournamentFillPage: React.FC = () => {
   const [value, setValue] = React.useState(2);
@@ -120,7 +117,7 @@ const TournamentFillPage: React.FC = () => {
         </Button>
       </Box>
 
-      {/* Footer Navigation (wie in home.tsx) */}
+      {/* Footer Navigation */}
       <BottomNavigation
         showLabels
         value={value}
