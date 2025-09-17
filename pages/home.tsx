@@ -10,7 +10,6 @@ import {
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import Link from "next/link";
 
 const Home: React.FC = () => {
@@ -21,6 +20,13 @@ const Home: React.FC = () => {
     color: ["Rot", "Blau", "Gelb"][index % 3],
     difficulty: ["Leicht", "Mittel", "Schwer"][index % 3],
   }));
+
+  // Dummy-Turniere in der Nähe
+  const dummyTournaments = [
+    { id: 1, name: "Frühlingsturnier Berlin", date: "12.04.2025" },
+    { id: 2, name: "Sommer-Cup Hamburg", date: "20.06.2025" },
+    { id: 3, name: "Herbst-Boulder Köln", date: "15.09.2025" },
+  ];
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
@@ -69,14 +75,35 @@ const Home: React.FC = () => {
         </Box>
       </Paper>
 
+      {/* Button zur Turniererstellung */}
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          component={Link}
+          href="/tournament-create"
+        >
+          Neues Turnier erstellen
+        </Button>
+      </Box>
+
       {/* Turniere in deiner Nähe */}
       <Paper variant="outlined" sx={{ p: 2, m: 2 }}>
         <Typography variant="h6" fontWeight="medium">
           Turniere in deiner Nähe
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          (Hier erscheinen Turniere in der Nähe als Liste)
-        </Typography>
+        <Box sx={{ mt: 1, display: "flex", flexDirection: "column", gap: 1 }}>
+          {dummyTournaments.map((tournament) => (
+            <Paper key={tournament.id} variant="outlined" sx={{ p: 1 }}>
+              <Typography variant="body2" fontWeight="medium">
+                {tournament.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {tournament.date}
+              </Typography>
+            </Paper>
+          ))}
+        </Box>
       </Paper>
 
       {/* News */}
@@ -85,7 +112,7 @@ const Home: React.FC = () => {
           News
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          (Hier können aktuelle Nachrichten oder Hinweise angezeigt werden)
+          Dies ist eine Test-Version der App.
         </Typography>
       </Paper>
 
@@ -99,7 +126,7 @@ const Home: React.FC = () => {
           label="Home"
           icon={<HomeIcon />}
           component={Link}
-          href="/"
+          href="/home"
         />
         <BottomNavigationAction
           label="Karte"
@@ -112,12 +139,6 @@ const Home: React.FC = () => {
           icon={<SportsHandballIcon />}
           component={Link}
           href="/tournament"
-        />
-        <BottomNavigationAction
-          label="Check"
-          icon={<PlaylistAddCheckIcon />}
-          component={Link}
-          href="/tournament-overview"
         />
       </BottomNavigation>
     </Box>
