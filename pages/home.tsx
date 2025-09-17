@@ -2,147 +2,131 @@ import React from "react";
 import {
   Box,
   Typography,
-  Paper,
-  BottomNavigation,
-  BottomNavigationAction,
   Button,
+  Paper,
+  Stack,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
-import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import Link from "next/link";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useRouter } from "next/router";
 
-const Home: React.FC = () => {
-  // Dummy-Routen für Scrollbox
-  const dummyRoutes = Array.from({ length: 12 }, (_, index) => ({
-    id: index + 1,
-    name: `Route ${index + 1}`,
-    color: ["Rot", "Blau", "Gelb"][index % 3],
-    difficulty: ["Leicht", "Mittel", "Schwer"][index % 3],
-  }));
-
-  // Dummy-Turniere in der Nähe
-  const dummyTournaments = [
-    { id: 1, name: "Frühlingsturnier Berlin", date: "12.04.2025" },
-    { id: 2, name: "Sommer-Cup Hamburg", date: "20.06.2025" },
-    { id: 3, name: "Herbst-Boulder Köln", date: "15.09.2025" },
-  ];
+const HomePage: React.FC = () => {
+  const router = useRouter();
+  const currentPath = router.pathname;
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
-      {/* Aktuelles Turnier */}
-      <Paper variant="outlined" sx={{ p: 2, m: 2 }}>
-        <Typography variant="h6" fontWeight="medium">
-          Aktuelles Turnier: Sommerturnier 2025
-        </Typography>
-        <Box
+      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
+        {/* News-Box */}
+        <Paper
+          elevation={3}
           sx={{
-            maxHeight: 220,
-            overflowY: "auto",
-            mt: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
+            p: 2,
+            borderRadius: 3,
+            mb: 3,
+            bgcolor: "#bdbdbd", // helleres Grau
           }}
         >
-          {dummyRoutes.map((route) => (
-            <Paper
-              key={route.id}
-              variant="outlined"
-              sx={{
-                p: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography variant="body2">
-                {route.name} – {route.color} – {route.difficulty}
-              </Typography>
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <Button size="small" variant="contained">
-                  Flash
-                </Button>
-                <Button size="small" variant="contained">
-                  Top
-                </Button>
-                <Button size="small" variant="contained">
-                  Zone
-                </Button>
-              </Box>
-            </Paper>
-          ))}
-        </Box>
-      </Paper>
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+            News
+          </Typography>
+          <Typography variant="body2">
+            Dies ist eine Test-Version der App.
+          </Typography>
+        </Paper>
 
-      {/* Button zur Turniererstellung */}
-      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          href="/tournament-create"
+        {/* Turniere in der Nähe */}
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", mb: 2, color: "text.primary" }}
         >
-          Neues Turnier erstellen
-        </Button>
-      </Box>
-
-      {/* Turniere in deiner Nähe */}
-      <Paper variant="outlined" sx={{ p: 2, m: 2 }}>
-        <Typography variant="h6" fontWeight="medium">
           Turniere in deiner Nähe
         </Typography>
-        <Box sx={{ mt: 1, display: "flex", flexDirection: "column", gap: 1 }}>
-          {dummyTournaments.map((tournament) => (
-            <Paper key={tournament.id} variant="outlined" sx={{ p: 1 }}>
-              <Typography variant="body2" fontWeight="medium">
-                {tournament.name}
+
+        <Stack spacing={2}>
+          {["Bochum", "Dortmund", "Berlin"].map((city, index) => (
+            <Paper
+              key={index}
+              elevation={3}
+              sx={{
+                p: 2,
+                borderRadius: 3,
+                cursor: "pointer",
+                bgcolor: "#e0e0e0", // noch helleres Grau für Karten
+                "&:hover": { boxShadow: 6, bgcolor: "#d6d6d6" },
+              }}
+              onClick={() => router.push("/tournament-overview")}
+            >
+              <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                {`Turnier ${index + 1}`}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {tournament.date}
-              </Typography>
+              <Typography variant="body2">Ort: {city}</Typography>
             </Paper>
           ))}
-        </Box>
-      </Paper>
+        </Stack>
+      </Box>
 
-      {/* News */}
-      <Paper variant="outlined" sx={{ p: 2, m: 2 }}>
-        <Typography variant="h6" fontWeight="medium">
-          News
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Dies ist eine Test-Version der App.
-        </Typography>
-      </Paper>
-
-      {/* Footer Navigation */}
-      <BottomNavigation
-        showLabels
-        value={0}
-        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+      {/* Footer */}
+      <Box
+        component="footer"
+        sx={{
+          position: "fixed",
+          left: 0,
+          bottom: 0,
+          width: "100%",
+          bgcolor: "#e0e0e0", // Footer heller gemacht
+          borderTop: 1,
+          borderColor: "divider",
+          py: 1,
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          zIndex: 100,
+        }}
       >
-        <BottomNavigationAction
-          label="Home"
-          icon={<HomeIcon />}
-          component={Link}
-          href="/home"
-        />
-        <BottomNavigationAction
-          label="Karte"
-          icon={<MapIcon />}
-          component={Link}
-          href="/map"
-        />
-        <BottomNavigationAction
-          label="Turniere"
-          icon={<SportsHandballIcon />}
-          component={Link}
-          href="/tournament"
-        />
-      </BottomNavigation>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/home" ? "primary" : "inherit"}
+            onClick={() => router.push("/home")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <HomeIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
+              Home
+            </Typography>
+          </Button>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/map" ? "primary" : "inherit"}
+            onClick={() => router.push("/map")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <MapIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
+              Karte
+            </Typography>
+          </Button>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/tournament-overview" ? "primary" : "inherit"}
+            onClick={() => router.push("/tournament-overview")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <EmojiEventsIcon />
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}
+            >
+              Turniere
+            </Typography>
+          </Button>
+        </Box>
+      </Box>
     </Box>
   );
 };
 
-export default Home;
+export default HomePage;
