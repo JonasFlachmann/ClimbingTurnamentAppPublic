@@ -85,8 +85,8 @@ const HomePage: React.FC = () => {
           Aktuelles Turnier
         </Typography>
         <Paper
-          elevation={2}
-          sx={{ p: 2, borderRadius: 3, mb: 2, bgcolor: "rgba(255,255,255,0.95)" }}
+          elevation={3}
+          sx={{ p: 2, borderRadius: 3, mb: 3, bgcolor: "rgba(255,255,255,0.95)" }}
         >
           <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
             {currentTournament.name}
@@ -104,6 +104,7 @@ const HomePage: React.FC = () => {
                   p: 1,
                   borderRadius: 2,
                   bgcolor: "rgba(250,250,250,0.95)",
+                  mb: 0.5,
                 }}
               >
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -173,50 +174,62 @@ const HomePage: React.FC = () => {
         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1.5, color: "success.dark" }}>
           Turniere in deiner Nähe
         </Typography>
-        <Stack spacing={1} sx={{ maxHeight: 220, overflowY: "auto", pr: 0.5 }}>
-          {dummyTournaments.map((t) => (
-            <Box key={t.id}>
-              {/* Eingeklappt */}
-              <Paper
-                elevation={2}
-                sx={{
-                  p: 1.5,
-                  borderRadius: 3,
-                  cursor: "pointer",
-                  bgcolor: "rgba(255,255,255,0.95)",
-                  "&:hover": { boxShadow: 4, bgcolor: "rgba(245,245,245,0.95)" },
-                }}
-                onClick={() => toggleDetails(t.id)}
-              >
-                <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main", fontSize: "0.95rem" }}>
-                  {t.name}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                  {t.city} – {t.date}
-                </Typography>
-              </Paper>
-
-              {/* Aufgeklappt */}
-              <Collapse in={openDetails[t.id] || false}>
+        <Paper
+          elevation={3}
+          sx={{ p: 2, borderRadius: 3, mb: 3, bgcolor: "rgba(255,255,255,0.95)" }}
+        >
+          <Stack spacing={1} sx={{ maxHeight: 220, overflowY: "auto", pr: 0.5 }}>
+            {dummyTournaments.map((t) => (
+              <Box key={t.id}>
+                {/* Eingeklappt */}
                 <Paper
-                  elevation={0}
-                  sx={{ bgcolor: "rgba(250,250,250,0.95)", p: 1.5, mt: 0.5, mb: 0.5 }}
+                  elevation={2}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 3,
+                    cursor: "pointer",
+                    bgcolor: "rgba(255,255,255,0.95)",
+                    mb: 0.5,
+                    "&:hover": { boxShadow: 4, bgcolor: "rgba(245,245,245,0.95)" },
+                  }}
+                  onClick={() => toggleDetails(t.id)}
                 >
-                  <Divider sx={{ mb: 1 }} />
-                  <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
-                    Austragungsort: {t.venue}
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: "bold", color: "success.main", fontSize: "0.95rem" }}
+                  >
+                    {t.name}
                   </Typography>
-                  <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
-                    Datum: {t.date}
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
-                    Weitere Infos folgen…
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "text.secondary", fontSize: "0.8rem" }}
+                  >
+                    {t.city} – {t.date}
                   </Typography>
                 </Paper>
-              </Collapse>
-            </Box>
-          ))}
-        </Stack>
+
+                {/* Aufgeklappt */}
+                <Collapse in={openDetails[t.id] || false}>
+                  <Paper
+                    elevation={0}
+                    sx={{ bgcolor: "rgba(250,250,250,0.95)", p: 1.5, mt: 0.5, mb: 0.5 }}
+                  >
+                    <Divider sx={{ mb: 1 }} />
+                    <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
+                      Austragungsort: {t.venue}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
+                      Datum: {t.date}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
+                      Weitere Infos folgen…
+                    </Typography>
+                  </Paper>
+                </Collapse>
+              </Box>
+            ))}
+          </Stack>
+        </Paper>
 
         {/* Neues Turnier erstellen */}
         <Button
@@ -282,7 +295,10 @@ const HomePage: React.FC = () => {
             sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <HomeIcon />
-            <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}
+            >
               Home
             </Typography>
           </Button>
@@ -294,7 +310,10 @@ const HomePage: React.FC = () => {
             sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <MapIcon />
-            <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}
+            >
               Karte
             </Typography>
           </Button>
