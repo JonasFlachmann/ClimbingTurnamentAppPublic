@@ -1,156 +1,202 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
-  Typography,
-  Button,
   Paper,
-  BottomNavigation,
-  BottomNavigationAction,
+  Typography,
+  Stack,
+  Divider,
+  IconButton,
+  Button,
+  Collapse,
 } from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
-import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import ImageIcon from "@mui/icons-material/Image";
-import Link from "next/link";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useRouter } from "next/router";
+
+// Dummy-Routen
+const dummyRoutes = [
+  {
+    id: 1,
+    name: "Überhang",
+    color: "Rot",
+    difficulty: "6b",
+    image: "/route1.jpg",
+    height: "4,5m",
+    setter: "Max Mustermann",
+    special: "Sprung am Ende",
+  },
+  {
+    id: 2,
+    name: "Platte",
+    color: "Gelb",
+    difficulty: "5c",
+    image: "/route2.jpg",
+    height: "3,8m",
+    setter: "Anna Beispiel",
+    special: "Technisch, kleine Tritte",
+  },
+  {
+    id: 3,
+    name: "Dachkante",
+    color: "Blau",
+    difficulty: "7a",
+    image: "/route3.jpg",
+    height: "5,0m",
+    setter: "Chris Schrauber",
+    special: "Sehr kraftvoll",
+  },
+];
 
 const TournamentFillPage: React.FC = () => {
-  const [value, setValue] = React.useState(2);
+  const [openRoutes, setOpenRoutes] = useState<{ [key: number]: boolean }>({});
+  const router = useRouter();
+  const currentPath = router.pathname;
 
-  // Dummy-Routen
-  const dummyRoutes = [
-    { id: 1, name: "Route 1", color: "Rot", difficulty: "Leicht" },
-    { id: 2, name: "Route 2", color: "Blau", difficulty: "Mittel" },
-    { id: 3, name: "Route 3", color: "Gelb", difficulty: "Schwer" },
-  ];
+  const toggleRoute = (id: number) =>
+    setOpenRoutes((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "background.default",
-        px: 2,
-        pb: 10,
-        pt: 5,
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
-      }}
-    >
-      {/* Turniername */}
-      <Typography variant="h5" fontWeight="bold" textAlign="center">
-        Sommerturnier 2025
-      </Typography>
-
-      {/* Upload Feld */}
-      <Paper
-        variant="outlined"
-        sx={{
-          p: 3,
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <Typography variant="body1" fontWeight="medium">
-          Hallenplan hochladen (PDF oder Bild)
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
+      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
+        {/* Turniername */}
+        <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+          Sommer Cup Bochum
         </Typography>
-        <Button variant="contained" component="label">
-          Datei auswählen
-          <input type="file" hidden accept=".pdf,image/*" />
+
+        {/* Upload Hallenplan */}
+        <Button variant="outlined" component="label" sx={{ mb: 3 }}>
+          Hallenplan hochladen
+          <input type="file" hidden accept="image/*,.pdf" />
         </Button>
-      </Paper>
 
-      {/* Dummy-Routen */}
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {dummyRoutes.map((route) => (
-          <Paper
-            key={route.id}
-            variant="outlined"
-            sx={{
-              p: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            {/* Bildplatzhalter */}
-            <Box
-              sx={{
-                width: 60,
-                height: 60,
-                bgcolor: "grey.200",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 2,
-              }}
-            >
-              <ImageIcon color="action" />
-            </Box>
+        {/* Routenliste */}
+        <Stack spacing={2}>
+          {dummyRoutes.map((route) => (
+            <Box key={route.id}>
+              {/* Eingeklappt */}
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 2,
+                  borderRadius: 3,
+                  cursor: "pointer",
+                  "&:hover": { boxShadow: 8, bgcolor: "action.hover" },
+                }}
+                onClick={() => toggleRoute(route.id)}
+              >
+                <Stack direction="row" spacing={2} alignItems="center">
+                  {/* Miniaturbild */}
+                  <Box
+                    component="img"
+                    src={route.image}
+                    alt={route.name}
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: 2,
+                      objectFit: "cover",
+                      bgcolor: "grey.200",
+                    }}
+                  />
+                  <Stack>
+                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                      {route.name}
+                    </Typography>
+                    <Typography sx={{ color: "text.secondary" }}>
+                      {route.color} – {route.difficulty}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Paper>
 
-            {/* Infos */}
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography variant="subtitle1" fontWeight="medium">
-                {route.name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Grifffarbe: {route.color}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Schwierigkeit: {route.difficulty}
-              </Typography>
+              {/* Aufgeklappt */}
+              <Collapse in={openRoutes[route.id] || false}>
+                <Paper
+                  elevation={0}
+                  sx={{ bgcolor: "background.default", p: 2, mt: 1, mb: 1 }}
+                >
+                  <Divider sx={{ mb: 2 }} />
+                  <Typography>Höhe: {route.height}</Typography>
+                  <Typography>Schrauber: {route.setter}</Typography>
+                  <Typography>Besonderheit: {route.special}</Typography>
+                </Paper>
+              </Collapse>
             </Box>
-          </Paper>
-        ))}
+          ))}
+        </Stack>
 
         {/* Add-Button */}
-        <Button
-          startIcon={<AddCircleOutlineIcon />}
-          variant="outlined"
-          fullWidth
-          sx={{ mt: 1 }}
-        >
-          Weitere Route hinzufügen
-        </Button>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+          <Button
+            variant="contained"
+            startIcon={<AddCircleIcon />}
+            onClick={() => router.push("/boulder-add")}
+          >
+            Neue Route hinzufügen
+          </Button>
+        </Box>
       </Box>
 
-      {/* Footer Navigation */}
-      <BottomNavigation
-        showLabels
-        value={value}
-        onChange={(event, newValue) => {
-          setValue(newValue);
+      {/* Footer */}
+      <Box
+        component="footer"
+        sx={{
+          position: "fixed",
+          left: 0,
+          bottom: 0,
+          width: "100%",
+          bgcolor: "background.paper",
+          borderTop: 1,
+          borderColor: "divider",
+          py: 1,
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          zIndex: 100,
         }}
-        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
       >
-        <BottomNavigationAction
-          label="Home"
-          icon={<HomeIcon />}
-          component={Link}
-          href="/"
-        />
-        <BottomNavigationAction
-          label="Karte"
-          icon={<MapIcon />}
-          component={Link}
-          href="/map"
-        />
-        <BottomNavigationAction
-          label="Turniere"
-          icon={<SportsHandballIcon />}
-          component={Link}
-          href="/tournament"
-        />
-        <BottomNavigationAction
-          label="Check"
-          icon={<PlaylistAddCheckIcon />}
-          component={Link}
-          href="/tournament-overview"
-        />
-      </BottomNavigation>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/home" ? "primary" : "inherit"}
+            onClick={() => router.push("/home")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <HomeIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
+              Home
+            </Typography>
+          </Button>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/map" ? "primary" : "inherit"}
+            onClick={() => router.push("/map")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <MapIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
+              Karte
+            </Typography>
+          </Button>
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/tournament-overview" ? "primary" : "inherit"}
+            onClick={() => router.push("/tournament-overview")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <EmojiEventsIcon />
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}
+            >
+              Turniere
+            </Typography>
+          </Button>
+        </Box>
+      </Box>
     </Box>
   );
 };
