@@ -1,52 +1,107 @@
 import React from "react";
-import { Box, Typography, TextField, Button, Paper, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  BottomNavigation,
+  BottomNavigationAction,
+} from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import AddBoxIcon from "@mui/icons-material/AddBox";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-const BoulderAddPage: React.FC = () => {
-  const [value, setValue] = React.useState(2);
+const BoulderAdd: React.FC = () => {
+  const [value, setValue] = React.useState(0);
   const router = useRouter();
 
-  const handleAddBoulder = () => {
-    // Boulder speichern...
-    router.push("/tournament-overview");
+  const handleConfirm = () => {
+    // später Logik zum Speichern einfügen
+    router.push("/tournament-fill");
   };
 
   return (
-    <>
-      <Box sx={{ minHeight: "100vh", bgcolor: "background.default", px: 2, pb: 10, pt: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
-          Boulder hinzufügen
-        </Typography>
-        <Paper elevation={2} sx={{ borderRadius: 4, p: 3, mb: 4, width: "100%", maxWidth: 400 }}>
-          <TextField label="Bezeichnung" fullWidth sx={{ mb: 2 }} />
-          <TextField label="Schwierigkeit" fullWidth sx={{ mb: 2 }} />
-          <TextField label="Beschreibung" multiline rows={2} fullWidth sx={{ mb: 2 }} />
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddBoxIcon />}
-            fullWidth
-            sx={{ mt: 2 }}
-            onClick={handleAddBoulder}
-          >
-            Boulder anlegen
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "background.default",
+        px: 2,
+        pb: 10,
+        pt: 5,
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+      }}
+    >
+      <Typography variant="h5" fontWeight="bold" textAlign="center">
+        Neue Route anlegen
+      </Typography>
+
+      <Paper variant="outlined" sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField label="Routenname" variant="outlined" fullWidth />
+        <TextField label="Grifffarbe" variant="outlined" fullWidth />
+        <TextField label="Schwierigkeit" variant="outlined" fullWidth />
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <Typography variant="body1" fontWeight="medium">
+            Foto hochladen
+          </Typography>
+          <Button variant="contained" component="label">
+            Datei auswählen
+            <input type="file" hidden accept="image/*" />
           </Button>
-        </Paper>
-      </Box>
-      <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100 }} elevation={3}>
-        <BottomNavigation showLabels value={value} onChange={(_, newValue) => setValue(newValue)}>
-          <BottomNavigationAction label="Home" icon={<HomeIcon />} component={Link} href="/home" />
-          <BottomNavigationAction label="Karte" icon={<MapIcon />} component={Link} href="/map" />
-          <BottomNavigationAction label="Turniere" icon={<SportsHandballIcon />} component={Link} href="/tournament-overview" />
-        </BottomNavigation>
+        </Box>
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleConfirm}
+          sx={{ mt: 2 }}
+        >
+          Bestätigen
+        </Button>
       </Paper>
-    </>
+
+      {/* Footer Navigation */}
+      <BottomNavigation
+        showLabels
+        value={value}
+        onChange={(event, newValue) => {
+          setValue(newValue);
+        }}
+        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+      >
+        <BottomNavigationAction
+          label="Home"
+          icon={<HomeIcon />}
+          component={Link}
+          href="/"
+        />
+        <BottomNavigationAction
+          label="Karte"
+          icon={<MapIcon />}
+          component={Link}
+          href="/map"
+        />
+        <BottomNavigationAction
+          label="Turniere"
+          icon={<SportsHandballIcon />}
+          component={Link}
+          href="/tournament"
+        />
+        <BottomNavigationAction
+          label="Check"
+          icon={<PlaylistAddCheckIcon />}
+          component={Link}
+          href="/tournament-overview"
+        />
+      </BottomNavigation>
+    </Box>
   );
 };
 
-export default BoulderAddPage;
+export default BoulderAdd;
