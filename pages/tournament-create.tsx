@@ -24,6 +24,12 @@ const dummyTournaments = [
     end: "2025-09-07",
     city: "Bochum",
     venue: "Neoliet",
+    routes: [
+      { name: "Wand 1", color: "Rot", difficulty: "5a" },
+      { name: "Überhang", color: "Blau", difficulty: "6b" },
+      { name: "Platte", color: "Gelb", difficulty: "6a+" },
+    ],
+    participants: 42,
   },
   {
     id: 2,
@@ -32,6 +38,12 @@ const dummyTournaments = [
     end: "2025-07-17",
     city: "Dortmund",
     venue: "Bergwerk",
+    routes: [
+      { name: "Dachkante", color: "Grün", difficulty: "7a" },
+      { name: "Sloperwand", color: "Orange", difficulty: "6c" },
+      { name: "Platte", color: "Violett", difficulty: "5c" },
+    ],
+    participants: 35,
   },
   {
     id: 3,
@@ -40,6 +52,12 @@ const dummyTournaments = [
     end: "2024-12-10",
     city: "Berlin",
     venue: "Boulderwelt",
+    routes: [
+      { name: "Crack", color: "Schwarz", difficulty: "7b+" },
+      { name: "Kante", color: "Rot", difficulty: "6a" },
+      { name: "Balance", color: "Gelb", difficulty: "6c+" },
+    ],
+    participants: 28,
   },
 ];
 
@@ -130,8 +148,9 @@ const TournamentCreatePage: React.FC = () => {
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                   {t.name}
                 </Typography>
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Typography>{t.city}</Typography>
+                  <Typography>{formatDate(t.start, t.end)}</Typography>
                   <IconButton
                     size="small"
                     onClick={(e) => handleAddClick(e, t.id)}
@@ -156,6 +175,33 @@ const TournamentCreatePage: React.FC = () => {
                   <Typography>Stadt: {t.city}</Typography>
                   <Typography>Austragungsort: {t.venue}</Typography>
                   <Typography>Datum: {formatDate(t.start, t.end)}</Typography>
+
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                    Routen:
+                  </Typography>
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    sx={{ mb: 1, maxHeight: 150, overflowY: "auto" }}
+                  >
+                    {t.routes.map((r, idx) => (
+                      <Paper key={idx} sx={{ p: 1.5, borderRadius: 2 }}>
+                        <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
+                        <Typography sx={{ color: "text.secondary" }}>
+                          Farbe: {r.color}
+                        </Typography>
+                        <Typography sx={{ color: "text.secondary" }}>
+                          Schwierigkeit: {r.difficulty}
+                        </Typography>
+                      </Paper>
+                    ))}
+                  </Stack>
+
+                  <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                    Teilnehmeranzahl:{" "}
+                    <span style={{ fontWeight: 400 }}>{t.participants}</span>
+                  </Typography>
                 </Paper>
               </Collapse>
             </Box>
@@ -212,7 +258,10 @@ const TournamentCreatePage: React.FC = () => {
             sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <EmojiEventsIcon />
-            <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}>
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}
+            >
               Turniere
             </Typography>
           </Button>
