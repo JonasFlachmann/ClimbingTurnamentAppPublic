@@ -13,6 +13,20 @@ import MapIcon from "@mui/icons-material/Map";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useRouter } from "next/router";
 
+const currentTournament = {
+  id: 99,
+  name: "Sommer Cup Bochum",
+  city: "Bochum",
+  venue: "Neoliet",
+  date: "20. – 21. September",
+  routes: [
+    { name: "Überhang", color: "Rot", difficulty: "6b", zone: "ja", top: "nein", flash: "nein" },
+    { name: "Platte", color: "Gelb", difficulty: "5c", zone: "ja", top: "ja", flash: "nein" },
+    { name: "Dachkante", color: "Blau", difficulty: "7a", zone: "nein", top: "nein", flash: "nein" },
+    { name: "Balance", color: "Grün", difficulty: "6a+", zone: "ja", top: "ja", flash: "ja" },
+  ],
+};
+
 const dummyTournaments = [
   {
     id: 1,
@@ -57,40 +71,49 @@ const HomePage: React.FC = () => {
       }}
     >
       <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
-        {/* Button: Neues Turnier */}
-        <Button
-          variant="contained"
-          color="success"
-          size="large"
-          fullWidth
-          sx={{
-            mb: 4,
-            fontWeight: "bold",
-            fontSize: "1.1rem",
-            borderRadius: 3,
-            boxShadow: 4,
-          }}
-          onClick={() => router.push("/tournament-create")}
+        {/* Aktuelles Turnier */}
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", mb: 2, color: "success.dark" }}
         >
-          Neues Turnier erstellen
-        </Button>
-
-        {/* News-Box */}
+          Aktuelles Turnier
+        </Typography>
         <Paper
           elevation={3}
           sx={{
             p: 2,
             borderRadius: 3,
-            mb: 3,
-            bgcolor: "rgba(189, 189, 189, 0.9)", // helleres Grau mit Transparenz
+            mb: 2,
+            bgcolor: "rgba(224, 224, 224, 0.95)",
           }}
         >
           <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
-            News
+            {currentTournament.name}
           </Typography>
-          <Typography variant="body2">
-            Dies ist eine Test-Version der App.
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>
+            {currentTournament.city} – {currentTournament.date}
           </Typography>
+
+          {/* Scrollbare Routensammlung */}
+          <Stack
+            spacing={1}
+            sx={{ maxHeight: 200, overflowY: "auto", pr: 1 }}
+          >
+            {currentTournament.routes.map((r, idx) => (
+              <Paper
+                key={idx}
+                sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(245,245,245,0.95)" }}
+              >
+                <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
+                <Typography sx={{ color: "text.secondary" }}>
+                  Farbe: {r.color} – Schwierigkeit: {r.difficulty}
+                </Typography>
+                <Typography variant="caption">
+                  Zone: {r.zone} | Top: {r.top} | Flash: {r.flash}
+                </Typography>
+              </Paper>
+            ))}
+          </Stack>
         </Paper>
 
         {/* Turniere in der Nähe */}
@@ -100,7 +123,6 @@ const HomePage: React.FC = () => {
         >
           Turniere in deiner Nähe
         </Typography>
-
         <Stack spacing={2}>
           {dummyTournaments.map((t) => (
             <Box key={t.id}>
@@ -139,6 +161,43 @@ const HomePage: React.FC = () => {
             </Box>
           ))}
         </Stack>
+
+        {/* Neues Turnier erstellen */}
+        <Button
+          variant="contained"
+          color="success"
+          size="large"
+          fullWidth
+          sx={{
+            mt: 4,
+            mb: 4,
+            fontWeight: "bold",
+            fontSize: "1.1rem",
+            borderRadius: 3,
+            boxShadow: 4,
+          }}
+          onClick={() => router.push("/tournament-create")}
+        >
+          Neues Turnier erstellen
+        </Button>
+
+        {/* News-Box */}
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            borderRadius: 3,
+            mb: 3,
+            bgcolor: "rgba(189, 189, 189, 0.9)",
+          }}
+        >
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
+            News
+          </Typography>
+          <Typography variant="body2">
+            Dies ist eine Test-Version der App.
+          </Typography>
+        </Paper>
       </Box>
 
       {/* Footer */}
