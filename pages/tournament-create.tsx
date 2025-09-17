@@ -38,10 +38,7 @@ const TournamentCreatePage: React.FC = () => {
   const currentPath = router.pathname;
 
   const handleOpenDetails = (id: number) => {
-    setOpenDetails((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setOpenDetails((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const handleAddClick = (e: React.MouseEvent, id: number) => {
@@ -51,9 +48,9 @@ const TournamentCreatePage: React.FC = () => {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
-      {/* Inhalt in der Mitte */}
+      {/* Inhalt */}
       <Box sx={{ maxWidth: 600, mx: "auto", pt: 5 }}>
-        {/* Button Neues Turnier */}
+        {/* Neues Turnier */}
         <Button
           variant="contained"
           color="primary"
@@ -66,9 +63,9 @@ const TournamentCreatePage: React.FC = () => {
         </Button>
 
         <Stack spacing={3}>
-          {dummyTournaments.map((tournament) => (
-            <Box key={tournament.id}>
-              {/* Turnierfeld klickbar */}
+          {dummyTournaments.map((t) => (
+            <Box key={t.id}>
+              {/* Kopfzeile (klickbar) */}
               <Paper
                 elevation={3}
                 sx={{
@@ -77,22 +74,15 @@ const TournamentCreatePage: React.FC = () => {
                   cursor: "pointer",
                   "&:hover": { boxShadow: 8, bgcolor: "action.hover" },
                 }}
-                onClick={() => handleOpenDetails(tournament.id)}
+                onClick={() => handleOpenDetails(t.id)}
               >
                 <Stack direction="row" alignItems="center" spacing={2}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: "bold", flexGrow: 1 }}
-                  >
-                    {tournament.name}
+                  <Typography variant="subtitle1" sx={{ fontWeight: "bold", flexGrow: 1 }}>
+                    {t.name}
                   </Typography>
-
                   <Typography sx={{ minWidth: 140 }}>
-                    {tournament.start === tournament.end
-                      ? `Datum: ${tournament.start}`
-                      : `Zeitraum: ${tournament.start} – ${tournament.end}`}
+                    {t.start === t.end ? `Datum: ${t.start}` : `Zeitraum: ${t.start} – ${t.end}`}
                   </Typography>
-
                   <Typography
                     sx={{
                       minWidth: 120,
@@ -100,15 +90,13 @@ const TournamentCreatePage: React.FC = () => {
                       whiteSpace: "nowrap",
                       textOverflow: "ellipsis",
                     }}
-                    title={`Ort: ${tournament.venue}`}
+                    title={`Ort: ${t.venue}`}
                   >
-                    Ort: {tournament.venue}
+                    Ort: {t.venue}
                   </Typography>
-
-                  {/* Plus-Button rechts */}
                   <IconButton
                     size="large"
-                    onClick={(e) => handleAddClick(e, tournament.id)}
+                    onClick={(e) => handleAddClick(e, t.id)}
                     sx={{ ml: 2, fontSize: 40 }}
                     aria-label="Turnier duplizieren/erstellen"
                   >
@@ -117,46 +105,27 @@ const TournamentCreatePage: React.FC = () => {
                 </Stack>
               </Paper>
 
-              {/* Details aufklappbar */}
-              <Collapse in={openDetails[tournament.id] || false}>
-                <Paper
-                  elevation={0}
-                  sx={{ bgcolor: "background.default", p: 2, mt: 1, mb: 1 }}
-                >
+              {/* Aufklapp-Details */}
+              <Collapse in={openDetails[t.id] || false}>
+                <Paper elevation={0} sx={{ bgcolor: "background.default", p: 2, mt: 1, mb: 1 }}>
                   <Divider sx={{ mb: 2 }} />
-
                   <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
                     Routen:
                   </Typography>
 
-                  <Stack
-                    direction="column"
-                    spacing={1}
-                    sx={{ mb: 1, maxHeight: 150, overflowY: "auto" }}
-                  >
-                    {tournament.routes.map((route, idx) => (
-                      <Paper
-                        key={idx}
-                        sx={{ p: 1.5, borderRadius: 2, minWidth: 120 }}
-                      >
-                        <Typography sx={{ fontWeight: "bold" }}>
-                          {route.name}
-                        </Typography>
-                        <Typography sx={{ color: "text.secondary" }}>
-                          Farbe: {route.color}
-                        </Typography>
-                        <Typography sx={{ color: "text.secondary" }}>
-                          Schwierigkeit: {route.difficulty}
-                        </Typography>
+                  {/* Routen untereinander & scrollbar */}
+                  <Stack direction="column" spacing={1} sx={{ mb: 1, maxHeight: 150, overflowY: "auto" }}>
+                    {t.routes.map((r, idx) => (
+                      <Paper key={idx} sx={{ p: 1.5, borderRadius: 2, minWidth: 120 }}>
+                        <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
+                        <Typography sx={{ color: "text.secondary" }}>Farbe: {r.color}</Typography>
+                        <Typography sx={{ color: "text.secondary" }}>Schwierigkeit: {r.difficulty}</Typography>
                       </Paper>
                     ))}
                   </Stack>
 
                   <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-                    Teilnehmeranzahl:{" "}
-                    <span style={{ fontWeight: 400 }}>
-                      {tournament.participants}
-                    </span>
+                    Teilnehmeranzahl: <span style={{ fontWeight: 400 }}>{t.participants}</span>
                   </Typography>
                 </Paper>
               </Collapse>
@@ -165,7 +134,7 @@ const TournamentCreatePage: React.FC = () => {
         </Stack>
       </Box>
 
-      {/* Footer identisch zu home.tsx */}
+      {/* Footer (wie Home) */}
       <Box
         component="footer"
         sx={{
@@ -185,3 +154,45 @@ const TournamentCreatePage: React.FC = () => {
       >
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
+            color={currentPath === "/home" ? "primary" : "inherit"}
+            onClick={() => router.push("/home")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <HomeIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
+              Home
+            </Typography>
+          </Button>
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/map" ? "primary" : "inherit"}
+            onClick={() => router.push("/map")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <MapIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
+              Karte
+            </Typography>
+          </Button>
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Button
+            color={currentPath === "/tournament-overview" ? "primary" : "inherit"}
+            onClick={() => router.push("/tournament-overview")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
+            <EmojiEventsIcon />
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}>
+              Turniere
+            </Typography>
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default TournamentCreatePage;
