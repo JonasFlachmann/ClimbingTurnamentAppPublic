@@ -16,19 +16,32 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useRouter } from "next/router";
 
 // Dummy Turniere
-const dummyTournaments = Array.from({ length: 6 }, (_, i) => ({
-  id: i + 1,
-  name: `Turnier ${i + 1}`,
-  start: "2025-09-01",
-  end: i % 2 === 0 ? "2025-09-07" : "2025-07-17", // abwechselnd Einzel- und Mehrtagesturniere
-  venue: `Kletterhalle ${i + 1}`,
-  routes: [
-    { name: "Wand 1", color: "Rot", difficulty: "5a" },
-    { name: "Überhang", color: "Blau", difficulty: "6b" },
-    { name: "Platte", color: "Gelb", difficulty: "6a+" },
-  ],
-  participants: 30 + i * 5,
-}));
+const dummyTournaments = [
+  {
+    id: 1,
+    name: "Sommer Cup",
+    start: "2025-09-01",
+    end: "2025-09-07",
+    city: "Bochum",
+    venue: "Neoliet",
+  },
+  {
+    id: 2,
+    name: "Herbst Boulder Jam",
+    start: "2025-07-17",
+    end: "2025-07-17",
+    city: "Dortmund",
+    venue: "Bergwerk",
+  },
+  {
+    id: 3,
+    name: "Winter Masters",
+    start: "2024-12-10",
+    end: "2024-12-10",
+    city: "Berlin",
+    venue: "Boulderwelt",
+  },
+];
 
 // Datumshilfe
 const formatDate = (start: string, end: string): string => {
@@ -38,21 +51,10 @@ const formatDate = (start: string, end: string): string => {
   const currentYear = now.getFullYear();
 
   const monthNames = [
-    "Januar",
-    "Februar",
-    "März",
-    "April",
-    "Mai",
-    "Juni",
-    "Juli",
-    "August",
-    "September",
-    "Oktober",
-    "November",
-    "Dezember",
+    "Januar","Februar","März","April","Mai","Juni",
+    "Juli","August","September","Oktober","November","Dezember",
   ];
 
-  // Einzel-Tag
   if (start === end) {
     if (startDate.getFullYear() === currentYear) {
       return `${startDate.getDate()}. ${monthNames[startDate.getMonth()]}`;
@@ -61,19 +63,21 @@ const formatDate = (start: string, end: string): string => {
     }
   }
 
-  // Zeitraum
   if (startDate.getFullYear() !== endDate.getFullYear()) {
-    return `${String(startDate.getMonth() + 1).padStart(2, "0")}/${startDate.getFullYear()} - ${String(endDate.getMonth() + 1).padStart(2, "0")}/${endDate.getFullYear()}`;
+    return `${String(startDate.getMonth() + 1).padStart(2, "0")}/${startDate.getFullYear()} - ${String(
+      endDate.getMonth() + 1
+    ).padStart(2, "0")}/${endDate.getFullYear()}`;
   }
 
   if (startDate.getFullYear() !== currentYear) {
     if (startDate.getMonth() === endDate.getMonth()) {
       return `${String(startDate.getMonth() + 1).padStart(2, "0")}/${startDate.getFullYear()}`;
     }
-    return `${String(startDate.getMonth() + 1).padStart(2, "0")}-${String(endDate.getMonth() + 1).padStart(2, "0")}/${startDate.getFullYear()}`;
+    return `${String(startDate.getMonth() + 1).padStart(2, "0")}-${String(
+      endDate.getMonth() + 1
+    ).padStart(2, "0")}/${startDate.getFullYear()}`;
   }
 
-  // Gleiches Jahr
   if (startDate.getMonth() === endDate.getMonth()) {
     return `${startDate.getDate()}. bis ${endDate.getDate()}. ${monthNames[startDate.getMonth()]}`;
   } else {
@@ -82,9 +86,7 @@ const formatDate = (start: string, end: string): string => {
 };
 
 const TournamentCreatePage: React.FC = () => {
-  const [openDetails, setOpenDetails] = useState<{ [key: number]: boolean }>(
-    {}
-  );
+  const [openDetails, setOpenDetails] = useState<{ [key: number]: boolean }>({});
   const router = useRouter();
   const currentPath = router.pathname;
 
@@ -99,9 +101,7 @@ const TournamentCreatePage: React.FC = () => {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
-      {/* Inhalt */}
       <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
-        {/* Neues Turnier */}
         <Button
           variant="contained"
           color="primary"
@@ -116,7 +116,7 @@ const TournamentCreatePage: React.FC = () => {
         <Stack spacing={2}>
           {dummyTournaments.map((t) => (
             <Box key={t.id}>
-              {/* Kopfzeile */}
+              {/* Eingeklappt */}
               <Paper
                 elevation={3}
                 sx={{
@@ -127,29 +127,11 @@ const TournamentCreatePage: React.FC = () => {
                 }}
                 onClick={() => handleOpenDetails(t.id)}
               >
-                {/* Erste Zeile: Name */}
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                   {t.name}
                 </Typography>
-
-                {/* Zweite Zeile: Ort + Datum */}
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography
-                    sx={{
-                      flexGrow: 1,
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      textOverflow: "ellipsis",
-                    }}
-                    title={`Ort: ${t.venue}`}
-                  >
-                    {t.venue}
-                  </Typography>
-
-                  <Typography sx={{ ml: 2, flexShrink: 0 }}>
-                    {formatDate(t.start, t.end)}
-                  </Typography>
-
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography>{t.city}</Typography>
                   <IconButton
                     size="small"
                     onClick={(e) => handleAddClick(e, t.id)}
@@ -161,7 +143,7 @@ const TournamentCreatePage: React.FC = () => {
                 </Stack>
               </Paper>
 
-              {/* Aufklapp-Details */}
+              {/* Ausgeklappt */}
               <Collapse in={openDetails[t.id] || false}>
                 <Paper
                   elevation={0}
@@ -169,31 +151,11 @@ const TournamentCreatePage: React.FC = () => {
                 >
                   <Divider sx={{ mb: 2 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-                    Routen:
+                    Turnier-Infos:
                   </Typography>
-
-                  <Stack
-                    direction="column"
-                    spacing={1}
-                    sx={{ mb: 1, maxHeight: 150, overflowY: "auto" }}
-                  >
-                    {t.routes.map((r, idx) => (
-                      <Paper key={idx} sx={{ p: 1.5, borderRadius: 2 }}>
-                        <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
-                        <Typography sx={{ color: "text.secondary" }}>
-                          Farbe: {r.color}
-                        </Typography>
-                        <Typography sx={{ color: "text.secondary" }}>
-                          Schwierigkeit: {r.difficulty}
-                        </Typography>
-                      </Paper>
-                    ))}
-                  </Stack>
-
-                  <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-                    Teilnehmeranzahl:{" "}
-                    <span style={{ fontWeight: 400 }}>{t.participants}</span>
-                  </Typography>
+                  <Typography>Stadt: {t.city}</Typography>
+                  <Typography>Austragungsort: {t.venue}</Typography>
+                  <Typography>Datum: {formatDate(t.start, t.end)}</Typography>
                 </Paper>
               </Collapse>
             </Box>
@@ -231,7 +193,6 @@ const TournamentCreatePage: React.FC = () => {
             </Typography>
           </Button>
         </Box>
-
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
             color={currentPath === "/map" ? "primary" : "inherit"}
@@ -244,7 +205,6 @@ const TournamentCreatePage: React.FC = () => {
             </Typography>
           </Button>
         </Box>
-
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
             color={currentPath === "/tournament-overview" ? "primary" : "inherit"}
@@ -252,10 +212,7 @@ const TournamentCreatePage: React.FC = () => {
             sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <EmojiEventsIcon />
-            <Typography
-              variant="caption"
-              sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}
-            >
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}>
               Turniere
             </Typography>
           </Button>
