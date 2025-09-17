@@ -49,7 +49,7 @@ const TournamentCreatePage: React.FC = () => {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
       {/* Inhalt */}
-      <Box sx={{ maxWidth: 600, mx: "auto", pt: 5 }}>
+      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
         {/* Neues Turnier */}
         <Button
           variant="contained"
@@ -62,7 +62,7 @@ const TournamentCreatePage: React.FC = () => {
           Neues Turnier anlegen
         </Button>
 
-        <Stack spacing={3}>
+        <Stack spacing={2}>
           {dummyTournaments.map((t) => (
             <Box key={t.id}>
               {/* Kopfzeile (klickbar) */}
@@ -76,31 +76,40 @@ const TournamentCreatePage: React.FC = () => {
                 }}
                 onClick={() => handleOpenDetails(t.id)}
               >
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: "bold", flexGrow: 1 }}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: "bold", flexShrink: 0 }}
+                  >
                     {t.name}
                   </Typography>
-                  <Typography sx={{ minWidth: 140 }}>
-                    {t.start === t.end ? `Datum: ${t.start}` : `Zeitraum: ${t.start} – ${t.end}`}
+
+                  <Typography sx={{ flexShrink: 0 }}>
+                    {t.start === t.end
+                      ? `Datum: ${t.start}`
+                      : `Zeitraum: ${t.start} – ${t.end}`}
                   </Typography>
+
                   <Typography
                     sx={{
-                      minWidth: 120,
+                      flexGrow: 1,
                       overflow: "hidden",
                       whiteSpace: "nowrap",
                       textOverflow: "ellipsis",
+                      textAlign: "right",
                     }}
                     title={`Ort: ${t.venue}`}
                   >
                     Ort: {t.venue}
                   </Typography>
+
                   <IconButton
-                    size="large"
+                    size="small"
                     onClick={(e) => handleAddClick(e, t.id)}
-                    sx={{ ml: 2, fontSize: 40 }}
+                    sx={{ ml: 1 }}
                     aria-label="Turnier duplizieren/erstellen"
                   >
-                    <AddCircleIcon fontSize="inherit" />
+                    <AddCircleIcon fontSize="large" />
                   </IconButton>
                 </Stack>
               </Paper>
@@ -113,19 +122,27 @@ const TournamentCreatePage: React.FC = () => {
                     Routen:
                   </Typography>
 
-                  {/* Routen untereinander & scrollbar */}
-                  <Stack direction="column" spacing={1} sx={{ mb: 1, maxHeight: 150, overflowY: "auto" }}>
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    sx={{ mb: 1, maxHeight: 150, overflowY: "auto" }}
+                  >
                     {t.routes.map((r, idx) => (
                       <Paper key={idx} sx={{ p: 1.5, borderRadius: 2, minWidth: 120 }}>
                         <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
-                        <Typography sx={{ color: "text.secondary" }}>Farbe: {r.color}</Typography>
-                        <Typography sx={{ color: "text.secondary" }}>Schwierigkeit: {r.difficulty}</Typography>
+                        <Typography sx={{ color: "text.secondary" }}>
+                          Farbe: {r.color}
+                        </Typography>
+                        <Typography sx={{ color: "text.secondary" }}>
+                          Schwierigkeit: {r.difficulty}
+                        </Typography>
                       </Paper>
                     ))}
                   </Stack>
 
                   <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
-                    Teilnehmeranzahl: <span style={{ fontWeight: 400 }}>{t.participants}</span>
+                    Teilnehmeranzahl:{" "}
+                    <span style={{ fontWeight: 400 }}>{t.participants}</span>
                   </Typography>
                 </Paper>
               </Collapse>
@@ -185,7 +202,10 @@ const TournamentCreatePage: React.FC = () => {
             sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <EmojiEventsIcon />
-            <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}>
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}
+            >
               Turniere
             </Typography>
           </Button>
