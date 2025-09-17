@@ -156,8 +156,16 @@ const HomePage: React.FC = () => {
               >
                 {/* Name + Farbe */}
                 <Box>
-                  <Typography sx={{ fontWeight: "bold", fontSize: "0.9rem" }}>{r.name}</Typography>
-                  <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: "bold", color: "success.main", fontSize: "0.95rem" }}
+                  >
+                    {r.name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "text.secondary", fontSize: "0.8rem" }}
+                  >
                     {r.color} – {r.difficulty}
                   </Typography>
                 </Box>
