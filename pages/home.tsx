@@ -295,7 +295,8 @@ const HomePage: React.FC = () => {
           left: 0,
           bottom: 0,
           width: "100%",
-          bgcolor: "rgba(46,125,50,0.75)", // success.main halbtransparent
+          boxSizing: "border-box", // verhindert Überlauf
+          bgcolor: "success.main", // gleiche Farbe wie Buttons
           borderTop: 1,
           borderColor: "divider",
           py: 0.5,
