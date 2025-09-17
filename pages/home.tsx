@@ -73,19 +73,20 @@ const HomePage: React.FC = () => {
       sx={{
         minHeight: "100vh",
         pb: 10,
+        backgroundColor: "#f5f8f6",
         backgroundImage: "url('/background-plants.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
+      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 3 }}>
         {/* Aktuelles Turnier */}
-        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, color: "success.dark" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1.5, color: "success.dark" }}>
           Aktuelles Turnier
         </Typography>
         <Paper
-          elevation={3}
-          sx={{ p: 2, borderRadius: 3, mb: 2, bgcolor: "rgba(224, 224, 224, 0.95)" }}
+          elevation={2}
+          sx={{ p: 2, borderRadius: 3, mb: 2, bgcolor: "rgba(255,255,255,0.95)" }}
         >
           <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
             {currentTournament.name}
@@ -95,33 +96,39 @@ const HomePage: React.FC = () => {
           </Typography>
 
           {/* Scrollbare Routensammlung */}
-          <Stack spacing={1} sx={{ maxHeight: 220, overflowY: "auto", pr: 1 }}>
+          <Stack spacing={1} sx={{ maxHeight: 180, overflowY: "auto", pr: 0.5 }}>
             {currentTournament.routes.map((r) => (
               <Paper
                 key={r.id}
                 sx={{
-                  p: 1.5,
+                  p: 1,
                   borderRadius: 2,
-                  bgcolor: "rgba(245,245,245,0.95)",
+                  bgcolor: "rgba(250,250,250,0.95)",
                 }}
               >
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   {/* Name + Farbe */}
                   <Box>
-                    <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
-                    <Typography sx={{ color: "text.secondary" }}>
+                    <Typography sx={{ fontWeight: "bold", fontSize: "0.9rem" }}>{r.name}</Typography>
+                    <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
                       {r.color} – {r.difficulty}
                     </Typography>
                   </Box>
 
-                  {/* Buttons kompakt */}
-                  <Stack direction="row" spacing={1}>
+                  {/* Buttons kompakt, rund */}
+                  <Stack direction="row" spacing={0.5}>
                     <Button
                       size="small"
                       variant={results[r.id] === "zone" ? "contained" : "outlined"}
                       color="success"
                       onClick={() => selectResult(r.id, "zone")}
-                      sx={{ minWidth: 32, px: 0 }}
+                      sx={{
+                        minWidth: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        px: 0,
+                        fontSize: "0.75rem",
+                      }}
                     >
                       Z
                     </Button>
@@ -130,7 +137,13 @@ const HomePage: React.FC = () => {
                       variant={results[r.id] === "top" ? "contained" : "outlined"}
                       color="success"
                       onClick={() => selectResult(r.id, "top")}
-                      sx={{ minWidth: 32, px: 0 }}
+                      sx={{
+                        minWidth: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        px: 0,
+                        fontSize: "0.75rem",
+                      }}
                     >
                       T
                     </Button>
@@ -139,7 +152,13 @@ const HomePage: React.FC = () => {
                       variant={results[r.id] === "flash" ? "contained" : "outlined"}
                       color="success"
                       onClick={() => selectResult(r.id, "flash")}
-                      sx={{ minWidth: 32, px: 0 }}
+                      sx={{
+                        minWidth: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        px: 0,
+                        fontSize: "0.75rem",
+                      }}
                     >
                       F
                     </Button>
@@ -151,28 +170,28 @@ const HomePage: React.FC = () => {
         </Paper>
 
         {/* Turniere in der Nähe */}
-        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2, color: "success.dark" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1.5, color: "success.dark" }}>
           Turniere in deiner Nähe
         </Typography>
-        <Stack spacing={2}>
+        <Stack spacing={1} sx={{ maxHeight: 220, overflowY: "auto", pr: 0.5 }}>
           {dummyTournaments.map((t) => (
             <Box key={t.id}>
               {/* Eingeklappt */}
               <Paper
-                elevation={3}
+                elevation={2}
                 sx={{
-                  p: 2,
+                  p: 1.5,
                   borderRadius: 3,
                   cursor: "pointer",
-                  bgcolor: "rgba(224, 224, 224, 0.95)",
-                  "&:hover": { boxShadow: 6, bgcolor: "rgba(200,200,200,0.95)" },
+                  bgcolor: "rgba(255,255,255,0.95)",
+                  "&:hover": { boxShadow: 4, bgcolor: "rgba(245,245,245,0.95)" },
                 }}
                 onClick={() => toggleDetails(t.id)}
               >
-                <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main", fontSize: "0.95rem" }}>
                   {t.name}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
                   {t.city} – {t.date}
                 </Typography>
               </Paper>
@@ -181,12 +200,18 @@ const HomePage: React.FC = () => {
               <Collapse in={openDetails[t.id] || false}>
                 <Paper
                   elevation={0}
-                  sx={{ bgcolor: "rgba(245,245,245,0.95)", p: 2, mt: 1, mb: 1 }}
+                  sx={{ bgcolor: "rgba(250,250,250,0.95)", p: 1.5, mt: 0.5, mb: 0.5 }}
                 >
                   <Divider sx={{ mb: 1 }} />
-                  <Typography variant="body2">Austragungsort: {t.venue}</Typography>
-                  <Typography variant="body2">Datum: {t.date}</Typography>
-                  <Typography variant="body2">Weitere Infos folgen…</Typography>
+                  <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
+                    Austragungsort: {t.venue}
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
+                    Datum: {t.date}
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
+                    Weitere Infos folgen…
+                  </Typography>
                 </Paper>
               </Collapse>
             </Box>
@@ -200,12 +225,12 @@ const HomePage: React.FC = () => {
           size="large"
           fullWidth
           sx={{
-            mt: 4,
-            mb: 4,
+            mt: 3,
+            mb: 3,
             fontWeight: "bold",
-            fontSize: "1.1rem",
+            fontSize: "1rem",
             borderRadius: 3,
-            boxShadow: 4,
+            boxShadow: 3,
           }}
           onClick={() => router.push("/tournament-create")}
         >
@@ -214,18 +239,20 @@ const HomePage: React.FC = () => {
 
         {/* News-Box */}
         <Paper
-          elevation={3}
+          elevation={2}
           sx={{
             p: 2,
             borderRadius: 3,
             mb: 3,
-            bgcolor: "rgba(189, 189, 189, 0.9)",
+            bgcolor: "rgba(255,255,255,0.9)",
           }}
         >
           <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
             News
           </Typography>
-          <Typography variant="body2">Dies ist eine Test-Version der App.</Typography>
+          <Typography variant="body2" sx={{ fontSize: "0.85rem" }}>
+            Dies ist eine Test-Version der App.
+          </Typography>
         </Paper>
       </Box>
 
@@ -237,10 +264,10 @@ const HomePage: React.FC = () => {
           left: 0,
           bottom: 0,
           width: "100%",
-          bgcolor: "rgba(245, 245, 245, 0.95)",
+          bgcolor: "rgba(255,255,255,0.95)",
           borderTop: 1,
           borderColor: "divider",
-          py: 1,
+          py: 0.5,
           display: "flex",
           justifyContent: "space-around",
           alignItems: "center",
