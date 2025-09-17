@@ -8,6 +8,7 @@ import {
   Collapse,
   Divider,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
@@ -294,9 +295,10 @@ const HomePage: React.FC = () => {
           position: "fixed",
           left: 0,
           bottom: 0,
-          width: "100%",
-          boxSizing: "border-box", // verhindert Überlauf
-          bgcolor: "success.main", // gleiche Farbe wie Buttons
+          width: "100vw",
+          maxWidth: "100%",
+          boxSizing: "border-box",
+          bgcolor: (theme) => alpha(theme.palette.success.main, 0.85), // gleiche Farbe wie Buttons + Glas
           borderTop: 1,
           borderColor: "divider",
           py: 0.5,
