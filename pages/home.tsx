@@ -294,7 +294,7 @@ const HomePage: React.FC = () => {
           left: 0,
           bottom: 0,
           width: "100%",
-          bgcolor: "rgba(255,255,255,0.95)",
+          bgcolor: "rgba(46,125,50,0.75)", // success.main halbtransparent
           borderTop: 1,
           borderColor: "divider",
           py: 0.5,
@@ -302,19 +302,28 @@ const HomePage: React.FC = () => {
           justifyContent: "space-around",
           alignItems: "center",
           zIndex: 100,
-          backdropFilter: "blur(6px)",
+          backdropFilter: "blur(10px)", // Glas-Effekt
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
-            color={currentPath === "/home" ? "success" : "inherit"}
+            color="inherit"
             onClick={() => router.push("/home")}
-            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+            sx={{
+              minWidth: 0,
+              p: 0,
+              display: "flex",
+              flexDirection: "column",
+              color: "white",
+            }}
           >
             <HomeIcon />
             <Typography
               variant="caption"
-              sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}
+              sx={{
+                fontWeight: currentPath === "/home" ? "bold" : "normal",
+                color: "white",
+              }}
             >
               Home
             </Typography>
@@ -322,14 +331,23 @@ const HomePage: React.FC = () => {
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
-            color={currentPath === "/map" ? "success" : "inherit"}
+            color="inherit"
             onClick={() => router.push("/map")}
-            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+            sx={{
+              minWidth: 0,
+              p: 0,
+              display: "flex",
+              flexDirection: "column",
+              color: "white",
+            }}
           >
             <MapIcon />
             <Typography
               variant="caption"
-              sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}
+              sx={{
+                fontWeight: currentPath === "/map" ? "bold" : "normal",
+                color: "white",
+              }}
             >
               Karte
             </Typography>
@@ -337,22 +355,8 @@ const HomePage: React.FC = () => {
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
-            color={currentPath === "/tournament-overview" ? "success" : "inherit"}
+            color="inherit"
             onClick={() => router.push("/tournament-overview")}
-            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
-          >
-            <EmojiEventsIcon />
-            <Typography
-              variant="caption"
-              sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}
-            >
-              Turniere
-            </Typography>
-          </Button>
-        </Box>
-      </Box>
-    </Box>
-  );
-};
-
-export default HomePage;
+            sx={{
+              minWidth: 0,
+              p: 0,
