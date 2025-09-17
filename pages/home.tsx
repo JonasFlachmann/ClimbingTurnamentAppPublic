@@ -1,37 +1,62 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
   Button,
   Paper,
   Stack,
+  Collapse,
+  Divider,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useRouter } from "next/router";
 
+const dummyTournaments = [
+  {
+    id: 1,
+    name: "Bochum Cup",
+    city: "Bochum",
+    venue: "Neoliet",
+    date: "20. – 21. September",
+  },
+  {
+    id: 2,
+    name: "Dortmund Masters",
+    city: "Dortmund",
+    venue: "Bergwerk",
+    date: "17. Juli",
+  },
+  {
+    id: 3,
+    name: "Berlin Open",
+    city: "Berlin",
+    venue: "Boulderwelt",
+    date: "06/2024",
+  },
+];
+
 const HomePage: React.FC = () => {
+  const [openDetails, setOpenDetails] = useState<{ [key: number]: boolean }>({});
   const router = useRouter();
   const currentPath = router.pathname;
+
+  const toggleDetails = (id: number) => {
+    setOpenDetails((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   return (
     <Box
       sx={{
         minHeight: "100vh",
         pb: 10,
-        backgroundImage: "url('/background-plants.jpg')", // hier dein Bild ins public/ legen
+        backgroundImage: "url('/background-plants.jpg')", // eigenes Bild in /public
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <Box
-        sx={{
-          maxWidth: "95%",
-          mx: "auto",
-          pt: 5,
-        }}
-      >
+      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
         {/* Button: Neues Turnier */}
         <Button
           variant="contained"
@@ -63,7 +88,7 @@ const HomePage: React.FC = () => {
           <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
             News
           </Typography>
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
+          <Typography variant="body2">
             Dies ist eine Test-Version der App.
           </Typography>
         </Paper>
@@ -77,26 +102,41 @@ const HomePage: React.FC = () => {
         </Typography>
 
         <Stack spacing={2}>
-          {["Bochum", "Dortmund", "Berlin"].map((city, index) => (
-            <Paper
-              key={index}
-              elevation={3}
-              sx={{
-                p: 2,
-                borderRadius: 3,
-                cursor: "pointer",
-                bgcolor: "rgba(224, 224, 224, 0.95)", // noch helleres Grau
-                "&:hover": { boxShadow: 6, bgcolor: "rgba(200,200,200,0.95)" },
-              }}
-              onClick={() => router.push("/tournament-overview")}
-            >
-              <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
-                {`Turnier ${index + 1}`}
-              </Typography>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                Ort: {city}
-              </Typography>
-            </Paper>
+          {dummyTournaments.map((t) => (
+            <Box key={t.id}>
+              {/* Eingeklappt */}
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 2,
+                  borderRadius: 3,
+                  cursor: "pointer",
+                  bgcolor: "rgba(224, 224, 224, 0.95)",
+                  "&:hover": { boxShadow: 6, bgcolor: "rgba(200,200,200,0.95)" },
+                }}
+                onClick={() => toggleDetails(t.id)}
+              >
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
+                  {t.name}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  {t.city} – {t.date}
+                </Typography>
+              </Paper>
+
+              {/* Aufgeklappt */}
+              <Collapse in={openDetails[t.id] || false}>
+                <Paper
+                  elevation={0}
+                  sx={{ bgcolor: "rgba(245,245,245,0.95)", p: 2, mt: 1, mb: 1 }}
+                >
+                  <Divider sx={{ mb: 1 }} />
+                  <Typography variant="body2">Austragungsort: {t.venue}</Typography>
+                  <Typography variant="body2">Datum: {t.date}</Typography>
+                  <Typography variant="body2">Weitere Infos folgen…</Typography>
+                </Paper>
+              </Collapse>
+            </Box>
           ))}
         </Stack>
       </Box>
@@ -117,7 +157,7 @@ const HomePage: React.FC = () => {
           justifyContent: "space-around",
           alignItems: "center",
           zIndex: 100,
-          backdropFilter: "blur(6px)", // leichter Glas-Effekt
+          backdropFilter: "blur(6px)",
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
