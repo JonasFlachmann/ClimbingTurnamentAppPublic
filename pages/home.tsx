@@ -79,6 +79,7 @@ const HomePage: React.FC = () => {
         backgroundPosition: "center",
       }}
     >
+      {/* Content Wrapper */}
       <Box sx={{ maxWidth: "95%", mx: "auto", pt: 3 }}>
         {/* Aktuelles Turnier */}
         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1.5, color: "success.dark" }}>
@@ -360,3 +361,26 @@ const HomePage: React.FC = () => {
             sx={{
               minWidth: 0,
               p: 0,
+              display: "flex",
+              flexDirection: "column",
+              color: "white",
+            }}
+          >
+            <EmojiEventsIcon />
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal",
+                color: "white",
+              }}
+            >
+              Turniere
+            </Typography>
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default HomePage;
