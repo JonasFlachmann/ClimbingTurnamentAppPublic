@@ -85,8 +85,13 @@ const HomePage: React.FC = () => {
           Aktuelles Turnier
         </Typography>
         <Paper
-          elevation={3}
-          sx={{ p: 2, borderRadius: 3, mb: 3, bgcolor: "rgba(255,255,255,0.95)" }}
+          sx={{
+            p: 2,
+            borderRadius: 3,
+            mb: 3,
+            bgcolor: "rgba(255,255,255,0.95)",
+            boxShadow: "0px 2px 6px rgba(0,0,0,0.1)",
+          }}
         >
           <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
             {currentTournament.name}
@@ -105,6 +110,7 @@ const HomePage: React.FC = () => {
                   borderRadius: 2,
                   bgcolor: "rgba(250,250,250,0.95)",
                   mb: 0.5,
+                  boxShadow: "0px 1px 4px rgba(0,0,0,0.08)",
                 }}
               >
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -175,22 +181,27 @@ const HomePage: React.FC = () => {
           Turniere in deiner Nähe
         </Typography>
         <Paper
-          elevation={3}
-          sx={{ p: 2, borderRadius: 3, mb: 3, bgcolor: "rgba(255,255,255,0.95)" }}
+          sx={{
+            p: 2,
+            borderRadius: 3,
+            mb: 3,
+            bgcolor: "rgba(255,255,255,0.95)",
+            boxShadow: "0px 2px 6px rgba(0,0,0,0.1)",
+          }}
         >
           <Stack spacing={1} sx={{ maxHeight: 220, overflowY: "auto", pr: 0.5 }}>
             {dummyTournaments.map((t) => (
               <Box key={t.id}>
                 {/* Eingeklappt */}
                 <Paper
-                  elevation={2}
                   sx={{
                     p: 1.5,
                     borderRadius: 3,
                     cursor: "pointer",
                     bgcolor: "rgba(255,255,255,0.95)",
-                    mb: 0.5,
-                    "&:hover": { boxShadow: 4, bgcolor: "rgba(245,245,245,0.95)" },
+                    mb: 0.8,
+                    boxShadow: "0px 1px 4px rgba(0,0,0,0.08)",
+                    "&:hover": { boxShadow: "0px 3px 8px rgba(0,0,0,0.15)" },
                   }}
                   onClick={() => toggleDetails(t.id)}
                 >
@@ -211,8 +222,14 @@ const HomePage: React.FC = () => {
                 {/* Aufgeklappt */}
                 <Collapse in={openDetails[t.id] || false}>
                   <Paper
-                    elevation={0}
-                    sx={{ bgcolor: "rgba(250,250,250,0.95)", p: 1.5, mt: 0.5, mb: 0.5 }}
+                    sx={{
+                      bgcolor: "rgba(250,250,250,0.95)",
+                      p: 1.5,
+                      mt: 0.5,
+                      mb: 0.8,
+                      borderRadius: 2,
+                      boxShadow: "0px 1px 4px rgba(0,0,0,0.08)",
+                    }}
                   >
                     <Divider sx={{ mb: 1 }} />
                     <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
@@ -243,7 +260,7 @@ const HomePage: React.FC = () => {
             fontWeight: "bold",
             fontSize: "1rem",
             borderRadius: 3,
-            boxShadow: 3,
+            boxShadow: "0px 3px 8px rgba(0,0,0,0.15)",
           }}
           onClick={() => router.push("/tournament-create")}
         >
@@ -252,12 +269,12 @@ const HomePage: React.FC = () => {
 
         {/* News-Box */}
         <Paper
-          elevation={2}
           sx={{
             p: 2,
             borderRadius: 3,
             mb: 3,
             bgcolor: "rgba(255,255,255,0.9)",
+            boxShadow: "0px 2px 6px rgba(0,0,0,0.1)",
           }}
         >
           <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
