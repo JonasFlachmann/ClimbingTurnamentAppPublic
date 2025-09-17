@@ -7,11 +7,14 @@ import {
   Stack,
   Collapse,
   Divider,
+  IconButton,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { useRouter } from "next/router";
 
 const currentTournament = {
@@ -80,8 +83,41 @@ const HomePage: React.FC = () => {
         backgroundPosition: "center",
       }}
     >
+      {/* Header */}
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          maxWidth: "100%",
+          boxSizing: "border-box",
+          bgcolor: (theme) => alpha(theme.palette.success.main, 0.9),
+          color: "white",
+          backdropFilter: "blur(10px)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: 2,
+          py: 1,
+          zIndex: 120,
+        }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Home
+        </Typography>
+        <Box>
+          <IconButton color="inherit" onClick={() => router.push("/profile")}>
+            <AccountCircleIcon />
+          </IconButton>
+          <IconButton color="inherit" onClick={() => router.push("/settings")}>
+            <SettingsIcon />
+          </IconButton>
+        </Box>
+      </Box>
+
       {/* Content Wrapper */}
-      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 3 }}>
+      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 10 }}>
         {/* Aktuelles Turnier */}
         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1.5, color: "success.dark" }}>
           Aktuelles Turnier
@@ -103,75 +139,76 @@ const HomePage: React.FC = () => {
           </Typography>
 
           {/* Scrollbare Routensammlung */}
-          <Stack spacing={1} sx={{ maxHeight: 180, overflowY: "auto", pr: 0.5 }}>
+          <Stack spacing={1} sx={{ maxHeight: 200, overflowY: "auto", pr: 0.5 }}>
             {currentTournament.routes.map((r) => (
               <Paper
                 key={r.id}
                 sx={{
-                  p: 1,
-                  borderRadius: 2,
-                  bgcolor: "rgba(250,250,250,0.95)",
-                  mb: 0.5,
+                  p: 1.5,
+                  borderRadius: 3,
+                  bgcolor: "rgba(255,255,255,0.95)",
+                  mb: 0.8,
                   boxShadow: "0px 1px 4px rgba(0,0,0,0.08)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  {/* Name + Farbe */}
-                  <Box>
-                    <Typography sx={{ fontWeight: "bold", fontSize: "0.9rem" }}>{r.name}</Typography>
-                    <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
-                      {r.color} – {r.difficulty}
-                    </Typography>
-                  </Box>
+                {/* Name + Farbe */}
+                <Box>
+                  <Typography sx={{ fontWeight: "bold", fontSize: "0.9rem" }}>{r.name}</Typography>
+                  <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
+                    {r.color} – {r.difficulty}
+                  </Typography>
+                </Box>
 
-                  {/* Buttons kompakt, rund */}
-                  <Stack direction="row" spacing={0.5}>
-                    <Button
-                      size="small"
-                      variant={results[r.id] === "zone" ? "contained" : "outlined"}
-                      color="success"
-                      onClick={() => selectResult(r.id, "zone")}
-                      sx={{
-                        minWidth: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        px: 0,
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      Z
-                    </Button>
-                    <Button
-                      size="small"
-                      variant={results[r.id] === "top" ? "contained" : "outlined"}
-                      color="success"
-                      onClick={() => selectResult(r.id, "top")}
-                      sx={{
-                        minWidth: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        px: 0,
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      T
-                    </Button>
-                    <Button
-                      size="small"
-                      variant={results[r.id] === "flash" ? "contained" : "outlined"}
-                      color="success"
-                      onClick={() => selectResult(r.id, "flash")}
-                      sx={{
-                        minWidth: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        px: 0,
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      F
-                    </Button>
-                  </Stack>
+                {/* Buttons kompakt, rund */}
+                <Stack direction="row" spacing={0.5}>
+                  <Button
+                    size="small"
+                    variant={results[r.id] === "zone" ? "contained" : "outlined"}
+                    color="success"
+                    onClick={() => selectResult(r.id, "zone")}
+                    sx={{
+                      minWidth: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      px: 0,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Z
+                  </Button>
+                  <Button
+                    size="small"
+                    variant={results[r.id] === "top" ? "contained" : "outlined"}
+                    color="success"
+                    onClick={() => selectResult(r.id, "top")}
+                    sx={{
+                      minWidth: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      px: 0,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    T
+                  </Button>
+                  <Button
+                    size="small"
+                    variant={results[r.id] === "flash" ? "contained" : "outlined"}
+                    color="success"
+                    onClick={() => selectResult(r.id, "flash")}
+                    sx={{
+                      minWidth: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      px: 0,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    F
+                  </Button>
                 </Stack>
               </Paper>
             ))}
@@ -298,7 +335,7 @@ const HomePage: React.FC = () => {
           width: "100vw",
           maxWidth: "100%",
           boxSizing: "border-box",
-          bgcolor: (theme) => alpha(theme.palette.success.main, 0.85), // gleiche Farbe wie Buttons + Glas
+          bgcolor: (theme) => alpha(theme.palette.success.main, 0.85),
           borderTop: 1,
           borderColor: "divider",
           py: 0.5,
@@ -306,29 +343,17 @@ const HomePage: React.FC = () => {
           justifyContent: "space-around",
           alignItems: "center",
           zIndex: 100,
-          backdropFilter: "blur(10px)", // Glas-Effekt
+          backdropFilter: "blur(10px)",
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Button
             color="inherit"
             onClick={() => router.push("/home")}
-            sx={{
-              minWidth: 0,
-              p: 0,
-              display: "flex",
-              flexDirection: "column",
-              color: "white",
-            }}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column", color: "white" }}
           >
             <HomeIcon />
-            <Typography
-              variant="caption"
-              sx={{
-                fontWeight: currentPath === "/home" ? "bold" : "normal",
-                color: "white",
-              }}
-            >
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal", color: "white" }}>
               Home
             </Typography>
           </Button>
@@ -337,22 +362,10 @@ const HomePage: React.FC = () => {
           <Button
             color="inherit"
             onClick={() => router.push("/map")}
-            sx={{
-              minWidth: 0,
-              p: 0,
-              display: "flex",
-              flexDirection: "column",
-              color: "white",
-            }}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column", color: "white" }}
           >
             <MapIcon />
-            <Typography
-              variant="caption"
-              sx={{
-                fontWeight: currentPath === "/map" ? "bold" : "normal",
-                color: "white",
-              }}
-            >
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal", color: "white" }}>
               Karte
             </Typography>
           </Button>
@@ -361,22 +374,10 @@ const HomePage: React.FC = () => {
           <Button
             color="inherit"
             onClick={() => router.push("/tournament-overview")}
-            sx={{
-              minWidth: 0,
-              p: 0,
-              display: "flex",
-              flexDirection: "column",
-              color: "white",
-            }}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column", color: "white" }}
           >
             <EmojiEventsIcon />
-            <Typography
-              variant="caption"
-              sx={{
-                fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal",
-                color: "white",
-              }}
-            >
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal", color: "white" }}>
               Turniere
             </Typography>
           </Button>
