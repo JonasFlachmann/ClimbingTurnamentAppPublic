@@ -64,7 +64,7 @@ const HomePage: React.FC = () => {
   const selectResult = (routeId: number, field: "zone" | "top" | "flash") => {
     setResults((prev) => ({
       ...prev,
-      [routeId]: prev[routeId] === field ? null : field, // wenn nochmal geklickt → abwählen
+      [routeId]: prev[routeId] === field ? null : field,
     }));
   };
 
@@ -97,39 +97,54 @@ const HomePage: React.FC = () => {
           {/* Scrollbare Routensammlung */}
           <Stack spacing={1} sx={{ maxHeight: 220, overflowY: "auto", pr: 1 }}>
             {currentTournament.routes.map((r) => (
-              <Paper key={r.id} sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(245,245,245,0.95)" }}>
+              <Paper
+                key={r.id}
+                sx={{
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: "rgba(245,245,245,0.95)",
+                }}
+              >
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
+                  {/* Name + Farbe */}
+                  <Box>
+                    <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
+                    <Typography sx={{ color: "text.secondary" }}>
+                      {r.color} – {r.difficulty}
+                    </Typography>
+                  </Box>
+
+                  {/* Buttons kompakt */}
                   <Stack direction="row" spacing={1}>
                     <Button
                       size="small"
                       variant={results[r.id] === "zone" ? "contained" : "outlined"}
                       color="success"
                       onClick={() => selectResult(r.id, "zone")}
+                      sx={{ minWidth: 32, px: 0 }}
                     >
-                      Zone
+                      Z
                     </Button>
                     <Button
                       size="small"
                       variant={results[r.id] === "top" ? "contained" : "outlined"}
                       color="success"
                       onClick={() => selectResult(r.id, "top")}
+                      sx={{ minWidth: 32, px: 0 }}
                     >
-                      Top
+                      T
                     </Button>
                     <Button
                       size="small"
                       variant={results[r.id] === "flash" ? "contained" : "outlined"}
                       color="success"
                       onClick={() => selectResult(r.id, "flash")}
+                      sx={{ minWidth: 32, px: 0 }}
                     >
-                      Flash
+                      F
                     </Button>
                   </Stack>
                 </Stack>
-                <Typography sx={{ color: "text.secondary" }}>
-                  {r.color} – {r.difficulty}
-                </Typography>
               </Paper>
             ))}
           </Stack>
@@ -210,9 +225,7 @@ const HomePage: React.FC = () => {
           <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "success.main" }}>
             News
           </Typography>
-          <Typography variant="body2">
-            Dies ist eine Test-Version der App.
-          </Typography>
+          <Typography variant="body2">Dies ist eine Test-Version der App.</Typography>
         </Paper>
       </Box>
 
