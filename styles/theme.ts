@@ -1,27 +1,21 @@
 import { createTheme, alpha } from "@mui/material/styles";
-import type {} from "@mui/x-date-pickers/themeAugmentation"; // falls später Date Pickers genutzt werden
 
-/**
- * Hilfsfunktion: Glas-Effekt in App-Farben (z. B. Header/Footer)
- * Nutzung: sx={{ ...glass(0.85) }}
- */
+/** Glas-Effekt (z. B. Header/Footer) */
 export const glass = (opacity: number = 0.85) => (theme: any) => ({
   backgroundColor: alpha(theme.palette.success.main, opacity),
   backdropFilter: "blur(10px)",
 });
 
-/**
- * Optional: helle Card-Hintergründe (z. B. für das „Pflanzen“-Theme)
- */
+/** Helle Card-Hintergründe */
 export const softCardBg = (theme: any) => alpha("#FFFFFF", 0.95);
 
 const theme = createTheme({
   palette: {
     primary: { main: "#2e7d32" },   // Grün
-    success: { main: "#2e7d32" },   // identisch zu primary => Buttons, Header, Footer
-    secondary: { main: "#6d6d6d" }, // neutrales Grau
+    success: { main: "#2e7d32" },   // identisch zu primary
+    secondary: { main: "#6d6d6d" }, // Grau
     background: {
-      default: "#f5f8f6",           // sehr helles Grau/Grün für Grundfläche
+      default: "#f5f8f6",
       paper: "#ffffff",
     },
     text: {
@@ -32,10 +26,10 @@ const theme = createTheme({
     divider: "rgba(0,0,0,0.12)",
   },
 
-  spacing: 8, // 1 = 8px
+  spacing: 8,
 
   shape: {
-    borderRadius: 8, // 👈 einheitlich etwas kleinere Rundung (vorher 12)
+    borderRadius: 8, // global etwas kleiner
   },
 
   typography: {
@@ -49,31 +43,21 @@ const theme = createTheme({
   },
 
   components: {
-    // Standard-Karten/Boxen (Paper) – gleiche Optik für Routen/Turniere/News
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 12, // Cards dürfen etwas runder sein als global
+          borderRadius: 12,
           boxShadow: "0px 2px 6px rgba(0,0,0,0.10)",
           backgroundColor: "#fff",
         },
       },
-      defaultProps: {
-        elevation: 0,
-      },
+      defaultProps: { elevation: 0 },
     },
 
-    // Primäre & sekundäre Buttons – kräftig, rund, konsistent
     MuiButton: {
       styleOverrides: {
-        root: {
-          borderRadius: 12,
-          textTransform: "none",
-          fontWeight: 700,
-        },
-        containedSuccess: {
-          boxShadow: "0px 3px 8px rgba(0,0,0,0.15)",
-        },
+        root: { borderRadius: 12, textTransform: "none", fontWeight: 700 },
+        containedSuccess: { boxShadow: "0px 3px 8px rgba(0,0,0,0.15)" },
         outlinedSuccess: {
           borderWidth: 2,
           ":hover": { borderWidth: 2 },
@@ -81,21 +65,12 @@ const theme = createTheme({
       },
     },
 
-    // Kleine runde IconButtons (z. B. im Header)
     MuiIconButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-        },
-      },
+      styleOverrides: { root: { borderRadius: 12 } },
     },
 
-    // Textfelder – angenehme Lesbarkeit & Fokusfarbe
     MuiTextField: {
-      defaultProps: {
-        variant: "outlined",
-        size: "medium",
-      },
+      defaultProps: { variant: "outlined", size: "medium" },
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-root": {
@@ -106,49 +81,24 @@ const theme = createTheme({
               borderWidth: 2,
             },
           },
-          "& .MuiInputLabel-root.Mui-focused": {
-            color: "#2e7d32",
-          },
+          "& .MuiInputLabel-root.Mui-focused": { color: "#2e7d32" },
         },
       },
     },
 
-    // AppBar/Toolbar – falls du Header global verwenden willst
     MuiAppBar: {
       styleOverrides: {
-        root: {
-          boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-        },
-        colorPrimary: {
-          backgroundColor: "#2e7d32",
-        },
-      },
-    },
-    MuiToolbar: {
-      styleOverrides: {
-        root: {
-          minHeight: 56,
-        },
+        root: { boxShadow: "0 2px 8px rgba(0,0,0,0.12)" },
+        colorPrimary: { backgroundColor: "#2e7d32" },
       },
     },
 
-    // Divider etwas weicher
-    MuiDivider: {
-      styleOverrides: {
-        root: {
-          borderColor: "rgba(0,0,0,0.10)",
-        },
-      },
-    },
+    MuiToolbar: { styleOverrides: { root: { minHeight: 56 } } },
 
-    // Optional: List/Items für kompaktere scrollbare Listen
+    MuiDivider: { styleOverrides: { root: { borderColor: "rgba(0,0,0,0.10)" } } },
+
     MuiListItem: {
-      styleOverrides: {
-        root: {
-          paddingTop: 6,
-          paddingBottom: 6,
-        },
-      },
+      styleOverrides: { root: { paddingTop: 6, paddingBottom: 6 } },
     },
   },
 });
