@@ -43,7 +43,6 @@ const theme = createTheme({
   },
 
   components: {
-    // Alle Boxen/Karten standardmäßig mit grün-transparentem Glas
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -78,7 +77,7 @@ const theme = createTheme({
         root: {
           "& .MuiOutlinedInput-root": {
             borderRadius: 12,
-            backgroundColor: "rgba(255,255,255,0.1)", // halbtransparent
+            backgroundColor: "rgba(255,255,255,0.1)",
             color: "#fff",
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: "#fff",
@@ -94,4 +93,21 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: { boxShadow: "0 2px 8px rgba(0,0,0,0.12)" },
-        colorPr
+        colorPrimary: {
+          backgroundColor: alpha("#2e7d32", 0.9),
+          backdropFilter: "blur(6px)",
+        },
+      },
+    },
+
+    MuiToolbar: { styleOverrides: { root: { minHeight: 56 } } },
+
+    MuiDivider: { styleOverrides: { root: { borderColor: "rgba(255,255,255,0.2)" } } },
+
+    MuiListItem: {
+      styleOverrides: { root: { paddingTop: 6, paddingBottom: 6 } },
+    },
+  },
+});
+
+export default theme; // 👈 WICHTIG
