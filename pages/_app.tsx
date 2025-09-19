@@ -1,17 +1,22 @@
-import type { AppProps } from "next/app";
+import type { AppProps, NextPage } from "next";
 import { ThemeProvider, CssBaseline, GlobalStyles } from "@mui/material";
 import theme from "../styles/theme";
 import Layout from "../components/Layout";
 
-// Swiper CSS (global)
-import "swiper/css";
-import "swiper/css/pagination";
-
-type MyAppProps = AppProps & {
-  Component: AppProps["Component"] & { title?: string };
+type NextPageWithOptions = NextPage & {
+  title?: string;
+  noLayout?: boolean;
+};
+type AppPropsWithOptions = AppProps & {
+  Component: NextPageWithOptions;
 };
 
-export default function MyApp({ Component, pageProps }: MyAppProps) {
+export default function MyApp({ Component, pageProps }: AppPropsWithOptions) {
+  const useLayout = !Component.noLayout;
+  const title = Component.title;
+
+  const content = <Component {...pageProps} />;
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -26,9 +31,7 @@ export default function MyApp({ Component, pageProps }: MyAppProps) {
           "#__next": { minHeight: "100%" },
         }}
       />
-      <Layout title={(Component as any).title}>
-        <Component {...pageProps} />
-      </Layout>
+      {useLayout ? <Layout title={title}>{content}</Layout> : content}
     </ThemeProvider>
   );
 }
