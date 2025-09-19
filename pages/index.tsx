@@ -1,166 +1,106 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Paper, BottomNavigation, BottomNavigationAction } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import MapIcon from "@mui/icons-material/Map";
-import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import LoginIcon from "@mui/icons-material/Login";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Link,
+  Paper,
+  Stack,
+} from "@mui/material";
 
-const IndexPage: React.FC = () => {
-  const [value, setValue] = useState(0);
-  const [username, setUsername] = useState("");
+function IndexPage() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Hier könntest du später die Login-Logik ergänzen
-    router.push("/home");
+  const handleLogin = () => {
+    // TODO: Login-Logik
+    console.log("Login mit:", email, password);
   };
 
   const handleRegister = () => {
-    router.push("/register");
+    // TODO: Registrierung-Logik
+    console.log("Registrierung mit:", email, password);
   };
 
   return (
-    <>
-      <Box
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "background.default",
+        p: 2,
+      }}
+    >
+      <Paper
         sx={{
-          minHeight: "100vh",
-          bgcolor: "background.default",
-          px: 2,
-          pb: 10,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
+          maxWidth: 400,
+          width: "100%",
+          p: 4,
+          borderRadius: 3,
+          boxShadow: 3,
+          textAlign: "center",
         }}
       >
-        <Paper
-          elevation={3}
-          sx={{
-            borderRadius: 4,
-            p: 4,
-            mt: 8,
-            mb: 4,
-            width: "100%",
-            maxWidth: 400,
-            textAlign: "center",
-            boxShadow: 6,
-          }}
+        {/* Titel */}
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ fontWeight: 700, color: "primary.main" }}
         >
-          <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
-            Boulder Turnier App
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            Logge dich ein, um Boulder-Turniere zu entdecken und teilzunehmen.
-          </Typography>
-          <form onSubmit={handleLogin} style={{ width: "100%" }}>
-            <TextField
-              label="Benutzername"
-              variant="outlined"
-              fullWidth
-              sx={{ mb: 2 }}
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              autoComplete="username"
-            />
-            <TextField
-              label="Passwort"
-              variant="outlined"
-              type="password"
-              fullWidth
-              sx={{ mb: 2 }}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              startIcon={<LoginIcon />}
-              fullWidth
-              sx={{
-                borderRadius: 3,
-                py: 1,
-                fontWeight: "bold",
-                fontSize: "1.15rem",
-                boxShadow: 3,
-                mb: 2,
-                transition: "transform 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                  transform: "scale(1.04)",
-                  boxShadow: 6,
-                },
-              }}
-            >
-              Einloggen
-            </Button>
-          </form>
+          ALLEZ-CLIMBING
+        </Typography>
+
+        <Stack spacing={2} mt={3}>
+          <TextField
+            label="E-Mail"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Passwort"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+          />
+
+          {/* Login Button */}
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleLogin}
+            sx={{ bgcolor: "success.dark", "&:hover": { bgcolor: "success.main" } }}
+          >
+            Anmelden
+          </Button>
+
+          {/* Registrieren Button */}
           <Button
             variant="outlined"
-            color="primary"
-            size="large"
-            startIcon={<PersonAddIcon />}
+            color="success"
             onClick={handleRegister}
-            fullWidth
-            sx={{
-              borderRadius: 3,
-              py: 1,
-              fontWeight: "bold",
-              fontSize: "1.10rem",
-              boxShadow: 2,
-              transition: "transform 0.2s, box-shadow 0.2s",
-              "&:hover": {
-                transform: "scale(1.04)",
-                boxShadow: 5,
-              },
-            }}
+            sx={{ borderRadius: 2 }}
           >
             Registrieren
           </Button>
-        </Paper>
-      </Box>
-      <Paper
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 100,
-        }}
-        elevation={3}
-      >
-        <BottomNavigation
-          showLabels
-          value={value}
-          onChange={(_, newValue) => setValue(newValue)}
-        >
-          <BottomNavigationAction
-            label="Home"
-            icon={<HomeIcon />}
-            component={Link}
-            href="/home"
-          />
-          <BottomNavigationAction
-            label="Karte"
-            icon={<MapIcon />}
-            component={Link}
-            href="/map"
-          />
-          <BottomNavigationAction
-            label="Turniere"
-            icon={<SportsHandballIcon />}
-            component={Link}
-            href="/tournament-overview"
-          />
-        </BottomNavigation>
+
+          {/* Passwort vergessen Link */}
+          <Link
+            href="#"
+            underline="hover"
+            sx={{ fontSize: "0.9rem", mt: 1 }}
+          >
+            Passwort vergessen?
+          </Link>
+        </Stack>
       </Paper>
-    </>
+    </Box>
   );
-};
+}
 
 export default IndexPage;
