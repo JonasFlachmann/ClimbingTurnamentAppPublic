@@ -3,6 +3,10 @@ import { ThemeProvider, CssBaseline, GlobalStyles } from "@mui/material";
 import theme from "../styles/theme";
 import Layout from "../components/Layout";
 
+// Swiper CSS (global)
+import "swiper/css";
+import "swiper/css/pagination";
+
 type MyAppProps = AppProps & {
   Component: AppProps["Component"] & { title?: string };
 };
@@ -22,7 +26,7 @@ export default function MyApp({ Component, pageProps }: MyAppProps) {
           "#__next": { minHeight: "100%" },
         }}
       />
-      <Layout title={Component.title}>
+      <Layout title={(Component as any).title}>
         <Component {...pageProps} />
       </Layout>
     </ThemeProvider>
