@@ -1,0 +1,109 @@
+import React, { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Box,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SettingsIcon from "@mui/icons-material/Settings";
+import HomeIcon from "@mui/icons-material/Home";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import EventIcon from "@mui/icons-material/Event";
+import InfoIcon from "@mui/icons-material/Info";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [navValue, setNavValue] = useState(0);
+
+  const toggleDrawer = (state: boolean) => () => {
+    setDrawerOpen(state);
+  };
+
+  return (
+    <Box sx={{ pb: 7 }}>
+      {/* Header */}
+      <AppBar position="fixed" color="primary" sx={{ zIndex: 1201 }}>
+        <Toolbar>
+          <IconButton edge="start" color="inherit" onClick={toggleDrawer(true)}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Climbing App
+          </Typography>
+          <IconButton color="inherit">
+            <AccountCircleIcon />
+          </IconButton>
+          <IconButton color="inherit">
+            <SettingsIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      {/* Sidebar (Drawer) */}
+      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+          <List>
+            <ListItem button>
+              <ListItemText primary="Account-Informationen" />
+            </ListItem>
+            <ListItem button>
+              <ListItemText primary="Einstellungen" />
+            </ListItem>
+            <ListItem button>
+              <ListItemText primary="Contact Us" />
+            </ListItem>
+            <ListItem button>
+              <ListItemText primary="Impressum" />
+            </ListItem>
+            <ListItem button>
+              <ListItemText primary="Unterstützen" />
+            </ListItem>
+          </List>
+          <Divider />
+          <Box sx={{ mt: "auto", p: 2, color: "error.main" }}>
+            <Typography variant="body2">Account löschen</Typography>
+          </Box>
+        </Box>
+      </Drawer>
+
+      {/* Page Content */}
+      <Box component="main" sx={{ pt: 8, pb: 7 }}>
+        {children}
+      </Box>
+
+      {/* Footer / Bottom Navigation */}
+      <Paper
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          borderRadius: 0,
+        }}
+        elevation={3}
+      >
+        <BottomNavigation
+          value={navValue}
+          onChange={(event, newValue) => setNavValue(newValue)}
+          showLabels
+        >
+          <BottomNavigationAction label="Home" icon={<HomeIcon />} />
+          <BottomNavigationAction label="Turniere" icon={<EventIcon />} />
+          <BottomNavigationAction label="Erstellen" icon={<AddCircleIcon />} />
+          <BottomNavigationAction label="Info" icon={<InfoIcon />} />
+        </BottomNavigation>
+      </Paper>
+    </Box>
+  );
+}
