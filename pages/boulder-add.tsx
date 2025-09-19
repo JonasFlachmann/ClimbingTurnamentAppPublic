@@ -10,12 +10,28 @@ import {
   Stack,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { Swiper, SwiperSlide } from "swiper/react";
+import dynamic from "next/dynamic";
 import { Pagination } from "swiper/modules";
 
+// ✅ Swiper nur Client-seitig laden
+const Swiper = dynamic(
+  async () => {
+    const mod = await import("swiper/react");
+    return mod.Swiper;
+  },
+  { ssr: false }
+);
+
+const SwiperSlide = dynamic(
+  async () => {
+    const mod = await import("swiper/react");
+    return mod.SwiperSlide;
+  },
+  { ssr: false }
+);
+
 function BoulderAddPage() {
-  // Dummy: Routename (kann später per Zustand/Props kommen)
-  const [routeName, setRouteName] = useState<string>("Neue Route");
+  const [routeName] = useState<string>("Neue Route");
   const [color, setColor] = useState<string>("");
   const [grade, setGrade] = useState<string>("");
   const [label, setLabel] = useState<string>("");
@@ -24,7 +40,7 @@ function BoulderAddPage() {
   const [tags, setTags] = useState<string[]>([]);
   const router = useRouter();
 
-  // Dummy-Fotos (später echte Bilder/Uploads)
+  // Dummy-Fotos (später austauschbar durch Uploads)
   const photos = [
     "https://picsum.photos/800/600?random=11",
     "https://picsum.photos/800/600?random=12",
@@ -43,13 +59,15 @@ function BoulderAddPage() {
     "Dynamisch",
   ];
 
-  const handleTagsChange = (_: React.MouseEvent<HTMLElement>, newTags: string[]) => {
+  const handleTagsChange = (
+    _: React.MouseEvent<HTMLElement>,
+    newTags: string[]
+  ) => {
     setTags(newTags as string[]);
   };
 
   const handleSubmit = () => {
-    // TODO: später Form-Validation & Persistenz
-    // Workflow-Anforderung: Zurück zur Tournament-Fill-Seite
+    // TODO: später Speichern in DB/API
     router.push("/tournament-fill");
   };
 
@@ -60,7 +78,7 @@ function BoulderAddPage() {
         {routeName}
       </Typography>
 
-      {/* Fotos: Swipe + Pagination-Indikator */}
+      {/* Fotos mit Swiper */}
       <Paper
         sx={{
           mb: 2,
@@ -81,14 +99,19 @@ function BoulderAddPage() {
                 component="img"
                 src={src}
                 alt={`Route Foto ${idx + 1}`}
-                sx={{ width: "100%", height: 260, objectFit: "cover", display: "block" }}
+                sx={{
+                  width: "100%",
+                  height: 260,
+                  objectFit: "cover",
+                  display: "block",
+                }}
               />
             </SwiperSlide>
           ))}
         </Swiper>
       </Paper>
 
-      {/* Felder */}
+      {/* Eingabefelder */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Stack spacing={2}>
           <TextField
@@ -154,7 +177,11 @@ function BoulderAddPage() {
         <Button
           variant="contained"
           color="success"
-          sx={{ bgcolor: "success.dark", "&:hover": { bgcolor: "success.main" }, px: 3 }}
+          sx={{
+            bgcolor: "success.dark",
+            "&:hover": { bgcolor: "success.main" },
+            px: 3,
+          }}
           onClick={handleSubmit}
         >
           Route festlegen
@@ -164,5 +191,7 @@ function BoulderAddPage() {
   );
 }
 
+// Titel für Header
 BoulderAddPage.title = "Neue Route";
+
 export default BoulderAddPage;
