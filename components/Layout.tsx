@@ -40,7 +40,11 @@ export default function Layout({
   return (
     <Box sx={{ pb: 7 }}>
       {/* Header */}
-      <AppBar position="fixed" color="primary" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar
+        position="fixed"
+        color="primary"
+        sx={{ zIndex: (theme) => theme.zIndex.drawer - 1 }}
+      >
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={toggleDrawer(true)}>
             <MenuIcon />
@@ -78,19 +82,19 @@ export default function Layout({
           <Divider />
 
           <List>
-            <ListItem button>
+            <ListItem button onClick={toggleDrawer(false)}>
               <ListItemText primary="Account-Informationen" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={toggleDrawer(false)}>
               <ListItemText primary="Einstellungen" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={toggleDrawer(false)}>
               <ListItemText primary="Contact Us" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={toggleDrawer(false)}>
               <ListItemText primary="Impressum" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={toggleDrawer(false)}>
               <ListItemText primary="Unterstützen" />
             </ListItem>
           </List>
