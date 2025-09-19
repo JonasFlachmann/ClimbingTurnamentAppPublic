@@ -8,19 +8,21 @@ import {
   Paper,
   Stack,
 } from "@mui/material";
+import { useRouter } from "next/router";
 
 function IndexPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleLogin = () => {
-    // TODO: Login-Logik
-    console.log("Login mit:", email, password);
+    // TODO: echte Login-Logik
+    router.push("/home"); // ✅ Login → home
   };
 
   const handleRegister = () => {
-    // TODO: Registrierung-Logik
-    console.log("Registrierung mit:", email, password);
+    // TODO: echte Registrierung-Logik
+    router.push("/registration-process"); // ✅ Registrieren → registration-process
   };
 
   return (
@@ -91,7 +93,7 @@ function IndexPage() {
 
           {/* Passwort vergessen Link */}
           <Link
-            href="#"
+            href="/reset-password"
             underline="hover"
             sx={{ fontSize: "0.9rem", mt: 1 }}
           >
@@ -102,5 +104,8 @@ function IndexPage() {
     </Box>
   );
 }
+
+// ❌ Kein Header/Footer/Sidebar hier
+IndexPage.noLayout = true;
 
 export default IndexPage;
