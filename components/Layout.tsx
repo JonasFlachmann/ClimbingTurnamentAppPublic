@@ -22,7 +22,13 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EventIcon from "@mui/icons-material/Event";
 import InfoIcon from "@mui/icons-material/Info";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title?: string;
+}) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navValue, setNavValue] = useState(0);
 
@@ -39,7 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Climbing App
+            {title || "Climbing App"}
           </Typography>
           <IconButton color="inherit">
             <AccountCircleIcon />
@@ -50,7 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar (Drawer) */}
+      {/* Sidebar */}
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
           <List>
@@ -82,7 +88,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </Box>
 
-      {/* Footer / Bottom Navigation */}
+      {/* Footer */}
       <Paper
         sx={{
           position: "fixed",
