@@ -7,25 +7,29 @@ import {
   Button,
   ToggleButton,
   ToggleButtonGroup,
-  MobileStepper,
+  Stack,
 } from "@mui/material";
-import SwipeableViews from "react-swipeable-views";
+import { useRouter } from "next/router";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
 
 function BoulderAddPage() {
-  const [activeStep, setActiveStep] = useState(0);
+  // Dummy: Routename (kann später per Zustand/Props kommen)
+  const [routeName, setRouteName] = useState<string>("Neue Route");
+  const [color, setColor] = useState<string>("");
+  const [grade, setGrade] = useState<string>("");
+  const [label, setLabel] = useState<string>("");
+  const [wall, setWall] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
-  const maxSteps = 3; // Beispiel: 3 Fotos pro Route
+  const router = useRouter();
 
-  const handleStepChange = (step: number) => {
-    setActiveStep(step);
-  };
-
-  const handleTagChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newTags: string[]
-  ) => {
-    setTags(newTags);
-  };
+  // Dummy-Fotos (später echte Bilder/Uploads)
+  const photos = [
+    "https://picsum.photos/800/600?random=11",
+    "https://picsum.photos/800/600?random=12",
+    "https://picsum.photos/800/600?random=13",
+  ];
 
   const tagOptions = [
     "Crimps",
@@ -39,96 +43,91 @@ function BoulderAddPage() {
     "Dynamisch",
   ];
 
+  const handleTagsChange = (_: React.MouseEvent<HTMLElement>, newTags: string[]) => {
+    setTags(newTags as string[]);
+  };
+
+  const handleSubmit = () => {
+    // TODO: später Form-Validation & Persistenz
+    // Workflow-Anforderung: Zurück zur Tournament-Fill-Seite
+    router.push("/tournament-fill");
+  };
+
   return (
     <Box sx={{ p: 2 }}>
-      {/* Name der Route */}
-      <Typography variant="h6" gutterBottom>
-        Neue Route
+      {/* Routename */}
+      <Typography variant="h6" gutterBottom sx={{ fontWeight: 700 }}>
+        {routeName}
       </Typography>
 
-      {/* Foto-Swipe-Box */}
+      {/* Fotos: Swipe + Pagination-Indikator */}
       <Paper
         sx={{
-          position: "relative",
           mb: 2,
           borderRadius: 2,
           overflow: "hidden",
         }}
       >
-        <SwipeableViews
-          index={activeStep}
-          onChangeIndex={handleStepChange}
-          enableMouseEvents
+        <Swiper
+          modules={[Pagination]}
+          pagination={{ clickable: true }}
+          spaceBetween={8}
+          slidesPerView={1}
+          style={{ width: "100%", height: 260 }}
         >
-          {[1, 2, 3].map((step) => (
-            <Box
-              key={step}
-              component="img"
-              src={`https://picsum.photos/400/300?random=${step}`}
-              alt={`Route Foto ${step}`}
-              sx={{
-                display: "block",
-                width: "100%",
-                height: "250px",
-                objectFit: "cover",
-              }}
-            />
+          {photos.map((src, idx) => (
+            <SwiperSlide key={idx}>
+              <Box
+                component="img"
+                src={src}
+                alt={`Route Foto ${idx + 1}`}
+                sx={{ width: "100%", height: 260, objectFit: "cover", display: "block" }}
+              />
+            </SwiperSlide>
           ))}
-        </SwipeableViews>
-        {/* Foto-Indikator */}
-        <MobileStepper
-          steps={maxSteps}
-          position="static"
-          activeStep={activeStep}
-          sx={{ justifyContent: "center", bgcolor: "transparent" }}
-          nextButton={null}
-          backButton={null}
-        />
+        </Swiper>
       </Paper>
 
-      {/* Eingabefelder */}
+      {/* Felder */}
       <Paper sx={{ p: 2, mb: 2 }}>
-        <TextField
-          label="Grifffarbe"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Schwierigkeit"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Routenbezeichnung"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Ort / Wand"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-        />
+        <Stack spacing={2}>
+          <TextField
+            label="Grifffarbe"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Schwierigkeit laut Route"
+            value={grade}
+            onChange={(e) => setGrade(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Routenbezeichnung"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Ort / Wand"
+            value={wall}
+            onChange={(e) => setWall(e.target.value)}
+            fullWidth
+          />
+        </Stack>
       </Paper>
 
       {/* Tags */}
       <Paper sx={{ p: 2, mb: 2 }}>
-        <Typography variant="subtitle1" gutterBottom>
+        <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 700 }}>
           Tags
         </Typography>
         <ToggleButtonGroup
           value={tags}
-          onChange={handleTagChange}
+          onChange={handleTagsChange}
           aria-label="Routen-Tags"
-          color="success"
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 1,
-          }}
+          sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}
         >
           {tagOptions.map((tag) => (
             <ToggleButton key={tag} value={tag} aria-label={tag} size="small">
@@ -142,20 +141,21 @@ function BoulderAddPage() {
       <Paper sx={{ p: 2, mb: 2 }}>
         <TextField
           label="Beschreibung"
-          variant="outlined"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           fullWidth
-          margin="normal"
           multiline
-          rows={3}
+          rows={4}
         />
       </Paper>
 
-      {/* Route festlegen Button */}
+      {/* Action */}
       <Box textAlign="center" sx={{ mt: 2 }}>
         <Button
           variant="contained"
           color="success"
-          sx={{ bgcolor: "darkgreen", "&:hover": { bgcolor: "green" } }}
+          sx={{ bgcolor: "success.dark", "&:hover": { bgcolor: "success.main" }, px: 3 }}
+          onClick={handleSubmit}
         >
           Route festlegen
         </Button>
@@ -164,7 +164,5 @@ function BoulderAddPage() {
   );
 }
 
-// 👇 Titel für den Header
 BoulderAddPage.title = "Neue Route";
-
 export default BoulderAddPage;
