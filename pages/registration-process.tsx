@@ -1,139 +1,124 @@
-import React, { useState } from "react";
-import { Box, Typography, Paper, BottomNavigation, BottomNavigationAction, Stepper, Step, StepLabel, Button, TextField } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import MapIcon from "@mui/icons-material/Map";
-import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import Link from "next/link";
+import * as React from "react";
+import {
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Stack,
+} from "@mui/material";
 import { useRouter } from "next/router";
+import RegistrationStepper from "../components/RegistrationStepper";
 
-const steps = [
-  "Persönliche Daten",
-  "E-Mail bestätigen",
-  "Teilnahmebedingungen",
-  "Abschluss"
-];
-
-const RegistrationProcessPage: React.FC = () => {
-  const [value, setValue] = useState(0);
-  const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState({
-    vorname: "",
-    nachname: "",
-    benutzername: "",
-    passwort: "",
-  });
+function RegistrationProcessPage() {
   const router = useRouter();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [firstName, setFirstName] = React.useState("");
+  const [lastName, setLastName] = React.useState("");
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [passwordRepeat, setPasswordRepeat] = React.useState("");
+  const [error, setError] = React.useState("");
 
   const handleNext = () => {
-    if (activeStep < steps.length - 1) {
-      setActiveStep(activeStep + 1);
-    } else {
-      // Registrierung abschließen
-      router.push("/home");
+    // Mini-Validierung
+    if (!firstName || !lastName || !username || !password || !passwordRepeat) {
+      setError("Bitte fülle alle Felder aus.");
+      return;
     }
+    if (password !== passwordRepeat) {
+      setError("Die Passwörter stimmen nicht überein.");
+      return;
+    }
+    setError("");
+    // weiter zu Schritt 2 (benenne die Route so, wie sie bei dir heißt)
+    router.push("/registration-email"); // z. B. E-Mail bestätigen
   };
 
   return (
-    <>
-      <Box sx={{ minHeight: "100vh", bgcolor: "background.default", px: 2, pb: 10, pt: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        p: { xs: 2, sm: 3 },
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: 760 }}>
+        <Typography
+          variant="h3"
+          align="center"
+          sx={{ fontWeight: 800, mb: 2 }}
+        >
           Registrierung
         </Typography>
-        <Paper elevation={2} sx={{ borderRadius: 4, p: 3, mb: 4, width: "100%", maxWidth: 400 }}>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map(label => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-          <Box sx={{ mt: 3 }}>
-            {activeStep === 0 && (
-              <>
-                <TextField
-                  label="Vorname"
-                  name="vorname"
-                  value={formData.vorname}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  autoComplete="given-name"
-                />
-                <TextField
-                  label="Nachname"
-                  name="nachname"
-                  value={formData.nachname}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  autoComplete="family-name"
-                />
-                <TextField
-                  label="Benutzername"
-                  name="benutzername"
-                  value={formData.benutzername}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  autoComplete="username"
-                />
-                <TextField
-                  label="Passwort"
-                  name="passwort"
-                  type="password"
-                  value={formData.passwort}
-                  onChange={handleChange}
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  autoComplete="new-password"
-                />
-              </>
-            )}
-            {activeStep === 1 && (
-              <Typography sx={{ textAlign: "center", mb: 2 }}>
-                Bitte bestätige deine E-Mail-Adresse.<br />
-                [Feld/Bestätigung folgt]
+
+        <Paper
+          sx={{
+            p: { xs: 2, sm: 3 },
+            borderRadius: 4,
+          }}
+        >
+          {/* Stepper (Schritt 1 von 4) */}
+          <RegistrationStepper activeStep={0} />
+
+          <Stack spacing={2} sx={{ mt: 2 }}>
+            <TextField
+              label="Vorname"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Nachname"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Benutzername"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Passwort"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              fullWidth
+            />
+            {/* NEU: Passwort wiederholen */}
+            <TextField
+              label="Passwort wiederholen"
+              type="password"
+              value={passwordRepeat}
+              onChange={(e) => setPasswordRepeat(e.target.value)}
+              fullWidth
+            />
+
+            {error && (
+              <Typography variant="body2" color="error" sx={{ mt: 0.5 }}>
+                {error}
               </Typography>
             )}
-            {activeStep === 2 && (
-              <Typography sx={{ textAlign: "center", mb: 2 }}>
-                Bitte akzeptiere die Teilnahmebedingungen.<br />
-                [Checkbox/Feld folgt]
-              </Typography>
-            )}
-            {activeStep === 3 && (
-              <Typography sx={{ textAlign: "center", mb: 2 }}>
-                Registrierung abgeschlossen! Du kannst jetzt loslegen.
-              </Typography>
-            )}
+
             <Button
               variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ mt: 2 }}
+              color="success"
               onClick={handleNext}
+              sx={{ mt: 1, py: 1.2 }}
             >
-              {activeStep < steps.length - 1 ? "Weiter" : "Abschließen"}
+              Weiter
             </Button>
-          </Box>
+          </Stack>
         </Paper>
       </Box>
-      <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100 }} elevation={3}>
-        <BottomNavigation showLabels value={value} onChange={(_, newValue) => setValue(newValue)}>
-          <BottomNavigationAction label="Home" icon={<HomeIcon />} component={Link} href="/home" />
-          <BottomNavigationAction label="Karte" icon={<MapIcon />} component={Link} href="/map" />
-          <BottomNavigationAction label="Turniere" icon={<SportsHandballIcon />} component={Link} href="/tournament-overview" />
-        </BottomNavigation>
-      </Paper>
-    </>
+    </Box>
   );
-};
+}
+
+// 🔒 Auth-Seite: kein Header/Sidebar/Footer
+RegistrationProcessPage.noLayout = true;
 
 export default RegistrationProcessPage;
