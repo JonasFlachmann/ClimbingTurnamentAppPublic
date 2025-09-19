@@ -3,7 +3,11 @@ import { ThemeProvider, CssBaseline, GlobalStyles } from "@mui/material";
 import theme from "../styles/theme";
 import Layout from "../components/Layout";
 
-export default function MyApp({ Component, pageProps }: AppProps) {
+type MyAppProps = AppProps & {
+  Component: AppProps["Component"] & { title?: string };
+};
+
+export default function MyApp({ Component, pageProps }: MyAppProps) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -18,7 +22,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           "#__next": { minHeight: "100%" },
         }}
       />
-      <Layout>
+      <Layout title={Component.title}>
         <Component {...pageProps} />
       </Layout>
     </ThemeProvider>
