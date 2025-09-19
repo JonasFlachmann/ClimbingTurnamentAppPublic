@@ -15,7 +15,6 @@ import {
   Paper,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HomeIcon from "@mui/icons-material/Home";
@@ -40,13 +39,9 @@ export default function Layout({
   return (
     <Box sx={{ pb: 7 }}>
       {/* Header */}
-      <AppBar
-        position="fixed"
-        color="primary"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer - 1 }}
-      >
+      <AppBar position="fixed" color="primary">
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={toggleDrawer(true)}>
+          <IconButton edge="start" color="inherit" onClick={toggleDrawer(!drawerOpen)}>
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -70,17 +65,11 @@ export default function Layout({
           "& .MuiDrawer-paper": {
             width: 250,
             boxSizing: "border-box",
+            top: (theme) => theme.mixins.toolbar.minHeight, // Start direkt unter Header
           },
         }}
       >
         <Box>
-          {/* Schließen-Button */}
-          <IconButton onClick={toggleDrawer(false)}>
-            <ChevronLeftIcon />
-          </IconButton>
-
-          <Divider />
-
           <List>
             <ListItem button onClick={toggleDrawer(false)}>
               <ListItemText primary="Account-Informationen" />
@@ -98,6 +87,7 @@ export default function Layout({
               <ListItemText primary="Unterstützen" />
             </ListItem>
           </List>
+          <Divider />
         </Box>
       </Drawer>
 
