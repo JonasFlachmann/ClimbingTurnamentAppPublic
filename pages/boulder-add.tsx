@@ -1,107 +1,170 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
+  Paper,
   TextField,
   Button,
-  Paper,
-  BottomNavigation,
-  BottomNavigationAction,
+  ToggleButton,
+  ToggleButtonGroup,
+  MobileStepper,
 } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import MapIcon from "@mui/icons-material/Map";
-import SportsHandballIcon from "@mui/icons-material/SportsHandball";
-import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import SwipeableViews from "react-swipeable-views";
 
-const BoulderAdd: React.FC = () => {
-  const [value, setValue] = React.useState(0);
-  const router = useRouter();
+function BoulderAddPage() {
+  const [activeStep, setActiveStep] = useState(0);
+  const [tags, setTags] = useState<string[]>([]);
+  const maxSteps = 3; // Beispiel: 3 Fotos pro Route
 
-  const handleConfirm = () => {
-    // später Logik zum Speichern einfügen
-    router.push("/tournament-fill");
+  const handleStepChange = (step: number) => {
+    setActiveStep(step);
   };
 
+  const handleTagChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newTags: string[]
+  ) => {
+    setTags(newTags);
+  };
+
+  const tagOptions = [
+    "Crimps",
+    "Leisten",
+    "Jugs",
+    "Sloper",
+    "Überhang",
+    "Platte",
+    "Kraft",
+    "Balance",
+    "Dynamisch",
+  ];
+
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "background.default",
-        px: 2,
-        pb: 10,
-        pt: 5,
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
-      }}
-    >
-      <Typography variant="h5" fontWeight="bold" textAlign="center">
-        Neue Route anlegen
+    <Box sx={{ p: 2 }}>
+      {/* Name der Route */}
+      <Typography variant="h6" gutterBottom>
+        Neue Route
       </Typography>
 
-      <Paper variant="outlined" sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-        <TextField label="Routenname" variant="outlined" fullWidth />
-        <TextField label="Grifffarbe" variant="outlined" fullWidth />
-        <TextField label="Schwierigkeit" variant="outlined" fullWidth />
-
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Typography variant="body1" fontWeight="medium">
-            Foto hochladen
-          </Typography>
-          <Button variant="contained" component="label">
-            Datei auswählen
-            <input type="file" hidden accept="image/*" />
-          </Button>
-        </Box>
-
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleConfirm}
-          sx={{ mt: 2 }}
+      {/* Foto-Swipe-Box */}
+      <Paper
+        sx={{
+          position: "relative",
+          mb: 2,
+          borderRadius: 2,
+          overflow: "hidden",
+        }}
+      >
+        <SwipeableViews
+          index={activeStep}
+          onChangeIndex={handleStepChange}
+          enableMouseEvents
         >
-          Bestätigen
-        </Button>
+          {[1, 2, 3].map((step) => (
+            <Box
+              key={step}
+              component="img"
+              src={`https://picsum.photos/400/300?random=${step}`}
+              alt={`Route Foto ${step}`}
+              sx={{
+                display: "block",
+                width: "100%",
+                height: "250px",
+                objectFit: "cover",
+              }}
+            />
+          ))}
+        </SwipeableViews>
+        {/* Foto-Indikator */}
+        <MobileStepper
+          steps={maxSteps}
+          position="static"
+          activeStep={activeStep}
+          sx={{ justifyContent: "center", bgcolor: "transparent" }}
+          nextButton={null}
+          backButton={null}
+        />
       </Paper>
 
-      {/* Footer Navigation */}
-      <BottomNavigation
-        showLabels
-        value={value}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-        }}
-        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
-      >
-        <BottomNavigationAction
-          label="Home"
-          icon={<HomeIcon />}
-          component={Link}
-          href="/"
+      {/* Eingabefelder */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <TextField
+          label="Grifffarbe"
+          variant="outlined"
+          fullWidth
+          margin="normal"
         />
-        <BottomNavigationAction
-          label="Karte"
-          icon={<MapIcon />}
-          component={Link}
-          href="/map"
+        <TextField
+          label="Schwierigkeit"
+          variant="outlined"
+          fullWidth
+          margin="normal"
         />
-        <BottomNavigationAction
-          label="Turniere"
-          icon={<SportsHandballIcon />}
-          component={Link}
-          href="/tournament"
+        <TextField
+          label="Routenbezeichnung"
+          variant="outlined"
+          fullWidth
+          margin="normal"
         />
-        <BottomNavigationAction
-          label="Check"
-          icon={<PlaylistAddCheckIcon />}
-          component={Link}
-          href="/tournament-overview"
+        <TextField
+          label="Ort / Wand"
+          variant="outlined"
+          fullWidth
+          margin="normal"
         />
-      </BottomNavigation>
+      </Paper>
+
+      {/* Tags */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography variant="subtitle1" gutterBottom>
+          Tags
+        </Typography>
+        <ToggleButtonGroup
+          value={tags}
+          onChange={handleTagChange}
+          aria-label="Routen-Tags"
+          color="success"
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 1,
+          }}
+        >
+          {tagOptions.map((tag) => (
+            <ToggleButton key={tag} value={tag} aria-label={tag} size="small">
+              {tag}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Paper>
+
+      {/* Beschreibung */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <TextField
+          label="Beschreibung"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          multiline
+          rows={3}
+        />
+      </Paper>
+
+      {/* Route festlegen Button */}
+      <Box textAlign="center" sx={{ mt: 2 }}>
+        <Button
+          variant="contained"
+          color="success"
+          sx={{ bgcolor: "darkgreen", "&:hover": { bgcolor: "green" } }}
+        >
+          Route festlegen
+        </Button>
+      </Box>
     </Box>
   );
-};
+}
 
-export default BoulderAdd;
+// 👇 Titel für den Header
+BoulderAddPage.title = "Neue Route";
+
+export default BoulderAddPage;
