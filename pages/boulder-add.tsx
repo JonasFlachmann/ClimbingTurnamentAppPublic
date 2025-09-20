@@ -1,197 +1,93 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  TextField,
-  Button,
-  ToggleButton,
-  ToggleButtonGroup,
-  Stack,
-} from "@mui/material";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
-import { Pagination } from "swiper/modules";
+import { Pagination } from "swiper"; // ✅ Fix: statt "swiper/modules"
 
 // ✅ Swiper nur Client-seitig laden
-const Swiper = dynamic(
-  async () => {
-    const mod = await import("swiper/react");
-    return mod.Swiper;
-  },
-  { ssr: false }
-);
-
+const Swiper = dynamic(() => import("swiper/react").then((mod) => mod.Swiper), {
+  ssr: false,
+});
 const SwiperSlide = dynamic(
-  async () => {
-    const mod = await import("swiper/react");
-    return mod.SwiperSlide;
-  },
-  { ssr: false }
+  () => import("swiper/react").then((mod) => mod.SwiperSlide),
+  {
+    ssr: false,
+  }
 );
 
-function BoulderAddPage() {
-  const [routeName] = useState<string>("Neue Route");
-  const [color, setColor] = useState<string>("");
-  const [grade, setGrade] = useState<string>("");
-  const [label, setLabel] = useState<string>("");
-  const [wall, setWall] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [tags, setTags] = useState<string[]>([]);
+export default function BoulderAdd() {
+  const [step, setStep] = useState(0);
   const router = useRouter();
 
-  // Dummy-Fotos (später austauschbar durch Uploads)
-  const photos = [
-    "https://picsum.photos/800/600?random=11",
-    "https://picsum.photos/800/600?random=12",
-    "https://picsum.photos/800/600?random=13",
-  ];
-
-  const tagOptions = [
-    "Crimps",
-    "Leisten",
-    "Jugs",
-    "Sloper",
-    "Überhang",
-    "Platte",
-    "Kraft",
-    "Balance",
-    "Dynamisch",
-  ];
-
-  const handleTagsChange = (
-    _: React.MouseEvent<HTMLElement>,
-    newTags: string[]
-  ) => {
-    setTags(newTags as string[]);
-  };
-
-  const handleSubmit = () => {
-    // TODO: später Speichern in DB/API
-    router.push("/tournament-fill");
-  };
+  const handleNext = () => setStep((prev) => prev + 1);
+  const handlePrev = () => setStep((prev) => prev - 1);
 
   return (
-    <Box sx={{ p: 2 }}>
-      {/* Routename */}
-      <Typography variant="h6" gutterBottom sx={{ fontWeight: 700 }}>
-        {routeName}
-      </Typography>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Boulder hinzufügen</h1>
 
-      {/* Fotos mit Swiper */}
-      <Paper
-        sx={{
-          mb: 2,
-          borderRadius: 2,
-          overflow: "hidden",
-        }}
+      <Swiper
+        modules={[Pagination]}
+        pagination={{ clickable: true }}
+        className="w-full h-64"
       >
-        <Swiper
-          modules={[Pagination]}
-          pagination={{ clickable: true }}
-          spaceBetween={8}
-          slidesPerView={1}
-          style={{ width: "100%", height: 260 }}
+        <SwiperSlide>
+          <div className="flex flex-col items-center justify-center h-full">
+            <h2 className="text-lg font-semibold">Schritt 1: Boulder Name</h2>
+            <input
+              type="text"
+              placeholder="Name eingeben"
+              className="mt-4 p-2 border rounded w-full"
+            />
+          </div>
+        </SwiperSlide>
+
+        <SwiperSlide>
+          <div className="flex flex-col items-center justify-center h-full">
+            <h2 className="text-lg font-semibold">Schritt 2: Schwierigkeitsgrad</h2>
+            <select className="mt-4 p-2 border rounded w-full">
+              <option>Leicht</option>
+              <option>Mittel</option>
+              <option>Schwer</option>
+            </select>
+          </div>
+        </SwiperSlide>
+
+        <SwiperSlide>
+          <div className="flex flex-col items-center justify-center h-full">
+            <h2 className="text-lg font-semibold">Schritt 3: Beschreibung</h2>
+            <textarea
+              placeholder="Beschreibung eingeben"
+              className="mt-4 p-2 border rounded w-full"
+              rows={4}
+            />
+          </div>
+        </SwiperSlide>
+      </Swiper>
+
+      <div className="flex justify-between mt-6">
+        <button
+          onClick={handlePrev}
+          disabled={step === 0}
+          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
         >
-          {photos.map((src, idx) => (
-            <SwiperSlide key={idx}>
-              <Box
-                component="img"
-                src={src}
-                alt={`Route Foto ${idx + 1}`}
-                sx={{
-                  width: "100%",
-                  height: 260,
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Paper>
-
-      {/* Eingabefelder */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Stack spacing={2}>
-          <TextField
-            label="Grifffarbe"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            fullWidth
-          />
-          <TextField
-            label="Schwierigkeit laut Route"
-            value={grade}
-            onChange={(e) => setGrade(e.target.value)}
-            fullWidth
-          />
-          <TextField
-            label="Routenbezeichnung"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            fullWidth
-          />
-          <TextField
-            label="Ort / Wand"
-            value={wall}
-            onChange={(e) => setWall(e.target.value)}
-            fullWidth
-          />
-        </Stack>
-      </Paper>
-
-      {/* Tags */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 700 }}>
-          Tags
-        </Typography>
-        <ToggleButtonGroup
-          value={tags}
-          onChange={handleTagsChange}
-          aria-label="Routen-Tags"
-          sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}
-        >
-          {tagOptions.map((tag) => (
-            <ToggleButton key={tag} value={tag} aria-label={tag} size="small">
-              {tag}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-      </Paper>
-
-      {/* Beschreibung */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <TextField
-          label="Beschreibung"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          fullWidth
-          multiline
-          rows={4}
-        />
-      </Paper>
-
-      {/* Action */}
-      <Box textAlign="center" sx={{ mt: 2 }}>
-        <Button
-          variant="contained"
-          color="success"
-          sx={{
-            bgcolor: "success.dark",
-            "&:hover": { bgcolor: "success.main" },
-            px: 3,
-          }}
-          onClick={handleSubmit}
-        >
-          Route festlegen
-        </Button>
-      </Box>
-    </Box>
+          Zurück
+        </button>
+        {step < 2 ? (
+          <button
+            onClick={handleNext}
+            className="px-4 py-2 bg-green-600 text-white rounded"
+          >
+            Weiter
+          </button>
+        ) : (
+          <button
+            onClick={() => router.push("/home")}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Fertig
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
-
-// Titel für Header
-BoulderAddPage.title = "Neue Route";
-
-export default BoulderAddPage;
