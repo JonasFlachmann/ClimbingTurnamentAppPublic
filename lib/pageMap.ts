@@ -1,6 +1,6 @@
-// Zentrale Projekt-Übersicht für ALLEZ-CLIMBING Pages.
-// -> "allPages": alle existierenden Routen (ohne _app.tsx).
-// -> "flow": Verbindungen zwischen Seiten (kannst du hier leicht anpassen/erweitern).
+// Übersicht über alle Pages im Projekt ALLEZ-CLIMBING
+// -> "allPages": Alle bekannten Seiten (basierend auf deinem Repo).
+// -> "flow": Verknüpfungen, die den User-Flow beschreiben.
 
 export const allPages = [
   "index",
@@ -27,7 +27,7 @@ export type FlowEdge = {
   label?: string;
 };
 
-// Erste, sinnvolle Standard-Verknüpfungen (entsprechend deiner App):
+// ✅ Definierter Flow – alle nicht verknüpften Pages erscheinen trotzdem im Diagramm (rot markiert).
 export const flow: FlowEdge[] = [
   // Einstieg
   { source: "index", target: "register", label: "Start → Registrieren" },
@@ -40,18 +40,14 @@ export const flow: FlowEdge[] = [
   { source: "home", target: "ranking", label: "Zu Ranking" },
   { source: "home", target: "results", label: "Zu Ergebnisse" },
   { source: "home", target: "tournament-create", label: "Turnier anlegen" },
+  { source: "home", target: "boulder-add", label: "Boulder hinzufügen" },
+  { source: "home", target: "user-flow", label: "Flow-Übersicht" },
 
-  // Turnier anlegen – mehrstufig
+  // Turnier anlegen – Mehrstufig
   { source: "tournament-create", target: "tournament-define", label: "Schritt 1 → 2" },
   { source: "tournament-define", target: "tournament-fill", label: "Schritt 2 → 3" },
   { source: "tournament-fill", target: "tournament-overview", label: "Zur Übersicht" },
 
   // Übersicht → Detail
-  { source: "tournament-overview", target: "tournament", label: "Details" },
-
-  // Boulder-Workflow (falls separat)
-  { source: "home", target: "boulder-add", label: "Boulder hinzufügen" },
-
-  // Dev-Tool
-  { source: "home", target: "user-flow", label: "Flow-Übersicht" }
+  { source: "tournament-overview", target: "tournament", label: "Details" }
 ];
