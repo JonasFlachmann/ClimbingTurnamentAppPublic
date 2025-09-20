@@ -92,7 +92,7 @@ export default function UserFlowPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 px-4 pb-4 flex-1">
         {/* Diagramm */}
-        <div className="lg:col-span-3 rounded-xl overflow-hidden border">
+        <div className="lg:col-span-3 rounded-xl overflow-hidden border h-[80vh]">
           <ReactFlow nodes={nodes} edges={edges} fitView onNodeClick={onNodeClick}>
             <Background />
             <MiniMap />
