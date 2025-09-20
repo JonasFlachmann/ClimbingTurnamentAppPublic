@@ -1,6 +1,13 @@
 import React from "react";
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+} from "reactflow";
+import "reactflow/dist/style.css";
 
-const userFlow = [
+// Definition der App-Seiten und Übergänge
+const pages = [
   { id: "home", label: "🏠 Home", next: ["login", "tournaments"] },
   { id: "login", label: "🔑 Login", next: ["dashboard"] },
   { id: "dashboard", label: "📊 Dashboard", next: ["tournaments", "profile"] },
@@ -9,37 +16,42 @@ const userFlow = [
   { id: "profile", label: "👤 Profil", next: ["dashboard"] },
 ];
 
+// Knoten für react-flow
+const nodes = pages.map((page, index) => ({
+  id: page.id,
+  data: { label: page.label },
+  position: { x: (index % 3) * 250, y: Math.floor(index / 3) * 150 },
+  style: {
+    padding: 10,
+    borderRadius: 12,
+    border: "2px solid #4caf50",
+    backgroundColor: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 180,
+  },
+}));
+
+// Kanten dynamisch aus "next"
+const edges = pages.flatMap((page) =>
+  page.next.map((target) => ({
+    id: `${page.id}-${target}`,
+    source: page.id,
+    target,
+    animated: true,
+    style: { stroke: "#4caf50" },
+  }))
+);
+
 export default function UserFlowPage() {
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">User-Flow Übersicht</h1>
-      <p className="text-gray-600">
-        Diese Seite zeigt den aktuellen Navigationsfluss der App.
-      </p>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {userFlow.map((node) => (
-          <div
-            key={node.id}
-            className="rounded-2xl shadow-md bg-white p-4 flex flex-col space-y-4"
-          >
-            <h2 className="text-lg font-semibold">{node.label}</h2>
-            <div className="flex flex-wrap gap-2">
-              {node.next.map((target) => {
-                const targetNode = userFlow.find((n) => n.id === target);
-                return (
-                  <span
-                    key={target}
-                    className="px-3 py-1 bg-primary text-accent rounded-full text-sm font-medium"
-                  >
-                    → {targetNode?.label || target}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
+    <div style={{ width: "100%", height: "100vh" }}>
+      <h1 className="text-2xl font-bold p-4">User-Flow Übersicht</h1>
+      <ReactFlow nodes={nodes} edges={edges} fitView>
+        <Background />
+        <MiniMap />
+        <Controls />
+      </ReactFlow>
     </div>
   );
 }
