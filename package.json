@@ -16,13 +16,14 @@
     "next": "13.4.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "swiper": "^9.1.1",
+    "swiper": "9.4.1",         // ✅ Fix: Swiper fest auf stabile 9.4.1 gesetzt
     "reactflow": "^11.9.3"
   },
   "devDependencies": {
     "eslint": "8.38.0",
     "eslint-config-next": "13.4.0",
     "typescript": "5.0.4",
-    "@types/node": "^18.16.3"
+    "@types/node": "^18.16.3",
+    "@types/swiper": "^9.1.0" // ✅ Neu: Typen für Swiper
   }
 }
