@@ -13,109 +13,140 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Paper,
+  Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HomeIcon from "@mui/icons-material/Home";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EventIcon from "@mui/icons-material/Event";
 import InfoIcon from "@mui/icons-material/Info";
+import MapIcon from "@mui/icons-material/Map";
+import Link from "next/link";
 
-export default function Layout({
-  children,
-  title,
-}: {
-  children: React.ReactNode;
-  title?: string;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [navValue, setNavValue] = useState(0);
+  const [value, setValue] = useState(0);
 
-  const toggleDrawer = (state: boolean) => () => {
-    setDrawerOpen(state);
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpen(open);
   };
 
   return (
     <Box sx={{ pb: 7 }}>
       {/* Header */}
-      <AppBar position="fixed" color="primary">
+      <AppBar position="static" sx={{ backgroundColor: "green" }}>
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={toggleDrawer(!drawerOpen)}>
+          {/* Menü-Button links */}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer(true)}
+          >
             <MenuIcon />
           </IconButton>
+
+          {/* Titel */}
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {title || "Climbing App"}
+            Climbing App
           </Typography>
-          <IconButton color="inherit">
-            <AccountCircleIcon />
-          </IconButton>
+
+          {/* Neuer UF-Button */}
+          <Link href="/user-flow" passHref>
+            <Button
+              variant="contained"
+              sx={{
+                minWidth: "40px",
+                minHeight: "40px",
+                borderRadius: "50%",
+                backgroundColor: "white",
+                color: "green",
+                fontWeight: "bold",
+                mr: 1,
+                "&:hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              UF
+            </Button>
+          </Link>
+
+          {/* Settings-Icon bleibt */}
           <IconButton color="inherit">
             <SettingsIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar */}
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={toggleDrawer(false)}
-        sx={{
-          "& .MuiDrawer-paper": {
-            width: 250,
-            boxSizing: "border-box",
-            top: (theme) => theme.mixins.toolbar.minHeight, // Start direkt unter Header
-          },
-        }}
-      >
-        <Box>
+      {/* Drawer Navigation */}
+      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
           <List>
-            <ListItem button onClick={toggleDrawer(false)}>
-              <ListItemText primary="Account-Informationen" />
+            <ListItem button component={Link} href="/home">
+              <ListItemText primary="Home" />
             </ListItem>
-            <ListItem button onClick={toggleDrawer(false)}>
-              <ListItemText primary="Einstellungen" />
+            <ListItem button component={Link} href="/tournament-create">
+              <ListItemText primary="Turnier erstellen" />
             </ListItem>
-            <ListItem button onClick={toggleDrawer(false)}>
-              <ListItemText primary="Contact Us" />
-            </ListItem>
-            <ListItem button onClick={toggleDrawer(false)}>
-              <ListItemText primary="Impressum" />
-            </ListItem>
-            <ListItem button onClick={toggleDrawer(false)}>
-              <ListItemText primary="Unterstützen" />
+            <ListItem button component={Link} href="/boulder-add">
+              <ListItemText primary="Boulder hinzufügen" />
             </ListItem>
           </List>
           <Divider />
+          <List>
+            <ListItem button component={Link} href="/results">
+              <ListItemText primary="Ergebnisse" />
+            </ListItem>
+            <ListItem button component={Link} href="/ranking">
+              <ListItemText primary="Ranking" />
+            </ListItem>
+            <ListItem button component={Link} href="/map">
+              <ListItemText primary="Karte" />
+            </ListItem>
+          </List>
         </Box>
       </Drawer>
 
-      {/* Page Content */}
-      <Box component="main" sx={{ pt: 8, pb: 7 }}>
+      {/* Seiteninhalt */}
+      <Box component="main" sx={{ p: 2 }}>
         {children}
       </Box>
 
-      {/* Footer */}
+      {/* Bottom Navigation */}
       <Paper
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          borderRadius: 0,
-        }}
+        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
         elevation={3}
       >
         <BottomNavigation
-          value={navValue}
-          onChange={(event, newValue) => setNavValue(newValue)}
+          value={value}
+          onChange={(event, newValue) => {
+            setValue(newValue);
+          }}
           showLabels
         >
-          <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-          <BottomNavigationAction label="Turniere" icon={<EventIcon />} />
-          <BottomNavigationAction label="Erstellen" icon={<AddCircleIcon />} />
-          <BottomNavigationAction label="Info" icon={<InfoIcon />} />
+          <BottomNavigationAction
+            label="Home"
+            icon={<HomeIcon />}
+            component={Link}
+            href="/home"
+          />
+          <BottomNavigationAction
+            label="Karte"
+            icon={<MapIcon />}
+            component={Link}
+            href="/map"
+          />
+          <BottomNavigationAction
+            label="Turniere"
+            icon={<EventIcon />}
+            component={Link}
+            href="/tournament-overview"
+          />
         </BottomNavigation>
       </Paper>
     </Box>
