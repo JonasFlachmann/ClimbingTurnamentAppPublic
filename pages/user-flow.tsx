@@ -12,6 +12,7 @@ import { allPages, flow, type PageId } from "../lib/pageMap";
 // React Flow nur clientseitig laden (kein SSR)
 const ReactFlow = dynamic(() => import("reactflow"), { ssr: false });
 
+// Labels schöner darstellen
 function prettyLabel(id: string) {
   if (id === "index") return "🏁 Index (Start)";
   return id
@@ -46,7 +47,7 @@ export default function UserFlowPage() {
         style: {
           padding: 10,
           borderRadius: 12,
-          border: isUsed ? "2px solid #16a34a" : "2px solid #ef4444", // grün = im Flow, rot = (noch) ungenutzt
+          border: isUsed ? "2px solid #16a34a" : "2px solid #ef4444", // grün = im Flow, rot = ungenutzt
           backgroundColor: "white",
           fontWeight: "bold",
           textAlign: "center" as const,
@@ -64,7 +65,8 @@ export default function UserFlowPage() {
         source: e.source,
         target: e.target,
         label: e.label,
-        animated: true
+        animated: true,
+        style: { stroke: "#16a34a" }
       }));
 
     const unusedPages = (allPages as readonly string[]).filter((p) => !used.has(p as PageId));
