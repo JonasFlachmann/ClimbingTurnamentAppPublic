@@ -1,12 +1,11 @@
+"use client";
+
 import React from "react";
-import ReactFlow, {
-  Background,
-  Controls,
-  MiniMap,
-  Node,
-  Edge,
-} from "reactflow";
+import dynamic from "next/dynamic";
+import { Background, Controls, MiniMap, Node, Edge } from "reactflow";
 import "reactflow/dist/style.css";
+
+const ReactFlow = dynamic(() => import("reactflow"), { ssr: false });
 
 // Definition der App-Seiten und Übergänge
 const pages = [
@@ -29,7 +28,7 @@ const nodes: Node[] = pages.map((page, index) => ({
     border: "2px solid #4caf50",
     backgroundColor: "white",
     fontWeight: "bold",
-    textAlign: "center" as const, // ✅ Fix: als gültigen CSS-Wert casten
+    textAlign: "center" as const,
     width: 180,
   },
 }));
