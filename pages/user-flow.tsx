@@ -4,13 +4,15 @@ import React, { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import type { Node, Edge } from "reactflow";
-import { Background, Controls, MiniMap } from "reactflow";
 import "reactflow/dist/style.css";
 
+import { Background, Controls, MiniMap } from "reactflow";
 import { allPages, flow, type PageId } from "../lib/pageMap";
 
+// React Flow nur clientseitig laden (kein SSR)
 const ReactFlow = dynamic(() => import("reactflow"), { ssr: false });
 
+// Labels schöner darstellen
 function prettyLabel(id: string) {
   if (id === "index") return "🏁 Index (Start)";
   return id
@@ -28,6 +30,7 @@ export default function UserFlowPage() {
       used.add(e.target);
     });
 
+    // Positionierung im Grid
     const colWidth = 240;
     const rowHeight = 160;
     const cols = 4;
@@ -44,7 +47,7 @@ export default function UserFlowPage() {
         style: {
           padding: 10,
           borderRadius: 12,
-          border: isUsed ? "2px solid #16a34a" : "2px solid #ef4444",
+          border: isUsed ? "2px solid #16a34a" : "2px solid #ef4444", // grün = im Flow, rot = ungenutzt
           backgroundColor: "white",
           fontWeight: "bold",
           textAlign: "center" as const,
@@ -53,14 +56,18 @@ export default function UserFlowPage() {
       };
     });
 
-    const edges: Edge[] = flow.map((e, i) => ({
-      id: `${e.source}-${e.target}-${i}`,
-      source: e.source,
-      target: e.target,
-      label: e.label,
-      animated: true,
-      style: { stroke: "#16a34a" }
-    }));
+    const edges: Edge[] = flow
+      .filter(
+        (e) => (allPages as readonly string[]).includes(e.source) && (allPages as readonly string[]).includes(e.target)
+      )
+      .map((e, i) => ({
+        id: `${e.source}-${e.target}-${i}`,
+        source: e.source,
+        target: e.target,
+        label: e.label,
+        animated: true,
+        style: { stroke: "#16a34a" }
+      }));
 
     const unusedPages = (allPages as readonly string[]).filter((p) => !used.has(p as PageId));
 
@@ -74,7 +81,7 @@ export default function UserFlowPage() {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col">
+    <div className="w-full min-h-screen flex flex-col">
       <header className="p-4">
         <h1 className="text-2xl font-bold">User-Flow & Seiten-Übersicht</h1>
         <p className="text-gray-600 mt-1">
@@ -85,9 +92,23 @@ export default function UserFlowPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 px-4 pb-4 flex-1">
         {/* Diagramm */}
-        <div className="lg:col-span-3 rounded-xl overflow-hidden border h-[80vh]">
-          <div style={{ width: "100%", height: "100%" }}>
-            <ReactFlow nodes={nodes} edges={edges} fitView onNodeClick={onNodeClick}>
+        <div className="lg:col-span-3 rounded-xl overflow-hidden border">
+          {/* Wichtig: explizite Höhe für den Diagramm-Container */}
+          <div
+            className="relative w-full"
+            style={{
+              // Höhe so berechnen, dass AppBar + Seite + BottomNav Platz lassen
+              height: "calc(100vh - 180px)", // bei Bedarf 180px anpassen
+              minHeight: 400
+            }}
+          >
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              fitView
+              onNodeClick={onNodeClick}
+              style={{ width: "100%", height: "100%" }} // <— ReactFlow selbst auf volle Größe setzen
+            >
               <Background />
               <MiniMap />
               <Controls />
@@ -96,7 +117,7 @@ export default function UserFlowPage() {
         </div>
 
         {/* Seitenliste & Status */}
-        <aside className="lg:col-span-1 rounded-xl border p-4 space-y-4 bg-white h-[80vh] overflow-y-auto">
+        <aside className="lg:col-span-1 rounded-xl border p-4 space-y-4 bg-white">
           <div>
             <h2 className="font-semibold mb-2">Statistik</h2>
             <ul className="text-sm space-y-1">
