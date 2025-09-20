@@ -18,13 +18,16 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HomeIcon from "@mui/icons-material/Home";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EventIcon from "@mui/icons-material/Event";
-import InfoIcon from "@mui/icons-material/Info";
 import MapIcon from "@mui/icons-material/Map";
 import Link from "next/link";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface LayoutProps {
+  children: React.ReactNode;
+  title?: string;
+}
+
+export default function Layout({ children, title }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [value, setValue] = useState(0);
 
@@ -49,7 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Titel */}
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Climbing App
+            {title || "Climbing App"}
           </Typography>
 
           {/* Neuer UF-Button */}
