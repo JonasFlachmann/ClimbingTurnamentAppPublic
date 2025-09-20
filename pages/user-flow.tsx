@@ -3,6 +3,8 @@ import ReactFlow, {
   Background,
   Controls,
   MiniMap,
+  Node,
+  Edge,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -17,7 +19,7 @@ const pages = [
 ];
 
 // Knoten für react-flow
-const nodes = pages.map((page, index) => ({
+const nodes: Node[] = pages.map((page, index) => ({
   id: page.id,
   data: { label: page.label },
   position: { x: (index % 3) * 250, y: Math.floor(index / 3) * 150 },
@@ -27,13 +29,13 @@ const nodes = pages.map((page, index) => ({
     border: "2px solid #4caf50",
     backgroundColor: "white",
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "center" as const, // ✅ Fix: als gültigen CSS-Wert casten
     width: 180,
   },
 }));
 
 // Kanten dynamisch aus "next"
-const edges = pages.flatMap((page) =>
+const edges: Edge[] = pages.flatMap((page) =>
   page.next.map((target) => ({
     id: `${page.id}-${target}`,
     source: page.id,
