@@ -12,5 +12,4 @@
       "preview": false
     }
   },
-  "ignoreCommand": "git log -1 --pretty=%B | grep skip-deploy"
 }
