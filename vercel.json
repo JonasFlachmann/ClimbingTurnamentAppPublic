@@ -8,10 +8,9 @@
   ],
   "git": {
     "deploymentEnabled": {
-      "main": true,   // ✅ true = Deployments auf main aktivieren | false = deaktivieren
-      "preview": false // ✅ true = Preview-Deployments für Branches aktivieren | false = deaktivieren
+      "main": true,
+      "preview": false
     }
   },
-  "ignoreCommand": "git log -1 --pretty=%B | grep skip-deploy" 
-  // ✅ Wenn die Commit-Message 'skip-deploy' enthält, wird KEIN Deployment ausgeführt
+  "ignoreCommand": "git log -1 --pretty=%B | grep skip-deploy"
 }
