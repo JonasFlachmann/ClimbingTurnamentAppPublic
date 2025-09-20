@@ -1,58 +1,137 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import dynamic from "next/dynamic";
-import { Background, Controls, MiniMap, Node, Edge } from "reactflow";
+import { useRouter } from "next/router";
+import type { Node, Edge } from "reactflow";
+import { Background, Controls, MiniMap } from "reactflow";
 import "reactflow/dist/style.css";
 
+import { allPages, flow, type PageId } from "../lib/pageMap";
+
+// React Flow nur clientseitig laden (kein SSR)
 const ReactFlow = dynamic(() => import("reactflow"), { ssr: false });
 
-// Definition der App-Seiten und Übergänge
-const pages = [
-  { id: "home", label: "🏠 Home", next: ["login", "tournaments"] },
-  { id: "login", label: "🔑 Login", next: ["dashboard"] },
-  { id: "dashboard", label: "📊 Dashboard", next: ["tournaments", "profile"] },
-  { id: "tournaments", label: "🏆 Turniere", next: ["tournament-detail"] },
-  { id: "tournament-detail", label: "📄 Turnier-Detail", next: ["dashboard"] },
-  { id: "profile", label: "👤 Profil", next: ["dashboard"] },
-];
-
-// Knoten für react-flow
-const nodes: Node[] = pages.map((page, index) => ({
-  id: page.id,
-  data: { label: page.label },
-  position: { x: (index % 3) * 250, y: Math.floor(index / 3) * 150 },
-  style: {
-    padding: 10,
-    borderRadius: 12,
-    border: "2px solid #4caf50",
-    backgroundColor: "white",
-    fontWeight: "bold",
-    textAlign: "center" as const,
-    width: 180,
-  },
-}));
-
-// Kanten dynamisch aus "next"
-const edges: Edge[] = pages.flatMap((page) =>
-  page.next.map((target) => ({
-    id: `${page.id}-${target}`,
-    source: page.id,
-    target,
-    animated: true,
-    style: { stroke: "#4caf50" },
-  }))
-);
+function prettyLabel(id: string) {
+  if (id === "index") return "🏁 Index (Start)";
+  return id
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+}
 
 export default function UserFlowPage() {
+  const router = useRouter();
+
+  const { nodes, edges, unusedPages } = useMemo(() => {
+    const used = new Set<PageId>();
+    flow.forEach((e) => {
+      used.add(e.source);
+      used.add(e.target);
+    });
+
+    // Positionierung im Grid
+    const colWidth = 240;
+    const rowHeight = 160;
+    const cols = 4;
+
+    const nodes: Node[] = allPages.map((id, index) => {
+      const isUsed = used.has(id);
+      const x = (index % cols) * colWidth;
+      const y = Math.floor(index / cols) * rowHeight;
+
+      return {
+        id,
+        data: { label: prettyLabel(id) },
+        position: { x, y },
+        style: {
+          padding: 10,
+          borderRadius: 12,
+          border: isUsed ? "2px solid #16a34a" : "2px solid #ef4444", // grün = im Flow, rot = (noch) ungenutzt
+          backgroundColor: "white",
+          fontWeight: "bold",
+          textAlign: "center" as const,
+          width: 200
+        }
+      };
+    });
+
+    const edges: Edge[] = flow
+      .filter(
+        (e) => (allPages as readonly string[]).includes(e.source) && (allPages as readonly string[]).includes(e.target)
+      )
+      .map((e, i) => ({
+        id: `${e.source}-${e.target}-${i}`,
+        source: e.source,
+        target: e.target,
+        label: e.label,
+        animated: true
+      }));
+
+    const unusedPages = (allPages as readonly string[]).filter((p) => !used.has(p as PageId));
+
+    return { nodes, edges, unusedPages };
+  }, []);
+
+  const onNodeClick = (_: unknown, node: Node) => {
+    const id = node.id;
+    const href = id === "index" ? "/" : `/${id}`;
+    router.push(href);
+  };
+
   return (
-    <div style={{ width: "100%", height: "100vh" }}>
-      <h1 className="text-2xl font-bold p-4">User-Flow Übersicht</h1>
-      <ReactFlow nodes={nodes} edges={edges} fitView>
-        <Background />
-        <MiniMap />
-        <Controls />
-      </ReactFlow>
+    <div className="w-full h-[100vh] flex flex-col">
+      <header className="p-4">
+        <h1 className="text-2xl font-bold">User-Flow & Seiten-Übersicht</h1>
+        <p className="text-gray-600 mt-1">
+          <span className="inline-block w-3 h-3 rounded-full border-2 border-green-600 mr-1 align-middle" /> im Flow&nbsp;
+          <span className="inline-block w-3 h-3 rounded-full border-2 border-red-500 mx-2 align-middle" /> (noch) nicht verknüpft
+        </p>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 px-4 pb-4 flex-1">
+        {/* Diagramm */}
+        <div className="lg:col-span-3 rounded-xl overflow-hidden border">
+          <ReactFlow nodes={nodes} edges={edges} fitView onNodeClick={onNodeClick}>
+            <Background />
+            <MiniMap />
+            <Controls />
+          </ReactFlow>
+        </div>
+
+        {/* Seitenliste & Status */}
+        <aside className="lg:col-span-1 rounded-xl border p-4 space-y-4 bg-white">
+          <div>
+            <h2 className="font-semibold mb-2">Statistik</h2>
+            <ul className="text-sm space-y-1">
+              <li>Gesamt: {allPages.length} Seiten</li>
+              <li>Im Flow verknüpft: {allPages.length - unusedPages.length}</li>
+              <li>Nicht verknüpft: {unusedPages.length}</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="font-semibold mb-2">Nicht verknüpfte Seiten</h2>
+            {unusedPages.length === 0 ? (
+              <p className="text-sm text-gray-600">Alle Seiten sind im Flow enthalten 🎉</p>
+            ) : (
+              <ul className="text-sm list-disc ml-5 space-y-1">
+                {unusedPages.map((p) => (
+                  <li key={p}>{prettyLabel(p)}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div>
+            <h2 className="font-semibold mb-2">Alle Seiten</h2>
+            <ul className="text-sm list-disc ml-5 space-y-1">
+              {(allPages as readonly string[]).map((p) => (
+                <li key={p}>{prettyLabel(p)}</li>
+              ))}
+            </ul>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
