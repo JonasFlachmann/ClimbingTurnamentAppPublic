@@ -1,15 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "next.config.js",
-      "use": "@vercel/next"
-    }
-  ],
   "git": {
     "deploymentEnabled": {
       "main": true,
       "preview": false
     }
-  }
+  },
+  "ignoreCommand": "git log -1 --pretty=%B | grep skip-deploy"
 }
