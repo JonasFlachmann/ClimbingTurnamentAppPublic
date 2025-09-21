@@ -1,108 +1,151 @@
+"use client";
+
 import React, { useState } from "react";
-import { Box, Paper, Typography, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
+import Link from "next/link";
 import { useRouter } from "next/router";
 
-const RegisterPage: React.FC = () => {
+export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    vorname: "",
-    nachname: "",
-    email: "",
-    benutzername: "",
-    passwort: "",
-    passwortWiederholen: "",
-  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordRepeat, setPasswordRepeat] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Keine Validierung mehr, alles optional!
-    router.push("/home");
+
+    if (!name || !email || !password || !passwordRepeat) {
+      alert("Bitte alle Felder ausfüllen.");
+      return;
+    }
+    if (password !== passwordRepeat) {
+      alert("Die Passwörter stimmen nicht überein.");
+      return;
+    }
+    if (!acceptedTerms) {
+      alert("Bitte akzeptiere die AGB.");
+      return;
+    }
+
+    // TODO: später Registrierung mit Supabase-Auth
+    alert(`Registrierung erfolgreich für ${name} (${email})`);
+    router.push("/"); // Weiterleitung z. B. zur Startseite
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "background.default", px: 2 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 4, maxWidth: 400, width: "100%" }}>
-        <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
+    <Box
+      component="main"
+      sx={{
+        p: 2,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        minHeight: "100vh",
+        pb: "calc(env(safe-area-inset-bottom, 0px) + 96px)",
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{ width: "100%", maxWidth: 500, p: 3, borderRadius: 2 }}
+      >
+        <Typography variant="h5" fontWeight={700} gutterBottom>
           Registrierung
         </Typography>
-        <form onSubmit={handleSubmit}>
+
+        <Box component="form" onSubmit={handleSubmit}>
           <TextField
-            label="Vorname"
-            name="vorname"
-            value={form.vorname}
-            onChange={handleChange}
             fullWidth
+            label="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             sx={{ mb: 2 }}
-            autoComplete="given-name"
           />
+
           <TextField
-            label="Nachname"
-            name="nachname"
-            value={form.nachname}
-            onChange={handleChange}
             fullWidth
-            sx={{ mb: 2 }}
-            autoComplete="family-name"
-          />
-          <TextField
             label="E-Mail-Adresse"
-            name="email"
             type="email"
-            value={form.email}
-            onChange={handleChange}
-            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             sx={{ mb: 2 }}
-            autoComplete="email"
           />
+
           <TextField
-            label="Benutzername"
-            name="benutzername"
-            value={form.benutzername}
-            onChange={handleChange}
             fullWidth
-            sx={{ mb: 2 }}
-            autoComplete="username"
-          />
-          <TextField
             label="Passwort"
-            name="passwort"
             type="password"
-            value={form.passwort}
-            onChange={handleChange}
-            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             sx={{ mb: 2 }}
-            autoComplete="new-password"
           />
+
           <TextField
-            label="Passwort wiederholen"
-            name="passwortWiederholen"
+            fullWidth
+            label="Passwort bestätigen"
             type="password"
-            value={form.passwortWiederholen}
-            onChange={handleChange}
-            fullWidth
+            value={passwordRepeat}
+            onChange={(e) => setPasswordRepeat(e.target.value)}
             sx={{ mb: 2 }}
-            autoComplete="new-password"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            fullWidth
-            sx={{ py: 1.5, fontWeight: "bold", fontSize: "1.1rem", mt: 1 }}
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                required
+              />
+            }
+            label={
+              <span>
+                Ich akzeptiere die{" "}
+                <Link
+                  href="/agb"
+                  style={{ color: "#16a34a", textDecoration: "underline" }}
+                >
+                  Allgemeinen Geschäftsbedingungen und Teilnahmebedingungen
+                </Link>
+              </span>
+            }
+          />
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mt: 3,
+              gap: 2,
+            }}
           >
-            Registrierung abschließen
-          </Button>
-        </form>
+            <Link href="/login" passHref>
+              <Button variant="outlined" fullWidth>
+                Zurück zur Anmeldung
+              </Button>
+            </Link>
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ textTransform: "none" }}
+            >
+              Registrieren
+            </Button>
+          </Box>
+        </Box>
       </Paper>
     </Box>
   );
-};
-
-export default RegisterPage;
+}
