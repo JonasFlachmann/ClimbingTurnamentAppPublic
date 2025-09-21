@@ -36,7 +36,7 @@ const TAG_GROUPS: string[][] = [
 ];
 
 const MAX_PHOTOS = 4;
-const PLACEHOLDER_COLORS = ["#E5E7EB", "#D1FAE5", "#DBEAFE", "#FCE7F3"]; // grau, grünlich, blau, rosa
+const PLACEHOLDER_COLORS = ["#E5E7EB", "#D1FAE5", "#DBEAFE", "#FCE7F3"]; // Grau, Grün, Blau, Rosa
 
 export default function BoulderAddPage() {
   const router = useRouter();
@@ -58,13 +58,12 @@ export default function BoulderAddPage() {
 
   const allTags = useMemo(() => TAG_GROUPS.flat(), []);
 
-  // Tag-Auswahl (Mehrfach)
+  // Tag-Auswahl
   const handleToggleGroup =
     (groupIndex: number) =>
     (_: React.MouseEvent<HTMLElement>, newValues: string[]) => {
       const current = new Set(tags);
       const groupTags = new Set(TAG_GROUPS[groupIndex]);
-      // Gruppe zurücksetzen & neue Auswahl übernehmen
       Array.from(groupTags).forEach((gt) => current.delete(gt));
       newValues.forEach((nv) => current.add(nv));
       setTags(Array.from(current));
@@ -92,12 +91,20 @@ export default function BoulderAddPage() {
   // Submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: später an API/Supabase senden
+    // TODO: später API-Aufruf
     router.push("/tournament-fill");
   };
 
   return (
-    <Box component="main" sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+    <Box
+      component="main"
+      sx={{
+        p: 2,
+        display: "flex",
+        justifyContent: "center",
+        pb: 8, // 👈 Platz nach unten, damit nichts im Footer verschwindet
+      }}
+    >
       <Paper elevation={3} sx={{ width: "100%", maxWidth: 800, p: 2, borderRadius: 2 }}>
         <Typography variant="h5" fontWeight={700} gutterBottom>
           Neue Route hinzufügen
@@ -154,7 +161,7 @@ export default function BoulderAddPage() {
                         />
                       ) : (
                         <Typography variant="body2" color="text.secondary">
-                          + Foto {i + 1}
+                          Platzhalter {i + 1}
                         </Typography>
                       )}
 
@@ -258,7 +265,6 @@ export default function BoulderAddPage() {
                           padding: "4px 10px",
                           borderRadius: 1.25,
                           borderColor: "divider",
-                          // Deutlicher Selected-State im Theme-Grün:
                           "&.Mui-selected": {
                             bgcolor: "success.main",
                             color: "#fff",
