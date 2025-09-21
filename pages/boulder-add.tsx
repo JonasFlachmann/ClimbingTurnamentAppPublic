@@ -2,7 +2,6 @@
 
 import React, { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
 import {
   Box,
   Paper,
@@ -13,21 +12,12 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Divider,
+  IconButton,
 } from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CheckIcon from "@mui/icons-material/Check";
-
-// Swiper nur Client-seitig laden
-const Swiper = dynamic(() => import("swiper/react").then((m) => m.Swiper), { ssr: false });
-const SwiperSlide = dynamic(
-  () => import("swiper/react").then((m) => m.SwiperSlide),
-  { ssr: false }
-);
-
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-import { Pagination, Navigation } from "swiper";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const TAG_GROUPS: string[][] = [
   ["Überhang", "Vertikale", "Platte", "Verschneidung"],
@@ -36,7 +26,7 @@ const TAG_GROUPS: string[][] = [
 ];
 
 const MAX_PHOTOS = 4;
-// deutlicher sichtbare Platzhalterfarben
+// gut sichtbare Platzhalterfarben
 const PLACEHOLDER_COLORS = ["#CBD5E1", "#86E3A1", "#93C5FD", "#F9A8D4"]; // slate-300, green, blue, pink
 
 export default function BoulderAddPage() {
@@ -51,15 +41,48 @@ export default function BoulderAddPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
-  // Fotos (Preview via Blob-URL)
+  // Fotos: Blob-URLs für Preview oder null für Platzhalter
   const [photoUrls, setPhotoUrls] = useState<(string | null)[]>(
     Array.from({ length: MAX_PHOTOS }, () => null)
   );
   const fileInputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
+  // Einfaches Carousel
+  const [index, setIndex] = useState(0);
+  const clampIndex = (v: number) =>
+    Math.max(0, Math.min(MAX_PHOTOS - 1, v));
+  const goPrev = () => setIndex((i) => clampIndex(i - 1));
+  const goNext = () => setIndex((i) => clampIndex(i + 1));
+  const goTo = (i: number) => setIndex(clampIndex(i));
+
+  // Drag / Swipe (Touch + Maus)
+  const startXRef = useRef<number | null>(null);
+  const draggingRef = useRef(false);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    draggingRef.current = true;
+    startXRef.current = e.clientX;
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!draggingRef.current || startXRef.current == null) return;
+    // optional: live translate – hier nicht nötig
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (!draggingRef.current || startXRef.current == null) return;
+    const dx = e.clientX - startXRef.current;
+    draggingRef.current = false;
+    startXRef.current = null;
+    const THRESHOLD = 40; // Pixel
+    if (dx > THRESHOLD) goPrev();
+    else if (dx < -THRESHOLD) goNext();
+  };
+  const onPointerLeave = () => {
+    draggingRef.current = false;
+    startXRef.current = null;
+  };
+
   const allTags = useMemo(() => TAG_GROUPS.flat(), []);
 
-  // Tag-Auswahl (Mehrfach)
   const handleToggleGroup =
     (groupIndex: number) =>
     (_: React.MouseEvent<HTMLElement>, newValues: string[]) => {
@@ -69,15 +92,12 @@ export default function BoulderAddPage() {
       newValues.forEach((nv) => current.add(nv));
       setTags(Array.from(current));
     };
-
   const selectedByGroup = (groupIndex: number) =>
     tags.filter((t) => TAG_GROUPS[groupIndex].includes(t));
 
-  // Kamera-/Upload
   const handlePickPhoto = (idx: number) => {
     fileInputsRef.current[idx]?.click();
   };
-
   const handleFileChange = (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -87,11 +107,13 @@ export default function BoulderAddPage() {
       next[idx] = url;
       return next;
     });
+    // springe auf dieses Bild
+    setIndex(idx);
   };
 
-  // Submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // TODO: später API/Supabase
     router.push("/tournament-fill");
   };
 
@@ -102,7 +124,7 @@ export default function BoulderAddPage() {
         p: 2,
         display: "flex",
         justifyContent: "center",
-        // zusätzlicher Platz nach unten (Footer + Safe Area)
+        // genug Abstand zum (globalen) Footer:
         pb: "calc(env(safe-area-inset-bottom, 0px) + 96px)",
       }}
     >
@@ -123,79 +145,142 @@ export default function BoulderAddPage() {
               />
             </Grid>
 
-            {/* Fotos */}
+            {/* Fotos – eigener, zuverlässiger Carousel */}
             <Grid item xs={12}>
               <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 Fotos (durchblättern)
               </Typography>
 
-              <Swiper
-                modules={[Pagination, Navigation]}
-                pagination={{ clickable: true }}
-                navigation
-                slidesPerView={1}
-                spaceBetween={12}
-                style={{ width: "100%", height: 280 }}
+              <Box
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                  height: 260,
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  userSelect: "none",
+                  touchAction: "pan-y",
+                  bgcolor: "#fff",
+                  border: "1px solid rgba(0,0,0,0.08)",
+                }}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onPointerLeave={onPointerLeave}
               >
-                {Array.from({ length: MAX_PHOTOS }).map((_, i) => (
-                  <SwiperSlide key={i}>
+                {/* aktuelles Bild / Platzhalter */}
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                    bgcolor:
+                      photoUrls[index] == null
+                        ? PLACEHOLDER_COLORS[index % PLACEHOLDER_COLORS.length]
+                        : "transparent",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {photoUrls[index] ? (
+                    <img
+                      src={photoUrls[index] as string}
+                      alt={`Foto ${index + 1}`}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    <Typography variant="body2" color="text.primary" sx={{ fontWeight: 600 }}>
+                      Platzhalter {index + 1}
+                    </Typography>
+                  )}
+
+                  {/* Kamera/Upload */}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<PhotoCameraIcon />}
+                    onClick={() => handlePickPhoto(index)}
+                    sx={{
+                      position: "absolute",
+                      right: 12,
+                      bottom: 12,
+                      borderRadius: 2,
+                      textTransform: "none",
+                    }}
+                  >
+                    Kamera
+                  </Button>
+                  <input
+                    ref={(el) => {
+                      fileInputsRef.current[index] = el;
+                    }}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleFileChange(index)}
+                    style={{ display: "none" }}
+                  />
+                </Box>
+
+                {/* Pfeile */}
+                <IconButton
+                  aria-label="vorheriges Foto"
+                  onClick={goPrev}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: 8,
+                    transform: "translateY(-50%)",
+                    bgcolor: "rgba(255,255,255,0.8)",
+                    "&:hover": { bgcolor: "rgba(255,255,255,0.95)" },
+                  }}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="nächstes Foto"
+                  onClick={goNext}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    right: 8,
+                    transform: "translateY(-50%)",
+                    bgcolor: "rgba(255,255,255,0.8)",
+                    "&:hover": { bgcolor: "rgba(255,255,255,0.95)" },
+                  }}
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+
+                {/* Dots */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: 8,
+                    left: 0,
+                    right: 0,
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 1,
+                  }}
+                >
+                  {Array.from({ length: MAX_PHOTOS }).map((_, i) => (
                     <Box
+                      key={i}
+                      onClick={() => goTo(i)}
                       sx={{
-                        width: "100%",
-                        height: 260,                // feste Höhe -> sichtbar
-                        borderRadius: 2,
-                        bgcolor: photoUrls[i]
-                          ? "transparent"
-                          : PLACEHOLDER_COLORS[i % PLACEHOLDER_COLORS.length],
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        position: "relative",
-                        overflow: "hidden",
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                        bgcolor: i === index ? "success.main" : "rgba(0,0,0,0.25)",
+                        outline: i === index ? "2px solid rgba(0,0,0,0.15)" : "none",
                       }}
-                    >
-                      {photoUrls[i] ? (
-                        <img
-                          src={photoUrls[i] as string}
-                          alt={`Foto ${i + 1}`}
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
-                      ) : (
-                        <Typography variant="body2" color="text.primary" sx={{ fontWeight: 600 }}>
-                          Platzhalter {i + 1}
-                        </Typography>
-                      )}
-
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<PhotoCameraIcon />}
-                        onClick={() => handlePickPhoto(i)}
-                        sx={{
-                          position: "absolute",
-                          right: 12,
-                          bottom: 12,
-                          borderRadius: 2,
-                          textTransform: "none",
-                        }}
-                      >
-                        Kamera
-                      </Button>
-
-                      <input
-                        ref={(el) => {
-                          fileInputsRef.current[i] = el;
-                        }}
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        onChange={handleFileChange(i)}
-                        style={{ display: "none" }}
-                      />
-                    </Box>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+                    />
+                  ))}
+                </Box>
+              </Box>
             </Grid>
 
             {/* Grifffarbe */}
@@ -315,7 +400,7 @@ export default function BoulderAddPage() {
             </Button>
           </Box>
 
-          {/* zusätzlicher Spacer gegen Footer-Überlappung */}
+          {/* extra Abstand zum globalen Footer */}
           <Box sx={{ height: 96 }} />
         </Box>
       </Paper>
