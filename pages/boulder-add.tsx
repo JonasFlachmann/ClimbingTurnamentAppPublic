@@ -25,7 +25,9 @@ const SwiperSlide = dynamic(
 );
 
 import "swiper/css";
-import { Pagination } from "swiper";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Pagination, Navigation } from "swiper";
 
 const TAG_GROUPS: string[][] = [
   ["Überhang", "Vertikale", "Platte", "Verschneidung"],
@@ -121,10 +123,12 @@ export default function BoulderAddPage() {
                 Fotos (durchblättern)
               </Typography>
               <Swiper
-                modules={[Pagination]}
+                modules={[Pagination, Navigation]}
                 pagination={{ clickable: true }}
+                navigation
                 slidesPerView={1}
                 spaceBetween={12}
+                style={{ width: "100%", height: "260px" }}
               >
                 {Array.from({ length: MAX_PHOTOS }).map((_, i) => (
                   <SwiperSlide key={i}>
@@ -132,7 +136,7 @@ export default function BoulderAddPage() {
                       sx={{
                         position: "relative",
                         width: "100%",
-                        height: 240,
+                        height: "100%",
                         borderRadius: 2,
                         overflow: "hidden",
                         bgcolor: photoUrls[i] ? "transparent" : "grey.300",
@@ -168,6 +172,7 @@ export default function BoulderAddPage() {
                       >
                         Kamera
                       </Button>
+
                       <input
                         ref={(el) => {
                           fileInputsRef.current[i] = el;
