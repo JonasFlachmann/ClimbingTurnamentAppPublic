@@ -18,9 +18,9 @@ import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import CheckIcon from "@mui/icons-material/Check";
 
 // Swiper nur Client-seitig laden
-const Swiper = dynamic(() => import("swiper/react").then(m => m.Swiper), { ssr: false });
+const Swiper = dynamic(() => import("swiper/react").then((m) => m.Swiper), { ssr: false });
 const SwiperSlide = dynamic(
-  () => import("swiper/react").then(m => m.SwiperSlide),
+  () => import("swiper/react").then((m) => m.SwiperSlide),
   { ssr: false }
 );
 
@@ -38,6 +38,7 @@ const MAX_PHOTOS = 5;
 export default function BoulderAddPage() {
   const router = useRouter();
 
+  // States für Form
   const [routeName, setRouteName] = useState("");
   const [gripColor, setGripColor] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -46,6 +47,7 @@ export default function BoulderAddPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
+  // Fotos
   const [photoUrls, setPhotoUrls] = useState<(string | null)[]>(
     Array.from({ length: MAX_PHOTOS }, () => null)
   );
@@ -53,33 +55,30 @@ export default function BoulderAddPage() {
 
   const allTags = useMemo(() => TAG_GROUPS.flat(), []);
 
-  // Fix: kein "for...of" mehr, sondern Array.from().forEach()
-  const handleToggleGroup = (groupIndex: number) => (
-    _: React.MouseEvent<HTMLElement>,
-    newValues: string[]
-  ) => {
-    const current = new Set(tags);
-    const groupTags = new Set(TAG_GROUPS[groupIndex]);
+  // Tag-Auswahl
+  const handleToggleGroup =
+    (groupIndex: number) =>
+    (_: React.MouseEvent<HTMLElement>, newValues: string[]) => {
+      const current = new Set(tags);
+      const groupTags = new Set(TAG_GROUPS[groupIndex]);
 
-    // Entferne alle Tags dieser Gruppe aus der Auswahl
-    Array.from(groupTags).forEach((gt) => current.delete(gt));
+      // Entferne alle Tags dieser Gruppe
+      Array.from(groupTags).forEach((gt) => current.delete(gt));
+      // Füge neu ausgewählte hinzu
+      newValues.forEach((nv) => current.add(nv));
 
-    // Füge neu ausgewählte hinzu
-    newValues.forEach((nv) => current.add(nv));
-
-    setTags(Array.from(current));
-  };
+      setTags(Array.from(current));
+    };
 
   const selectedByGroup = (groupIndex: number) =>
     tags.filter((t) => TAG_GROUPS[groupIndex].includes(t));
 
+  // Kamera-/Upload
   const handlePickPhoto = (idx: number) => {
     fileInputsRef.current[idx]?.click();
   };
 
-  const handleFileChange = (idx: number) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
@@ -90,9 +89,10 @@ export default function BoulderAddPage() {
     });
   };
 
+  // Submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 🚧 TODO: API Call
+    // 🚧 TODO: Speichern/DB
     router.push("/tournament-fill");
   };
 
@@ -169,7 +169,9 @@ export default function BoulderAddPage() {
                         Kamera
                       </Button>
                       <input
-                        ref={(el) => (fileInputsRef.current[i] = el)}
+                        ref={(el) => {
+                          fileInputsRef.current[i] = el;
+                        }}
                         type="file"
                         accept="image/*"
                         capture="environment"
@@ -253,7 +255,9 @@ export default function BoulderAddPage() {
                     >
                       {group.map((tag) => (
                         <ToggleButton key={tag} value={tag} aria-label={tag}>
-                          {tags.includes(tag) && <CheckIcon fontSize="inherit" sx={{ mr: 0.5 }} />}
+                          {tags.includes(tag) && (
+                            <CheckIcon fontSize="inherit" sx={{ mr: 0.5 }} />
+                          )}
                           {tag}
                         </ToggleButton>
                       ))}
