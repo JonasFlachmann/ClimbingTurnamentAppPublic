@@ -35,12 +35,13 @@ const TAG_GROUPS: string[][] = [
   ["Kraft", "Balance", "Dynamisch", "Technisch"],
 ];
 
-const MAX_PHOTOS = 5;
+const MAX_PHOTOS = 4;
+const PLACEHOLDER_COLORS = ["#E5E7EB", "#D1FAE5", "#DBEAFE", "#FCE7F3"]; // grau, grünlich, blau, rosa
 
 export default function BoulderAddPage() {
   const router = useRouter();
 
-  // States für Form
+  // Form-States
   const [routeName, setRouteName] = useState("");
   const [gripColor, setGripColor] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -49,7 +50,7 @@ export default function BoulderAddPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
-  // Fotos
+  // Fotos (Preview via Blob-URL)
   const [photoUrls, setPhotoUrls] = useState<(string | null)[]>(
     Array.from({ length: MAX_PHOTOS }, () => null)
   );
@@ -57,18 +58,15 @@ export default function BoulderAddPage() {
 
   const allTags = useMemo(() => TAG_GROUPS.flat(), []);
 
-  // Tag-Auswahl
+  // Tag-Auswahl (Mehrfach)
   const handleToggleGroup =
     (groupIndex: number) =>
     (_: React.MouseEvent<HTMLElement>, newValues: string[]) => {
       const current = new Set(tags);
       const groupTags = new Set(TAG_GROUPS[groupIndex]);
-
-      // Entferne alle Tags dieser Gruppe
+      // Gruppe zurücksetzen & neue Auswahl übernehmen
       Array.from(groupTags).forEach((gt) => current.delete(gt));
-      // Füge neu ausgewählte hinzu
       newValues.forEach((nv) => current.add(nv));
-
       setTags(Array.from(current));
     };
 
@@ -94,7 +92,7 @@ export default function BoulderAddPage() {
   // Submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 🚧 TODO: Speichern/DB
+    // TODO: später an API/Supabase senden
     router.push("/tournament-fill");
   };
 
@@ -122,13 +120,14 @@ export default function BoulderAddPage() {
               <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 Fotos (durchblättern)
               </Typography>
+
               <Swiper
                 modules={[Pagination, Navigation]}
                 pagination={{ clickable: true }}
                 navigation
                 slidesPerView={1}
                 spaceBetween={12}
-                style={{ width: "100%", height: "260px" }}
+                style={{ width: "100%", height: 260 }}
               >
                 {Array.from({ length: MAX_PHOTOS }).map((_, i) => (
                   <SwiperSlide key={i}>
@@ -139,7 +138,9 @@ export default function BoulderAddPage() {
                         height: "100%",
                         borderRadius: 2,
                         overflow: "hidden",
-                        bgcolor: photoUrls[i] ? "transparent" : "grey.300",
+                        bgcolor: photoUrls[i]
+                          ? "transparent"
+                          : PLACEHOLDER_COLORS[i % PLACEHOLDER_COLORS.length],
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -238,6 +239,7 @@ export default function BoulderAddPage() {
               <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 Tags
               </Typography>
+
               <Grid container spacing={1}>
                 {TAG_GROUPS.map((group, gi) => (
                   <Grid item xs={12} key={`group-${gi}`}>
@@ -253,8 +255,16 @@ export default function BoulderAddPage() {
                         "& .MuiToggleButton-root": {
                           textTransform: "none",
                           fontSize: 12,
-                          padding: "4px 8px",
+                          padding: "4px 10px",
                           borderRadius: 1.25,
+                          borderColor: "divider",
+                          // Deutlicher Selected-State im Theme-Grün:
+                          "&.Mui-selected": {
+                            bgcolor: "success.main",
+                            color: "#fff",
+                            borderColor: "success.main",
+                            "&:hover": { bgcolor: "success.dark" },
+                          },
                         },
                       }}
                     >
@@ -290,19 +300,10 @@ export default function BoulderAddPage() {
 
           {/* Bestätigungsbutton */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
-            <Button
-              variant="outlined"
-              onClick={() => router.back()}
-              sx={{ textTransform: "none" }}
-            >
+            <Button variant="outlined" onClick={() => router.back()} sx={{ textTransform: "none" }}>
               Abbrechen
             </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{ textTransform: "none" }}
-            >
+            <Button type="submit" variant="contained" color="primary" sx={{ textTransform: "none" }}>
               Route festlegen
             </Button>
           </Box>
