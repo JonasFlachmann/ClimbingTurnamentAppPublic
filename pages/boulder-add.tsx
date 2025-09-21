@@ -1,92 +1,100 @@
-import { useState } from "react";
+"use client";
+
+import React, { useState } from "react";
 import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
-import { Pagination } from "swiper"; // ✅ Fix: statt "swiper/modules"
 
-// ✅ Swiper nur Client-seitig laden
-const Swiper = dynamic(() => import("swiper/react").then((mod) => mod.Swiper), {
-  ssr: false,
-});
-const SwiperSlide = dynamic(
-  () => import("swiper/react").then((mod) => mod.SwiperSlide),
-  {
-    ssr: false,
-  }
-);
-
-export default function BoulderAdd() {
-  const [step, setStep] = useState(0);
+export default function BoulderAddPage() {
   const router = useRouter();
+  const [boulderName, setBoulderName] = useState("");
+  const [difficulty, setDifficulty] = useState("");
+  const [description, setDescription] = useState("");
 
-  const handleNext = () => setStep((prev) => prev + 1);
-  const handlePrev = () => setStep((prev) => prev - 1);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // 🚧 TODO: API Call zum Speichern des Boulders
+    alert("Boulder gespeichert!");
+    router.push("/tournament-overview");
+  };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Boulder hinzufügen</h1>
+    <div className="w-full min-h-screen p-6 flex flex-col items-center bg-gray-50">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow p-6">
+        <h1 className="text-2xl font-bold mb-6">Boulder hinzufügen</h1>
 
-      <Swiper
-        modules={[Pagination]}
-        pagination={{ clickable: true }}
-        className="w-full h-64"
-      >
-        <SwiperSlide>
-          <div className="flex flex-col items-center justify-center h-full">
-            <h2 className="text-lg font-semibold">Schritt 1: Boulder Name</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Bouldername */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Bouldername</label>
             <input
               type="text"
-              placeholder="Name eingeben"
-              className="mt-4 p-2 border rounded w-full"
+              value={boulderName}
+              onChange={(e) => setBoulderName(e.target.value)}
+              placeholder="Name des Boulders"
+              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+              required
             />
           </div>
-        </SwiperSlide>
 
-        <SwiperSlide>
-          <div className="flex flex-col items-center justify-center h-full">
-            <h2 className="text-lg font-semibold">Schritt 2: Schwierigkeitsgrad</h2>
-            <select className="mt-4 p-2 border rounded w-full">
-              <option>Leicht</option>
-              <option>Mittel</option>
-              <option>Schwer</option>
+          {/* Schwierigkeit */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Schwierigkeit</label>
+            <select
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+              required
+            >
+              <option value="">Bitte wählen</option>
+              <option value="leicht">Leicht</option>
+              <option value="mittel">Mittel</option>
+              <option value="schwer">Schwer</option>
             </select>
           </div>
-        </SwiperSlide>
 
-        <SwiperSlide>
-          <div className="flex flex-col items-center justify-center h-full">
-            <h2 className="text-lg font-semibold">Schritt 3: Beschreibung</h2>
+          {/* Beschreibung */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Beschreibung</label>
             <textarea
-              placeholder="Beschreibung eingeben"
-              className="mt-4 p-2 border rounded w-full"
-              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Kurze Beschreibung des Boulders"
+              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+              rows={3}
             />
           </div>
-        </SwiperSlide>
-      </Swiper>
 
-      <div className="flex justify-between mt-6">
-        <button
-          onClick={handlePrev}
-          disabled={step === 0}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-        >
-          Zurück
-        </button>
-        {step < 2 ? (
-          <button
-            onClick={handleNext}
-            className="px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Weiter
-          </button>
-        ) : (
-          <button
-            onClick={() => router.push("/home")}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
-          >
-            Fertig
-          </button>
-        )}
+          {/* Platzhalter für Fotos */}
+          <div>
+            <label className="block text-sm font-medium mb-3">Fotos</label>
+            <div className="grid grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="w-full h-32 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600"
+                >
+                  + Foto
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-4">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-4 py-2 rounded-lg border border-gray-300"
+            >
+              Abbrechen
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+            >
+              Speichern
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
