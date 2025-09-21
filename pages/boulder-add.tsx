@@ -3,183 +3,146 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  Grid,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
+  Chip,
+  Button,
+  Divider,
+} from "@mui/material";
 
 // Swiper nur Client-seitig laden
-const Swiper = dynamic(() => import("swiper/react").then((mod) => mod.Swiper), {
+const Swiper = dynamic(() => import("swiper/react").then((m) => m.Swiper), {
   ssr: false,
 });
 const SwiperSlide = dynamic(
-  () => import("swiper/react").then((mod) => mod.SwiperSlide),
+  () => import("swiper/react").then((m) => m.SwiperSlide),
   { ssr: false }
 );
 
+// Wichtig: Bei Swiper 9 den Pagination-Import aus "swiper" selbst
+import { Pagination } from "swiper";
 import "swiper/css";
 import "swiper/css/pagination";
 
 export default function BoulderAddPage() {
   const router = useRouter();
 
+  // Form-State
   const [routeName, setRouteName] = useState("");
   const [gripColor, setGripColor] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [hallLabel, setHallLabel] = useState("");
   const [location, setLocation] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
+  // Tags (Mehrfachauswahl)
+  const [tags, setTags] = useState<string[]>([]);
   const toggleTag = (tag: string) => {
     setTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // 🚧 TODO: API-Call einbauen
-    router.push("/tournament-fill");
-  };
-
-  const tagGroups = [
+  const tagGroups: string[][] = [
     ["Überhang", "Vertikale", "Platte", "Verschneidung"],
     ["Crimps", "Leisten", "Sloper", "Jugs", "Pocketholes"],
     ["Kraft", "Balance", "Dynamisch", "Technisch"],
   ];
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Später API-Call einbauen
+    router.push("/tournament-fill");
+  };
+
   return (
-    <div className="w-full min-h-screen p-6 flex flex-col items-center bg-gray-50">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow p-6">
-        <h1 className="text-2xl font-bold mb-6">Neue Route hinzufügen</h1>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+        <Typography variant="h5" fontWeight={700} gutterBottom>
+          Neue Route hinzufügen
+        </Typography>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Routename */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Routenname</label>
-            <input
-              type="text"
-              value={routeName}
-              onChange={(e) => setRouteName(e.target.value)}
-              placeholder="Name der Route"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
+            {/* Routename */}
+            <Grid item xs={12}>
+              <TextField
+                label="Routenname"
+                value={routeName}
+                onChange={(e) => setRouteName(e.target.value)}
+                fullWidth
+                required
+              />
+            </Grid>
 
-          {/* Fotos */}
-          <div>
-            <label className="block text-sm font-medium mb-3">Fotos</label>
-            <Swiper spaceBetween={12} slidesPerView={1}>
-              {[1, 2, 3].map((i) => (
-                <SwiperSlide key={i}>
-                  <div className="w-full h-48 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600">
-                    + Foto {i}
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-
-          {/* Grifffarbe */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Grifffarbe</label>
-            <input
-              type="text"
-              value={gripColor}
-              onChange={(e) => setGripColor(e.target.value)}
-              placeholder="z. B. Blau"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Schwierigkeit laut Halle */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Schwierigkeit (laut Halle)
-            </label>
-            <input
-              type="text"
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
-              placeholder="z. B. 6a"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Bezeichnung laut Halle */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Bezeichnung (laut Halle)
-            </label>
-            <input
-              type="text"
-              value={hallLabel}
-              onChange={(e) => setHallLabel(e.target.value)}
-              placeholder="z. B. #42"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Ort / Wand */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Ort / Wand</label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="z. B. Sektor A"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          {/* Tags */}
-          <div>
-            <label className="block text-sm font-medium mb-3">Tags</label>
-            <div className="space-y-2">
-              {tagGroups.map((group, gi) => (
-                <div key={gi} className="flex flex-wrap gap-2">
-                  {group.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => toggleTag(tag)}
-                      className={`px-2 py-1 rounded-md text-xs ${
-                        tags.includes(tag)
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
-                    >
-                      {tag}
-                    </button>
+            {/* Fotos – Swiper mit Platzhaltern */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle1" gutterBottom>
+                Fotos
+              </Typography>
+              <Paper
+                variant="outlined"
+                sx={{ borderRadius: 2, overflow: "hidden" }}
+              >
+                <Swiper
+                  modules={[Pagination]}
+                  pagination={{ clickable: true }}
+                  spaceBetween={8}
+                  slidesPerView={1}
+                  style={{ width: "100%", height: 220 }}
+                >
+                  {[1, 2, 3].map((i) => (
+                    <SwiperSlide key={i}>
+                      <Box
+                        sx={{
+                          width: "100%",
+                          height: 220,
+                          bgcolor: "grey.300",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "grey.700",
+                          fontWeight: 600,
+                          fontSize: 16,
+                        }}
+                      >
+                        + Foto {i}
+                      </Box>
+                    </SwiperSlide>
                   ))}
-                </div>
-              ))}
-            </div>
-          </div>
+                </Swiper>
+              </Paper>
+            </Grid>
 
-          {/* Beschreibung */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Beschreibung
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Kurze Beschreibung der Route"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
-              rows={3}
-            />
-          </div>
+            {/* Grifffarbe */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Grifffarbe"
+                value={gripColor}
+                onChange={(e) => setGripColor(e.target.value)}
+                fullWidth
+                placeholder="z. B. Blau"
+              />
+            </Grid>
 
-          {/* Bestätigungsbutton */}
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="px-6 py-3 rounded-lg bg-green-600 text-white hover:bg-green-700"
-            >
-              Route festlegen
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
+            {/* Schwierigkeit laut Halle */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Schwierigkeit (laut Halle)</InputLabel>
+                <Select
+                  label="Schwierigkeit (laut Halle)"
+                  value={difficulty}
+                  onChange={(e) => setDifficulty(e.target.value)}
+                >
+                  <MenuItem value={"leicht"}>Leicht</MenuItem>
+                  <MenuItem value={"mittel"}>Mittel</MenuItem>
