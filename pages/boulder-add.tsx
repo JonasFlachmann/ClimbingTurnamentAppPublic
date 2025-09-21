@@ -50,7 +50,7 @@ export default function BoulderAddPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
-  // Fotos (Preview via Blob-URL)
+  // Fotos
   const [photoUrls, setPhotoUrls] = useState<(string | null)[]>(
     Array.from({ length: MAX_PHOTOS }, () => null)
   );
@@ -91,7 +91,6 @@ export default function BoulderAddPage() {
   // Submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: später API-Aufruf
     router.push("/tournament-fill");
   };
 
@@ -102,7 +101,6 @@ export default function BoulderAddPage() {
         p: 2,
         display: "flex",
         justifyContent: "center",
-        pb: 8, // 👈 Platz nach unten, damit nichts im Footer verschwindet
       }}
     >
       <Paper elevation={3} sx={{ width: "100%", maxWidth: 800, p: 2, borderRadius: 2 }}>
@@ -140,17 +138,16 @@ export default function BoulderAddPage() {
                   <SwiperSlide key={i}>
                     <Box
                       sx={{
-                        position: "relative",
                         width: "100%",
-                        height: "100%",
+                        height: 240, // 👈 feste Höhe für Platzhalter
                         borderRadius: 2,
-                        overflow: "hidden",
                         bgcolor: photoUrls[i]
                           ? "transparent"
                           : PLACEHOLDER_COLORS[i % PLACEHOLDER_COLORS.length],
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        position: "relative",
                       }}
                     >
                       {photoUrls[i] ? (
@@ -313,6 +310,9 @@ export default function BoulderAddPage() {
               Route festlegen
             </Button>
           </Box>
+
+          {/* 👇 Spacer gegen Footer-Überlappung */}
+          <Box sx={{ height: 80 }} />
         </Box>
       </Paper>
     </Box>
