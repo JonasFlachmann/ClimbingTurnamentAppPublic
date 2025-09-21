@@ -1,148 +1,301 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import {
   Box,
-  Container,
   Paper,
   Typography,
-  Grid,
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Stack,
-  Chip,
   Button,
+  Grid,
+  ToggleButtonGroup,
+  ToggleButton,
   Divider,
 } from "@mui/material";
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import CheckIcon from "@mui/icons-material/Check";
 
 // Swiper nur Client-seitig laden
-const Swiper = dynamic(() => import("swiper/react").then((m) => m.Swiper), {
-  ssr: false,
-});
-const SwiperSlide = dynamic(
-  () => import("swiper/react").then((m) => m.SwiperSlide),
-  { ssr: false }
-);
-
-// Wichtig: Bei Swiper 9 den Pagination-Import aus "swiper" selbst
-import { Pagination } from "swiper";
+const Swiper = dynamic(() => import("swiper/react").then(m => m.Swiper), { ssr: false });
+const SwiperSlide = dynamic(() => import("swiper/react").then(m => m.SwiperSlide), { ssr: false });
+// CSS für Swiper
 import "swiper/css";
-import "swiper/css/pagination";
+import { Pagination } from "swiper"; // stabiler Import für unsere Version
+
+// --- Tag-Gruppen ---
+const TAG_GROUPS: string[][] = [
+  ["Überhang", "Vertikale", "Platte", "Verschneidung"],
+  ["Crimps", "Leisten", "Sloper", "Jugs", "Pocketholes"],
+  ["Kraft", "Balance", "Dynamisch", "Technisch"],
+];
+
+const MAX_PHOTOS = 5;
 
 export default function BoulderAddPage() {
   const router = useRouter();
 
-  // Form-State
+  // Form-States
   const [routeName, setRouteName] = useState("");
   const [gripColor, setGripColor] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [hallLabel, setHallLabel] = useState("");
   const [location, setLocation] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
-  // Tags (Mehrfachauswahl)
-  const [tags, setTags] = useState<string[]>([]);
-  const toggleTag = (tag: string) => {
-    setTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+  // Foto-States (Blob-URLs für Preview)
+  const [photoUrls, setPhotoUrls] = useState<(string | null)[]>(
+    Array.from({ length: MAX_PHOTOS }, () => null)
+  );
+  // Für Kamerazugriff/Upload verwenden wir ein verstecktes Input pro Slide
+  const fileInputsRef = useRef<Array<HTMLInputElement | null>>([]);
+
+  const allTags = useMemo(() => TAG_GROUPS.flat(), []);
+
+  // Merge-Handler für einzelne Gruppen (Mehrfachauswahl, kleine Buttons)
+  const handleToggleGroup = (groupIndex: number) => (_: React.MouseEvent<HTMLElement>, newValues: string[]) => {
+    const current = new Set(tags);
+    const groupTags = new Set(TAG_GROUPS[groupIndex]);
+
+    // Entferne alle Tags dieser Gruppe aus der aktuellen Auswahl
+    for (const gt of groupTags) current.delete(gt);
+    // Füge die in dieser Gruppe neu ausgewählten hinzu
+    for (const nv of newValues) current.add(nv);
+
+    setTags(Array.from(current));
   };
 
-  const tagGroups: string[][] = [
-    ["Überhang", "Vertikale", "Platte", "Verschneidung"],
-    ["Crimps", "Leisten", "Sloper", "Jugs", "Pocketholes"],
-    ["Kraft", "Balance", "Dynamisch", "Technisch"],
-  ];
+  const selectedByGroup = (groupIndex: number) =>
+    tags.filter((t) => TAG_GROUPS[groupIndex].includes(t));
+
+  // Kamera-/Foto-Upload
+  const handlePickPhoto = (idx: number) => {
+    fileInputsRef.current[idx]?.click();
+  };
+
+  const handleFileChange = (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setPhotoUrls((prev) => {
+      const next = [...prev];
+      next[idx] = url;
+      return next;
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Später API-Call einbauen
+    // TODO: API-Call einbauen (z. B. Speicherung in Supabase), Form-Validation etc.
     router.push("/tournament-fill");
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 3 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+    <Box component="main" sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+      <Paper elevation={3} sx={{ width: "100%", maxWidth: 800, p: 2, borderRadius: 2 }}>
         <Typography variant="h5" fontWeight={700} gutterBottom>
           Neue Route hinzufügen
         </Typography>
 
-        <Box component="form" onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <Grid container spacing={2}>
             {/* Routename */}
             <Grid item xs={12}>
               <TextField
+                fullWidth
                 label="Routenname"
                 value={routeName}
                 onChange={(e) => setRouteName(e.target.value)}
-                fullWidth
-                required
               />
             </Grid>
 
-            {/* Fotos – Swiper mit Platzhaltern */}
+            {/* Fotos mit Swipe (graue Platzhalter + Kamera-Button) */}
             <Grid item xs={12}>
-              <Typography variant="subtitle1" gutterBottom>
-                Fotos
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                Fotos (durchblättern)
               </Typography>
-              <Paper
-                variant="outlined"
-                sx={{ borderRadius: 2, overflow: "hidden" }}
-              >
-                <Swiper
-                  modules={[Pagination]}
-                  pagination={{ clickable: true }}
-                  spaceBetween={8}
-                  slidesPerView={1}
-                  style={{ width: "100%", height: 220 }}
-                >
-                  {[1, 2, 3].map((i) => (
-                    <SwiperSlide key={i}>
-                      <Box
+
+              <Swiper modules={[Pagination]} pagination={{ clickable: true }} slidesPerView={1} spaceBetween={12}>
+                {Array.from({ length: MAX_PHOTOS }).map((_, i) => (
+                  <SwiperSlide key={i}>
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: 240,
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        bgcolor: photoUrls[i] ? "transparent" : "grey.300",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {photoUrls[i] ? (
+                        // Preview
+                        <img
+                          src={photoUrls[i] as string}
+                          alt={`Foto ${i + 1}`}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">
+                          + Foto {i + 1}
+                        </Typography>
+                      )}
+
+                      {/* Kamera-/Upload-Button */}
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<PhotoCameraIcon />}
+                        onClick={() => handlePickPhoto(i)}
                         sx={{
-                          width: "100%",
-                          height: 220,
-                          bgcolor: "grey.300",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "grey.700",
-                          fontWeight: 600,
-                          fontSize: 16,
+                          position: "absolute",
+                          right: 12,
+                          bottom: 12,
+                          borderRadius: 2,
+                          textTransform: "none",
                         }}
                       >
-                        + Foto {i}
-                      </Box>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              </Paper>
+                        Kamera
+                      </Button>
+
+                      {/* Hidden File Input (Kamera) */}
+                      <input
+                        ref={(el) => (fileInputsRef.current[i] = el)}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleFileChange(i)}
+                        style={{ display: "none" }}
+                      />
+                    </Box>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </Grid>
 
             {/* Grifffarbe */}
             <Grid item xs={12} sm={6}>
               <TextField
+                fullWidth
                 label="Grifffarbe"
                 value={gripColor}
                 onChange={(e) => setGripColor(e.target.value)}
-                fullWidth
                 placeholder="z. B. Blau"
               />
             </Grid>
 
             {/* Schwierigkeit laut Halle */}
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Schwierigkeit (laut Halle)</InputLabel>
-                <Select
-                  label="Schwierigkeit (laut Halle)"
-                  value={difficulty}
-                  onChange={(e) => setDifficulty(e.target.value)}
-                >
-                  <MenuItem value={"leicht"}>Leicht</MenuItem>
-                  <MenuItem value={"mittel"}>Mittel</MenuItem>
+              <TextField
+                fullWidth
+                label="Schwierigkeit (laut Halle)"
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value)}
+                placeholder="z. B. 6a"
+              />
+            </Grid>
+
+            {/* Bezeichnung laut Halle */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Bezeichnung (laut Halle)"
+                value={hallLabel}
+                onChange={(e) => setHallLabel(e.target.value)}
+                placeholder="z. B. #42"
+              />
+            </Grid>
+
+            {/* Ort/Wand */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Ort / Wand"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="z. B. Sektor A"
+              />
+            </Grid>
+
+            {/* Tags (kleine Buttons, Mehrfachauswahl) */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                Tags
+              </Typography>
+
+              <Grid container spacing={1}>
+                {TAG_GROUPS.map((group, gi) => (
+                  <Grid item xs={12} key={`group-${gi}`}>
+                    <ToggleButtonGroup
+                      color="primary"
+                      value={selectedByGroup(gi)}
+                      onChange={handleToggleGroup(gi)}
+                      exclusive={false}
+                      size="small"
+                      sx={{
+                        flexWrap: "wrap",
+                        gap: 1,
+                        "& .MuiToggleButton-root": {
+                          textTransform: "none",
+                          fontSize: 12,
+                          padding: "4px 8px",
+                          borderRadius: 1.25,
+                        },
+                      }}
+                    >
+                      {group.map((tag) => (
+                        <ToggleButton key={tag} value={tag} aria-label={tag}>
+                          {tags.includes(tag) && <CheckIcon fontSize="inherit" sx={{ mr: 0.5 }} />}
+                          {tag}
+                        </ToggleButton>
+                      ))}
+                    </ToggleButtonGroup>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+
+            {/* Beschreibung */}
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Beschreibung"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Kurze Beschreibung der Route"
+                multiline
+                minRows={3}
+              />
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 2 }} />
+
+          {/* Bestätigungsbutton */}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+            <Button
+              variant="outlined"
+              onClick={() => router.back()}
+              sx={{ textTransform: "none" }}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
+              Route festlegen
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
+  );
+}
