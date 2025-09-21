@@ -19,12 +19,14 @@ import CheckIcon from "@mui/icons-material/Check";
 
 // Swiper nur Client-seitig laden
 const Swiper = dynamic(() => import("swiper/react").then(m => m.Swiper), { ssr: false });
-const SwiperSlide = dynamic(() => import("swiper/react").then(m => m.SwiperSlide), { ssr: false });
-// CSS für Swiper
-import "swiper/css";
-import { Pagination } from "swiper"; // stabiler Import für unsere Version
+const SwiperSlide = dynamic(
+  () => import("swiper/react").then(m => m.SwiperSlide),
+  { ssr: false }
+);
 
-// --- Tag-Gruppen ---
+import "swiper/css";
+import { Pagination } from "swiper";
+
 const TAG_GROUPS: string[][] = [
   ["Überhang", "Vertikale", "Platte", "Verschneidung"],
   ["Crimps", "Leisten", "Sloper", "Jugs", "Pocketholes"],
@@ -36,7 +38,6 @@ const MAX_PHOTOS = 5;
 export default function BoulderAddPage() {
   const router = useRouter();
 
-  // Form-States
   const [routeName, setRouteName] = useState("");
   const [gripColor, setGripColor] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -45,24 +46,26 @@ export default function BoulderAddPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
-  // Foto-States (Blob-URLs für Preview)
   const [photoUrls, setPhotoUrls] = useState<(string | null)[]>(
     Array.from({ length: MAX_PHOTOS }, () => null)
   );
-  // Für Kamerazugriff/Upload verwenden wir ein verstecktes Input pro Slide
   const fileInputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   const allTags = useMemo(() => TAG_GROUPS.flat(), []);
 
-  // Merge-Handler für einzelne Gruppen (Mehrfachauswahl, kleine Buttons)
-  const handleToggleGroup = (groupIndex: number) => (_: React.MouseEvent<HTMLElement>, newValues: string[]) => {
+  // Fix: kein "for...of" mehr, sondern Array.from().forEach()
+  const handleToggleGroup = (groupIndex: number) => (
+    _: React.MouseEvent<HTMLElement>,
+    newValues: string[]
+  ) => {
     const current = new Set(tags);
     const groupTags = new Set(TAG_GROUPS[groupIndex]);
 
-    // Entferne alle Tags dieser Gruppe aus der aktuellen Auswahl
-    for (const gt of groupTags) current.delete(gt);
-    // Füge die in dieser Gruppe neu ausgewählten hinzu
-    for (const nv of newValues) current.add(nv);
+    // Entferne alle Tags dieser Gruppe aus der Auswahl
+    Array.from(groupTags).forEach((gt) => current.delete(gt));
+
+    // Füge neu ausgewählte hinzu
+    newValues.forEach((nv) => current.add(nv));
 
     setTags(Array.from(current));
   };
@@ -70,12 +73,13 @@ export default function BoulderAddPage() {
   const selectedByGroup = (groupIndex: number) =>
     tags.filter((t) => TAG_GROUPS[groupIndex].includes(t));
 
-  // Kamera-/Foto-Upload
   const handlePickPhoto = (idx: number) => {
     fileInputsRef.current[idx]?.click();
   };
 
-  const handleFileChange = (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (idx: number) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
@@ -88,7 +92,7 @@ export default function BoulderAddPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API-Call einbauen (z. B. Speicherung in Supabase), Form-Validation etc.
+    // 🚧 TODO: API Call
     router.push("/tournament-fill");
   };
 
@@ -111,13 +115,17 @@ export default function BoulderAddPage() {
               />
             </Grid>
 
-            {/* Fotos mit Swipe (graue Platzhalter + Kamera-Button) */}
+            {/* Fotos */}
             <Grid item xs={12}>
               <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 Fotos (durchblättern)
               </Typography>
-
-              <Swiper modules={[Pagination]} pagination={{ clickable: true }} slidesPerView={1} spaceBetween={12}>
+              <Swiper
+                modules={[Pagination]}
+                pagination={{ clickable: true }}
+                slidesPerView={1}
+                spaceBetween={12}
+              >
                 {Array.from({ length: MAX_PHOTOS }).map((_, i) => (
                   <SwiperSlide key={i}>
                     <Box
@@ -134,7 +142,6 @@ export default function BoulderAddPage() {
                       }}
                     >
                       {photoUrls[i] ? (
-                        // Preview
                         <img
                           src={photoUrls[i] as string}
                           alt={`Foto ${i + 1}`}
@@ -146,7 +153,6 @@ export default function BoulderAddPage() {
                         </Typography>
                       )}
 
-                      {/* Kamera-/Upload-Button */}
                       <Button
                         variant="contained"
                         color="primary"
@@ -162,8 +168,6 @@ export default function BoulderAddPage() {
                       >
                         Kamera
                       </Button>
-
-                      {/* Hidden File Input (Kamera) */}
                       <input
                         ref={(el) => (fileInputsRef.current[i] = el)}
                         type="file"
@@ -189,7 +193,7 @@ export default function BoulderAddPage() {
               />
             </Grid>
 
-            {/* Schwierigkeit laut Halle */}
+            {/* Schwierigkeit */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -200,7 +204,7 @@ export default function BoulderAddPage() {
               />
             </Grid>
 
-            {/* Bezeichnung laut Halle */}
+            {/* Bezeichnung */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -222,12 +226,11 @@ export default function BoulderAddPage() {
               />
             </Grid>
 
-            {/* Tags (kleine Buttons, Mehrfachauswahl) */}
+            {/* Tags */}
             <Grid item xs={12}>
               <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 Tags
               </Typography>
-
               <Grid container spacing={1}>
                 {TAG_GROUPS.map((group, gi) => (
                   <Grid item xs={12} key={`group-${gi}`}>
