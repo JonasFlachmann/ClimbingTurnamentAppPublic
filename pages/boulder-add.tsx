@@ -36,7 +36,8 @@ const TAG_GROUPS: string[][] = [
 ];
 
 const MAX_PHOTOS = 4;
-const PLACEHOLDER_COLORS = ["#E5E7EB", "#D1FAE5", "#DBEAFE", "#FCE7F3"]; // Grau, Grün, Blau, Rosa
+// deutlicher sichtbare Platzhalterfarben
+const PLACEHOLDER_COLORS = ["#CBD5E1", "#86E3A1", "#93C5FD", "#F9A8D4"]; // slate-300, green, blue, pink
 
 export default function BoulderAddPage() {
   const router = useRouter();
@@ -50,7 +51,7 @@ export default function BoulderAddPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
-  // Fotos
+  // Fotos (Preview via Blob-URL)
   const [photoUrls, setPhotoUrls] = useState<(string | null)[]>(
     Array.from({ length: MAX_PHOTOS }, () => null)
   );
@@ -58,7 +59,7 @@ export default function BoulderAddPage() {
 
   const allTags = useMemo(() => TAG_GROUPS.flat(), []);
 
-  // Tag-Auswahl
+  // Tag-Auswahl (Mehrfach)
   const handleToggleGroup =
     (groupIndex: number) =>
     (_: React.MouseEvent<HTMLElement>, newValues: string[]) => {
@@ -101,6 +102,8 @@ export default function BoulderAddPage() {
         p: 2,
         display: "flex",
         justifyContent: "center",
+        // zusätzlicher Platz nach unten (Footer + Safe Area)
+        pb: "calc(env(safe-area-inset-bottom, 0px) + 96px)",
       }}
     >
       <Paper elevation={3} sx={{ width: "100%", maxWidth: 800, p: 2, borderRadius: 2 }}>
@@ -132,14 +135,14 @@ export default function BoulderAddPage() {
                 navigation
                 slidesPerView={1}
                 spaceBetween={12}
-                style={{ width: "100%", height: 260 }}
+                style={{ width: "100%", height: 280 }}
               >
                 {Array.from({ length: MAX_PHOTOS }).map((_, i) => (
                   <SwiperSlide key={i}>
                     <Box
                       sx={{
                         width: "100%",
-                        height: 240, // 👈 feste Höhe für Platzhalter
+                        height: 260,                // feste Höhe -> sichtbar
                         borderRadius: 2,
                         bgcolor: photoUrls[i]
                           ? "transparent"
@@ -148,6 +151,7 @@ export default function BoulderAddPage() {
                         alignItems: "center",
                         justifyContent: "center",
                         position: "relative",
+                        overflow: "hidden",
                       }}
                     >
                       {photoUrls[i] ? (
@@ -157,7 +161,7 @@ export default function BoulderAddPage() {
                           style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />
                       ) : (
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.primary" sx={{ fontWeight: 600 }}>
                           Platzhalter {i + 1}
                         </Typography>
                       )}
@@ -311,8 +315,8 @@ export default function BoulderAddPage() {
             </Button>
           </Box>
 
-          {/* 👇 Spacer gegen Footer-Überlappung */}
-          <Box sx={{ height: 80 }} />
+          {/* zusätzlicher Spacer gegen Footer-Überlappung */}
+          <Box sx={{ height: 96 }} />
         </Box>
       </Paper>
     </Box>
