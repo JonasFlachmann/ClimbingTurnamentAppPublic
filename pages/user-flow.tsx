@@ -2,15 +2,14 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
+import "reactflow/dist/style.css";
 import { pageNodes, pageEdges } from "../lib/pageMap";
 
-// ReactFlow nur clientseitig laden
-const ReactFlow = dynamic(() => import("reactflow").then(mod => mod.default), {
-  ssr: false,
-});
-const Background = dynamic(() => import("reactflow").then(mod => mod.Background), { ssr: false });
-const Controls = dynamic(() => import("reactflow").then(mod => mod.Controls), { ssr: false });
-const MiniMap = dynamic(() => import("reactflow").then(mod => mod.MiniMap), { ssr: false });
+// ReactFlow nur clientseitig laden (SSR aus)
+const ReactFlow = dynamic(() => import("reactflow").then(m => m.default), { ssr: false });
+const Background = dynamic(() => import("reactflow").then(m => m.Background), { ssr: false });
+const Controls = dynamic(() => import("reactflow").then(m => m.Controls), { ssr: false });
+const MiniMap = dynamic(() => import("reactflow").then(m => m.MiniMap), { ssr: false });
 
 export default function UserFlowPage() {
   const nodes = pageNodes.map((n, i) => ({
@@ -25,6 +24,7 @@ export default function UserFlowPage() {
       fontWeight: "bold",
       textAlign: "center" as const,
       width: 220,
+      whiteSpace: "pre-line",
     },
   }));
 
@@ -48,5 +48,6 @@ export default function UserFlowPage() {
   );
 }
 
+// Kein globales Layout (Header/Footer) auf dieser Seite
 ;(UserFlowPage as any).noLayout = true;
 (UserFlowPage as any).title = "User Flow";
