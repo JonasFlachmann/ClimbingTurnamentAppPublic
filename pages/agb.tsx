@@ -56,7 +56,8 @@ export default function AgbPage() {
         </Typography>
 
         <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
-          <Link href="/registration-process" passHref>
+          {/* 👉 Zurück zu Schritt 3 (Teilnahmebedingungen) */}
+          <Link href="/registration-process?step=2" passHref>
             <Button variant="outlined">Zurück</Button>
           </Link>
           <Button variant="contained" color="primary" onClick={downloadPdf}>
