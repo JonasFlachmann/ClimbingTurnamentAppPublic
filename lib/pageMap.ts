@@ -1,53 +1,27 @@
-// Übersicht über alle Pages im Projekt ALLEZ-CLIMBING
-// -> "allPages": Alle bekannten Seiten (basierend auf deinem Repo).
-// -> "flow": Verknüpfungen, die den User-Flow beschreiben.
+// lib/pageMap.ts
+// Übersicht aller Pages in der App für das User-Flow-Diagramm
 
-export const allPages = [
-  "index",
-  "home",
-  "map",
-  "ranking",
-  "register",
-  "registration-process",
-  "results",
-  "tournament-create",
-  "tournament-define",
-  "tournament-fill",
-  "tournament-overview",
-  "tournament",
-  "boulder-add",
-  "user-flow"
-] as const;
+export const pageNodes = [
+  { id: "index", label: "Startseite", path: "/" },
+  { id: "login", label: "Login", path: "/login" },
+  { id: "registration-process", label: "Registrierung (mehrstufig)", path: "/registration-process" },
+  { id: "agb", label: "AGB", path: "/agb" },
+  { id: "boulder-add", label: "Boulder hinzufügen", path: "/boulder-add" },
+  { id: "tournament-fill", label: "Turnier ausfüllen", path: "/tournament-fill" },
+  { id: "user-flow", label: "User-Flow Übersicht", path: "/user-flow" },
+];
 
-export type PageId = typeof allPages[number];
+export const pageEdges = [
+  // Startseite → Login & Registrierung
+  { source: "index", target: "login" },
+  { source: "index", target: "registration-process" },
 
-export type FlowEdge = {
-  source: PageId;
-  target: PageId;
-  label?: string;
-};
+  // Registrierung → AGB
+  { source: "registration-process", target: "agb" },
 
-// ✅ Definierter Flow – alle nicht verknüpften Pages erscheinen trotzdem im Diagramm (rot markiert).
-export const flow: FlowEdge[] = [
-  // Einstieg
-  { source: "index", target: "register", label: "Start → Registrieren" },
-  { source: "register", target: "registration-process", label: "Weiter" },
-  { source: "registration-process", target: "home", label: "Fertig → Home" },
+  // Boulder → Turnier
+  { source: "boulder-add", target: "tournament-fill" },
 
-  // Hauptnavigation ab Home
-  { source: "home", target: "tournament-overview", label: "Zu Turnieren" },
-  { source: "home", target: "map", label: "Zu Karte" },
-  { source: "home", target: "ranking", label: "Zu Ranking" },
-  { source: "home", target: "results", label: "Zu Ergebnisse" },
-  { source: "home", target: "tournament-create", label: "Turnier anlegen" },
-  { source: "home", target: "boulder-add", label: "Boulder hinzufügen" },
-  { source: "home", target: "user-flow", label: "Flow-Übersicht" },
-
-  // Turnier anlegen – Mehrstufig
-  { source: "tournament-create", target: "tournament-define", label: "Schritt 1 → 2" },
-  { source: "tournament-define", target: "tournament-fill", label: "Schritt 2 → 3" },
-  { source: "tournament-fill", target: "tournament-overview", label: "Zur Übersicht" },
-
-  // Übersicht → Detail
-  { source: "tournament-overview", target: "tournament", label: "Details" }
+  // Übersicht
+  { source: "index", target: "user-flow" },
 ];
