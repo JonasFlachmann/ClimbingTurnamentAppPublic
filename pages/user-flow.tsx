@@ -131,20 +131,22 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 
     function checkNode(node: ts.Node) {
       // JSX <Link href="...">
-      if (
-        ts.isJsxSelfClosingElement(node) ||
-        ts.isJsxOpeningElement(node)
-      ) {
+      if (ts.isJsxSelfClosingElement(node) || ts.isJsxOpeningElement(node)) {
         const tagName = node.tagName.getText(sourceFile);
         if (tagName === "Link") {
           const hrefAttr = node.attributes.properties.find(
-            (p) =>
-              ts.isJsxAttribute(p) && p.name.text === "href" && p.initializer
+            (p) => ts.isJsxAttribute(p) && p.name.text === "href"
           ) as ts.JsxAttribute | undefined;
 
-          if (hrefAttr && ts.isStringLiteral(hrefAttr.initializer)) {
+          if (
+            hrefAttr &&
+            hrefAttr.initializer &&
+            ts.isStringLiteral(hrefAttr.initializer)
+          ) {
             const target = hrefAttr.initializer.text;
-            if (target.startsWith("/")) edgesOut.push({ from: route, to: target });
+            if (target.startsWith("/")) {
+              edgesOut.push({ from: route, to: target });
+            }
           }
         }
       }
@@ -159,7 +161,9 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
           const arg = node.arguments[0];
           if (ts.isStringLiteral(arg)) {
             const target = arg.text;
-            if (target.startsWith("/")) edgesOut.push({ from: route, to: target });
+            if (target.startsWith("/")) {
+              edgesOut.push({ from: route, to: target });
+            }
           }
         }
       }
