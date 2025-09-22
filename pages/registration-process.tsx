@@ -12,6 +12,8 @@ import {
   Stepper,
   Step,
   StepLabel,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -19,6 +21,9 @@ import { useRouter } from "next/router";
 const steps = ["Persönliche Daten", "E-Mail bestätigen", "Teilnahmebedingungen"];
 
 function RegistrationStepper({ activeStep }: { activeStep: number }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <Stepper
       activeStep={activeStep}
@@ -34,9 +39,9 @@ function RegistrationStepper({ activeStep }: { activeStep: number }) {
         },
       }}
     >
-      {steps.map((label) => (
+      {steps.map((label, index) => (
         <Step key={label}>
-          <StepLabel>{label}</StepLabel>
+          <StepLabel>{isMobile ? `${index + 1}` : label}</StepLabel>
         </Step>
       ))}
     </Stepper>
@@ -47,33 +52,53 @@ export default function RegistrationProcess() {
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
 
-  // Step 1
+  // Step 1: Daten
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordRepeat, setPasswordRepeat] = useState("");
 
-  // Step 2
+  // Step 2: Code
   const [code, setCode] = useState("");
 
-  // Step 3
+  // Step 3: Teilnahmebedingungen
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const next = () => setActiveStep((s) => Math.min(s + 1, steps.length - 1));
   const back = () => setActiveStep((s) => Math.max(s - 1, 0));
 
   const canGoNext = () => {
-    if (activeStep === 0) return firstName && lastName && email;
+    if (activeStep === 0) {
+      return (
+        firstName.trim() &&
+        lastName.trim() &&
+        email.trim() &&
+        username.trim() &&
+        password.trim() &&
+        passwordRepeat.trim() &&
+        password === passwordRepeat
+      );
+    }
     if (activeStep === 1) return code.trim().length >= 4;
     if (activeStep === 2) return acceptedTerms;
     return true;
   };
 
   const sendVerificationCode = () => {
-    alert(`Bestätigungscode an ${email} gesendet.`);
+    // TODO: Integration Mailversand
+    console.log(`Bestätigungscode an ${email} gesendet.`);
   };
 
   const finish = () => {
-    alert("Registrierung abgeschlossen. Willkommen bei ALLEZ-CLIMBING!");
+    // TODO: Registrierung finalisieren
+    console.log("Registrierung abgeschlossen:", {
+      firstName,
+      lastName,
+      email,
+      username,
+    });
     router.push("/home");
   };
 
@@ -96,9 +121,9 @@ export default function RegistrationProcess() {
 
         <RegistrationStepper activeStep={activeStep} />
 
+        {/* Step 1 */}
         {activeStep === 0 && (
           <>
-            <Typography sx={{ mb: 2 }}>Bitte gib deine persönlichen Daten ein.</Typography>
             <TextField
               fullWidth
               label="Vorname"
@@ -116,22 +141,42 @@ export default function RegistrationProcess() {
             <TextField
               fullWidth
               type="email"
-              label="E-Mail"
+              label="E-Mail-Adresse"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              sx={{ mb: 1.5 }}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Benutzername"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              type="password"
+              label="Passwort"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              type="password"
+              label="Passwort wiederholen"
+              value={passwordRepeat}
+              onChange={(e) => setPasswordRepeat(e.target.value)}
+              sx={{ mb: 2 }}
             />
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Button
                 onClick={() => {
-                  if (!email.trim()) {
-                    alert("Bitte zuerst eine E-Mail-Adresse eingeben.");
-                    return;
-                  }
                   sendVerificationCode();
                   next();
                 }}
                 variant="contained"
+                disabled={!canGoNext()}
               >
                 Weiter
               </Button>
@@ -139,6 +184,7 @@ export default function RegistrationProcess() {
           </>
         )}
 
+        {/* Step 2 */}
         {activeStep === 1 && (
           <>
             <Typography sx={{ mb: 2 }}>
@@ -168,6 +214,7 @@ export default function RegistrationProcess() {
           </>
         )}
 
+        {/* Step 3 */}
         {activeStep === 2 && (
           <>
             <Typography sx={{ mb: 2 }}>
@@ -204,6 +251,5 @@ export default function RegistrationProcess() {
   );
 }
 
-// Flag, damit kein Header/Footer angezeigt wird
 ;(RegistrationProcess as any).noLayout = true;
 (RegistrationProcess as any).title = "Registrierung";
