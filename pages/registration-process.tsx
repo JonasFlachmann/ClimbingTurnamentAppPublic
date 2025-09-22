@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Paper,
@@ -50,9 +50,19 @@ function RegistrationStepper({ activeStep }: { activeStep: number }) {
 
 export default function RegistrationProcess() {
   const router = useRouter();
-  const [activeStep, setActiveStep] = useState(0);
 
-  // Step 1: Daten
+  // 👉 Step aus URL übernehmen (z. B. /registration-process?step=2)
+  const [activeStep, setActiveStep] = useState(0);
+  useEffect(() => {
+    if (router.query.step) {
+      const stepIndex = parseInt(router.query.step as string, 10);
+      if (!isNaN(stepIndex) && stepIndex >= 0 && stepIndex <= 2) {
+        setActiveStep(stepIndex);
+      }
+    }
+  }, [router.query.step]);
+
+  // Step 1
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -60,10 +70,10 @@ export default function RegistrationProcess() {
   const [password, setPassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
 
-  // Step 2: Code
+  // Step 2
   const [code, setCode] = useState("");
 
-  // Step 3: Teilnahmebedingungen
+  // Step 3
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const next = () => setActiveStep((s) => Math.min(s + 1, steps.length - 1));
@@ -87,12 +97,10 @@ export default function RegistrationProcess() {
   };
 
   const sendVerificationCode = () => {
-    // TODO: Integration Mailversand
     console.log(`Bestätigungscode an ${email} gesendet.`);
   };
 
   const finish = () => {
-    // TODO: Registrierung finalisieren
     console.log("Registrierung abgeschlossen:", {
       firstName,
       lastName,
