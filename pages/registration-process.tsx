@@ -18,11 +18,14 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-const steps = ["Persönliche Daten", "E-Mail bestätigen", "Teilnahmebedingungen"];
+const stepsDesktop = ["Persönliche Daten", "E-Mail bestätigen", "Teilnahmebedingungen"];
+const stepsMobile = ["Persönliche\nDaten", "Bestätigung\nE-Mail", "AGB"];
 
 function RegistrationStepper({ activeStep }: { activeStep: number }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const steps = isMobile ? stepsMobile : stepsDesktop;
 
   return (
     <Stepper
@@ -31,7 +34,11 @@ function RegistrationStepper({ activeStep }: { activeStep: number }) {
       sx={{
         mb: 3,
         "& .MuiStepConnector-line": { borderTopWidth: 2 },
-        "& .MuiStepLabel-label": { typography: "subtitle2", whiteSpace: "nowrap" },
+        "& .MuiStepLabel-label": {
+          typography: "subtitle2",
+          whiteSpace: "pre-line", // 👉 Zeilenumbruch für mobile Labels
+          textAlign: "center",
+        },
         "& .MuiStepIcon-root": {
           color: "rgba(0,0,0,0.2)",
           "&.Mui-active": { color: "success.main" },
@@ -40,8 +47,8 @@ function RegistrationStepper({ activeStep }: { activeStep: number }) {
       }}
     >
       {steps.map((label, index) => (
-        <Step key={label}>
-          <StepLabel>{isMobile ? `${index + 1}` : label}</StepLabel>
+        <Step key={index}>
+          <StepLabel>{label}</StepLabel>
         </Step>
       ))}
     </Stepper>
@@ -76,7 +83,7 @@ export default function RegistrationProcess() {
   // Step 3
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  const next = () => setActiveStep((s) => Math.min(s + 1, steps.length - 1));
+  const next = () => setActiveStep((s) => Math.min(s + 1, stepsDesktop.length - 1));
   const back = () => setActiveStep((s) => Math.max(s - 1, 0));
 
   const canGoNext = () => {
@@ -101,13 +108,8 @@ export default function RegistrationProcess() {
   };
 
   const finish = () => {
-    console.log("Registrierung abgeschlossen:", {
-      firstName,
-      lastName,
-      email,
-      username,
-    });
-    router.push("/home");
+    alert("Registrierung erfolgreich abgeschlossen! Bitte melde dich nun an.");
+    router.push("/"); // 👉 Weiterleitung zur Login/Startseite
   };
 
   return (
