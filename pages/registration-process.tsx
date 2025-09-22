@@ -18,31 +18,63 @@ import { useRouter } from "next/router";
 
 const steps = ["Persönliche Daten", "E-Mail bestätigen", "Teilnahmebedingungen"];
 
-export default function RegistrationProcess() {
-  const [activeStep, setActiveStep] = useState(0);
-  const router = useRouter();
+function RegistrationStepper({ activeStep }: { activeStep: number }) {
+  return (
+    <Stepper
+      activeStep={activeStep}
+      alternativeLabel
+      sx={{
+        mb: 3,
+        "& .MuiStepConnector-line": { borderTopWidth: 2 },
+        "& .MuiStepLabel-label": { typography: "subtitle2", whiteSpace: "nowrap" },
+        "& .MuiStepIcon-root": {
+          color: "rgba(0,0,0,0.2)",
+          "&.Mui-active": { color: "success.main" },
+          "&.Mui-completed": { color: "success.main" },
+        },
+      }}
+    >
+      {steps.map((label) => (
+        <Step key={label}>
+          <StepLabel>{label}</StepLabel>
+        </Step>
+      ))}
+    </Stepper>
+  );
+}
 
-  // Form states
-  const [name, setName] = useState("");
+export default function RegistrationProcess() {
+  const router = useRouter();
+  const [activeStep, setActiveStep] = useState(0);
+
+  // Step 1
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+
+  // Step 2
+  const [code, setCode] = useState("");
+
+  // Step 3
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  const handleNext = () => {
-    if (activeStep === steps.length - 1) {
-      if (!acceptedTerms) {
-        alert("Bitte akzeptiere die Teilnahmebedingungen.");
-        return;
-      }
-      // TODO: Registrierung finalisieren (Supabase oder API)
-      alert("Registrierung erfolgreich!");
-      router.push("/");
-    } else {
-      setActiveStep((prev) => prev + 1);
-    }
+  const next = () => setActiveStep((s) => Math.min(s + 1, steps.length - 1));
+  const back = () => setActiveStep((s) => Math.max(s - 1, 0));
+
+  const canGoNext = () => {
+    if (activeStep === 0) return firstName && lastName && email;
+    if (activeStep === 1) return code.trim().length >= 4;
+    if (activeStep === 2) return acceptedTerms;
+    return true;
   };
 
-  const handleBack = () => {
-    setActiveStep((prev) => prev - 1);
+  const sendVerificationCode = () => {
+    alert(`Bestätigungscode an ${email} gesendet.`);
+  };
+
+  const finish = () => {
+    alert("Registrierung abgeschlossen. Willkommen bei ALLEZ-CLIMBING!");
+    router.push("/home");
   };
 
   return (
@@ -57,92 +89,121 @@ export default function RegistrationProcess() {
         pb: "calc(env(safe-area-inset-bottom, 0px) + 96px)",
       }}
     >
-      <Paper
-        elevation={3}
-        sx={{ width: "100%", maxWidth: 600, p: 3, borderRadius: 2 }}
-      >
-        <Typography variant="h5" fontWeight={700} gutterBottom>
+      <Paper elevation={3} sx={{ width: "100%", maxWidth: 720, p: 3, borderRadius: 2 }}>
+        <Typography variant="h5" fontWeight={800} gutterBottom>
           Registrierung
         </Typography>
 
-        {/* Stepper */}
-        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 3 }}>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+        <RegistrationStepper activeStep={activeStep} />
 
-        {/* Inhalt pro Schritt */}
         {activeStep === 0 && (
           <>
+            <Typography sx={{ mb: 2 }}>Bitte gib deine persönlichen Daten ein.</Typography>
             <TextField
               fullWidth
-              label="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              label="Vorname"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               sx={{ mb: 2 }}
             />
             <TextField
               fullWidth
+              label="Nachname"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              type="email"
               label="E-Mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={{ mb: 1.5 }}
             />
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                onClick={() => {
+                  if (!email.trim()) {
+                    alert("Bitte zuerst eine E-Mail-Adresse eingeben.");
+                    return;
+                  }
+                  sendVerificationCode();
+                  next();
+                }}
+                variant="contained"
+              >
+                Weiter
+              </Button>
+            </Box>
           </>
         )}
 
         {activeStep === 1 && (
-          <Typography>
-            Wir haben dir eine Bestätigungs-E-Mail gesendet. Bitte klicke auf
-            den Bestätigungslink, um fortzufahren.
-          </Typography>
+          <>
+            <Typography sx={{ mb: 2 }}>
+              Wir haben dir einen Bestätigungscode an <b>{email || "deine E-Mail"}</b> gesendet.
+              Bitte gib den Code hier ein.
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", mb: 2 }}>
+              <TextField
+                fullWidth
+                label="Bestätigungscode"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                inputProps={{ inputMode: "numeric", pattern: "\\d*" }}
+              />
+              <Button variant="outlined" onClick={sendVerificationCode}>
+                Code erneut senden
+              </Button>
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Button onClick={back} variant="outlined">
+                Zurück
+              </Button>
+              <Button onClick={next} variant="contained" disabled={!canGoNext()}>
+                Weiter
+              </Button>
+            </Box>
+          </>
         )}
 
         {activeStep === 2 && (
           <>
             <Typography sx={{ mb: 2 }}>
-              Bitte akzeptiere die Teilnahmebedingungen, um fortzufahren.
+              Bitte akzeptiere die Bedingungen, um fortzufahren.
             </Typography>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={acceptedTerms}
                   onChange={(e) => setAcceptedTerms(e.target.checked)}
-                  required
                 />
               }
               label={
                 <span>
                   Ich akzeptiere die{" "}
-                  <Link
-                    href="/agb"
-                    style={{ color: "#16a34a", textDecoration: "underline" }}
-                  >
+                  <Link href="/agb" style={{ color: "#16a34a", textDecoration: "underline" }}>
                     Allgemeinen Geschäftsbedingungen und Teilnahmebedingungen
                   </Link>
                 </span>
               }
             />
+            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+              <Button onClick={back} variant="outlined">
+                Zurück
+              </Button>
+              <Button onClick={finish} variant="contained" disabled={!canGoNext()}>
+                Fertigstellen
+              </Button>
+            </Box>
           </>
         )}
-
-        {/* Navigation */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-          <Button
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            variant="outlined"
-          >
-            Zurück
-          </Button>
-          <Button onClick={handleNext} variant="contained" color="primary">
-            {activeStep === steps.length - 1 ? "Fertigstellen" : "Weiter"}
-          </Button>
-        </Box>
       </Paper>
     </Box>
   );
 }
+
+// Flag, damit kein Header/Footer angezeigt wird
+;(RegistrationProcess as any).noLayout = true;
+(RegistrationProcess as any).title = "Registrierung";
