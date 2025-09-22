@@ -1,9 +1,16 @@
 "use client";
 
 import React from "react";
-import ReactFlow, { Background, Controls, MiniMap } from "reactflow";
-import "reactflow/dist/style.css";
+import dynamic from "next/dynamic";
 import { pageNodes, pageEdges } from "../lib/pageMap";
+
+// ReactFlow nur clientseitig laden
+const ReactFlow = dynamic(() => import("reactflow").then(mod => mod.default), {
+  ssr: false,
+});
+const Background = dynamic(() => import("reactflow").then(mod => mod.Background), { ssr: false });
+const Controls = dynamic(() => import("reactflow").then(mod => mod.Controls), { ssr: false });
+const MiniMap = dynamic(() => import("reactflow").then(mod => mod.MiniMap), { ssr: false });
 
 export default function UserFlowPage() {
   const nodes = pageNodes.map((n, i) => ({
