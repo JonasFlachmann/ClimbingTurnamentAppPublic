@@ -19,13 +19,12 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-// Swiper-Komponenten nur Client-seitig laden (SSR-sicher)
-const Swiper = dynamic(() => import("swiper/react").then(m => m.Swiper), { ssr: false });
-const SwiperSlide = dynamic(() => import("swiper/react").then(m => m.SwiperSlide), { ssr: false });
-// ✅ Kompatibel mit Swiper v8: Module direkt aus "swiper" importieren (nicht "swiper/modules")
+// Swiper nur Client-seitig laden (SSR-sicher)
+const Swiper = dynamic(() => import("swiper/react").then((m) => m.Swiper), { ssr: false });
+const SwiperSlide = dynamic(() => import("swiper/react").then((m) => m.SwiperSlide), { ssr: false });
+// Kompatibel mit eurer Swiper-Version (v8)
 import { Pagination } from "swiper";
 
-// Platzhalter-Daten (kannst du später durch echte Daten ersetzen)
 type RouteItem = { id: number; name: string; thumbnail: string; photos: string[] };
 type TournamentItem = { id: number; name: string; location: string; date: string };
 
@@ -41,7 +40,7 @@ const placeholderImg = (w: number, h: number) =>
 function HomePage() {
   const router = useRouter();
 
-  // ------------------- Beispiel-Daten -------------------
+  // -------- Beispiel-Daten (Platzhalter) --------
   const currentTournamentRoutes: RouteItem[] = useMemo(
     () => [
       {
@@ -75,22 +74,21 @@ function HomePage() {
     []
   );
 
-  // ------------------- UI State -------------------
+  // -------- UI-State --------
   const [expandedRouteIds, setExpandedRouteIds] = useState<Set<number>>(new Set());
   const [routeResult, setRouteResult] = useState<Record<number, "top" | "flash" | null>>({});
-  const [photoModal, setPhotoModal] = useState<{ open: boolean; routeId: number | null; startIndex: number }>({
-    open: false,
-    routeId: null,
-    startIndex: 0,
-  });
   const [expandedTournamentIds, setExpandedTournamentIds] = useState<Set<number>>(new Set());
 
-  // ------------------- Helpers -------------------
+  // Foto-Overlay-Status (Fotos direkt übergeben ⇒ robuster als routeId)
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [photoModalPhotos, setPhotoModalPhotos] = useState<string[] | null>(null);
+  const [photoModalIndex, setPhotoModalIndex] = useState(0);
+
+  // -------- Helpers --------
   const toggleRouteExpanded = (id: number) => {
     setExpandedRouteIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   };
@@ -98,22 +96,27 @@ function HomePage() {
   const toggleTournamentExpanded = (id: number) => {
     setExpandedTournamentIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   };
 
-  const setResult = (routeId: number, value: "top" | "flash" | null) => {
+  const setResult = (routeId: number, value: "top" | "flash" | null) =>
     setRouteResult((prev) => ({ ...prev, [routeId]: value }));
+
+  const openPhotoOverlay = (photos: string[], startIndex = 0) => {
+    setPhotoModalPhotos(photos);
+    setPhotoModalIndex(startIndex);
+    setPhotoModalOpen(true);
   };
 
-  const openPhotoOverlay = (routeId: number, startIndex: number) =>
-    setPhotoModal({ open: true, routeId, startIndex });
+  const closePhotoOverlay = () => {
+    setPhotoModalOpen(false);
+    setPhotoModalPhotos(null);
+    setPhotoModalIndex(0);
+  };
 
-  const closePhotoOverlay = () => setPhotoModal({ open: false, routeId: null, startIndex: 0 });
-
-  // ------------------- Gemeinsame Card-Styles (Hover) -------------------
+  // Ein einheitlicher Hover-Schatten für „Karten“
   const cardHover = {
     transition: "box-shadow 160ms ease, transform 160ms ease",
     boxShadow: "0px 1px 4px rgba(0,0,0,0.08)",
@@ -126,7 +129,7 @@ function HomePage() {
 
   const innerStop = (e: React.MouseEvent) => e.stopPropagation();
 
-  // ------------------- Render -------------------
+  // -------- Render --------
   return (
     <Box sx={{ p: { xs: 2, md: 3 }, display: "grid", gap: 2, maxWidth: 960, mx: "auto" }}>
       {/* Aktuelles Turnier */}
@@ -146,6 +149,7 @@ function HomePage() {
           {currentTournamentRoutes.map((route) => {
             const isOpen = expandedRouteIds.has(route.id);
             const value = routeResult[route.id] ?? null;
+
             return (
               <Box
                 key={route.id}
@@ -192,7 +196,7 @@ function HomePage() {
                   <Box
                     onClick={(e) => {
                       e.stopPropagation();
-                      openPhotoOverlay(route.id, 0);
+                      openPhotoOverlay(route.photos, 0);
                     }}
                     sx={{
                       width: 64,
@@ -202,6 +206,7 @@ function HomePage() {
                       mr: 1.5,
                       flexShrink: 0,
                       border: "1px solid rgba(0,0,0,0.08)",
+                      backgroundColor: "#f3f4f6",
                     }}
                   >
                     <img
@@ -229,7 +234,7 @@ function HomePage() {
                       Platzhaltertext zur Route – z. B. Halle, Wand, Farbe, Bewertung …
                     </Typography>
 
-                    {/* Kleines vergrößertes Bild im aufgeklappten Bereich (optional) */}
+                    {/* Optional: etwas größeres Bild im aufgeklappten Bereich */}
                     <Box
                       sx={{
                         mt: 1.5,
@@ -242,7 +247,7 @@ function HomePage() {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        openPhotoOverlay(route.id, 0);
+                        openPhotoOverlay(route.photos, 0);
                       }}
                     >
                       <img
@@ -332,10 +337,11 @@ function HomePage() {
 
       {/* Foto-Overlay (Swiper) */}
       <Dialog
-        open={photoModal.open}
+        open={photoModalOpen}
         onClose={closePhotoOverlay}
         fullWidth
         maxWidth="md"
+        keepMounted
         PaperProps={{ sx: { borderRadius: 2, overflow: "hidden" } }}
       >
         <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
@@ -344,44 +350,42 @@ function HomePage() {
           </IconButton>
         </Box>
         <DialogContent sx={{ pt: 0 }}>
-          {photoModal.routeId != null && (
+          {photoModalPhotos && (
             <Box sx={{ width: "100%", height: { xs: 300, md: 420 } }}>
               <Swiper
                 modules={[Pagination]}
                 pagination={{ clickable: true }}
-                initialSlide={photoModal.startIndex}
+                initialSlide={photoModalIndex}
                 style={{ width: "100%", height: "100%" }}
               >
-                {currentTournamentRoutes
-                  .find((r) => r.id === photoModal.routeId)!
-                  .photos.map((src, idx) => (
-                    <SwiperSlide key={idx}>
-                      <Box
-                        sx={{
-                          width: "100%",
-                          height: "100%",
-                          bgcolor: "#f3f4f6",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderRadius: 1.5,
-                          overflow: "hidden",
-                          border: "1px solid rgba(0,0,0,0.08)",
+                {photoModalPhotos.map((src, idx) => (
+                  <SwiperSlide key={idx}>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        bgcolor: "#f3f4f6",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: 1.5,
+                        overflow: "hidden",
+                        border: "1px solid rgba(0,0,0,0.08)",
+                      }}
+                    >
+                      <img
+                        src={src}
+                        alt={`Foto ${idx + 1}`}
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                          objectFit: "contain",
+                          display: "block",
                         }}
-                      >
-                        <img
-                          src={src}
-                          alt={`Foto ${idx + 1}`}
-                          style={{
-                            maxWidth: "100%",
-                            maxHeight: "100%",
-                            objectFit: "contain",
-                            display: "block",
-                          }}
-                        />
-                      </Box>
-                    </SwiperSlide>
-                  ))}
+                      />
+                    </Box>
+                  </SwiperSlide>
+                ))}
               </Swiper>
             </Box>
           )}
@@ -391,8 +395,5 @@ function HomePage() {
   );
 }
 
-// 👇 Titel für den globalen Header festlegen
 (HomePage as any).title = "Home";
-// Layout verwenden (kein noLayout-Flag gesetzt)
-
 export default HomePage;
