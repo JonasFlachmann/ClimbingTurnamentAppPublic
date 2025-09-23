@@ -19,17 +19,11 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-// Swiper nur Client-seitig laden (SSR-sicher)
+// Swiper-Komponenten nur Client-seitig laden (SSR-sicher)
 const Swiper = dynamic(() => import("swiper/react").then(m => m.Swiper), { ssr: false });
 const SwiperSlide = dynamic(() => import("swiper/react").then(m => m.SwiperSlide), { ssr: false });
-// Optionales Modul (Pagination)
-let PaginationMod: any = null;
-if (typeof window !== "undefined") {
-  // Lazy load des Pagination-Moduls nur im Browser
-  import("swiper/modules").then((m) => {
-    PaginationMod = m.Pagination;
-  });
-}
+// ✅ Kompatibel mit Swiper v8: Module direkt aus "swiper" importieren (nicht "swiper/modules")
+import { Pagination } from "swiper";
 
 // Platzhalter-Daten (kannst du später durch echte Daten ersetzen)
 type RouteItem = { id: number; name: string; thumbnail: string; photos: string[] };
@@ -89,7 +83,6 @@ function HomePage() {
     routeId: null,
     startIndex: 0,
   });
-
   const [expandedTournamentIds, setExpandedTournamentIds] = useState<Set<number>>(new Set());
 
   // ------------------- Helpers -------------------
@@ -353,9 +346,8 @@ function HomePage() {
         <DialogContent sx={{ pt: 0 }}>
           {photoModal.routeId != null && (
             <Box sx={{ width: "100%", height: { xs: 300, md: 420 } }}>
-              {/* Fallback: Wenn PaginationMod noch nicht geladen, rendert Swiper ohne Module → okay */}
               <Swiper
-                modules={PaginationMod ? [PaginationMod] : []}
+                modules={[Pagination]}
                 pagination={{ clickable: true }}
                 initialSlide={photoModal.startIndex}
                 style={{ width: "100%", height: "100%" }}
