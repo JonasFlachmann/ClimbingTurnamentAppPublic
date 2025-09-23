@@ -1,10 +1,10 @@
-import type { AppProps } from "next/app";   // ✅ richtiges Import-Modul
+import type { AppProps } from "next/app";
 import type { NextPage } from "next";
 import { ThemeProvider, CssBaseline, GlobalStyles } from "@mui/material";
 import theme from "../styles/theme";
 import Layout from "../components/Layout";
 
-// Swiper CSS global laden (für boulder-add)
+// Swiper CSS global laden
 import "swiper/css";
 import "swiper/css/pagination";
 
@@ -34,6 +34,12 @@ export default function MyApp({ Component, pageProps }: AppPropsWithOptions) {
             height: "100%",
             backgroundColor: theme.palette.background.default,
             margin: 0,
+            // 🔧 Blaues Aufblitzen auf Android verhindern:
+            WebkitTapHighlightColor: "transparent",
+          },
+          // Sicherstellen, dass der Tap-Highlight global weg ist
+          "*": {
+            WebkitTapHighlightColor: "transparent",
           },
           "#__next": { minHeight: "100%" },
         }}
