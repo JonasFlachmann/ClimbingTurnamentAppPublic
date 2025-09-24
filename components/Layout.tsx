@@ -21,6 +21,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import EventIcon from "@mui/icons-material/Event";
 import MapIcon from "@mui/icons-material/Map";
 import Link from "next/link";
+import { glass } from "../styles/theme";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -31,14 +32,28 @@ export default function Layout({ children, title }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [value, setValue] = useState(0);
 
-  const toggleDrawer = (open: boolean) => () => {
-    setDrawerOpen(open);
-  };
+  const toggleDrawer =
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
+      ) {
+        return;
+      }
+      setDrawerOpen(open);
+    };
 
   return (
     <Box sx={{ pb: 7 }}>
       {/* Header */}
-      <AppBar position="static" sx={{ backgroundColor: "green" }}>
+      <AppBar
+        position="static"
+        sx={(theme) => ({
+          ...glass(0.9)(theme),
+          color: theme.palette.getContrastText(theme.palette.success.main),
+        })}
+      >
         <Toolbar>
           {/* Menü-Button links */}
           <IconButton
@@ -50,39 +65,30 @@ export default function Layout({ children, title }: LayoutProps) {
             <MenuIcon />
           </IconButton>
 
-          {/* Titel */}
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {title || "Climbing App"}
+          {/* Titel zentriert */}
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            {title ?? "Boulder App"}
           </Typography>
 
-          {/* Neuer UF-Button */}
-          <Link href="/user-flow" passHref>
-            <Button
-              variant="contained"
-              sx={{
-                minWidth: "40px",
-                minHeight: "40px",
-                borderRadius: "50%",
-                backgroundColor: "white",
-                color: "green",
-                fontWeight: "bold",
-                mr: 1,
-                "&:hover": { backgroundColor: "#f0f0f0" },
-              }}
-            >
-              UF
-            </Button>
-          </Link>
-
-          {/* Settings-Icon bleibt */}
-          <IconButton color="inherit">
+          {/* Settings rechts */}
+          <IconButton color="inherit" aria-label="settings">
             <SettingsIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
 
-      {/* Drawer Navigation */}
-      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+      {/* Sidebar */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        PaperProps={{
+          sx: (theme) => ({
+            ...glass(0.9)(theme),
+            color: theme.palette.getContrastText(theme.palette.success.main),
+          }),
+        }}
+      >
         <Box
           sx={{ width: 250 }}
           role="presentation"
@@ -122,10 +128,26 @@ export default function Layout({ children, title }: LayoutProps) {
 
       {/* Bottom Navigation */}
       <Paper
-        sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
-        elevation={3}
+        sx={(theme) => ({
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          ...glass(0.9)(theme),
+          borderTop: "1px solid rgba(0,0,0,0.12)",
+        })}
+        elevation={8}
       >
         <BottomNavigation
+          sx={(theme) => ({
+            background: "transparent",
+            "& .MuiBottomNavigationAction-root": {
+              color: theme.palette.getContrastText(theme.palette.success.main),
+            },
+            "& .Mui-selected": {
+              color: theme.palette.common.white,
+            },
+          })}
           value={value}
           onChange={(event, newValue) => {
             setValue(newValue);
