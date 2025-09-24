@@ -7,197 +7,246 @@ import {
   CardContent,
   ToggleButton,
   ToggleButtonGroup,
+  Modal,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Pagination } from "swiper"; // ✅ für Swiper v8
 import "swiper/css";
 import "swiper/css/pagination";
 
-// Dummy-Routen
-const routes = [
-  { id: 1, name: "Route A – Wand Links" },
-  { id: 2, name: "Route B – Überhang" },
-  { id: 3, name: "Route C – Platte" },
-];
+// Globale Styles (z. B. Hover-Effekt, Schatten) kommen aus theme
 
-// Dummy-Turniere
-const tournaments = [
-  { id: 1, name: "Sommer Cup 2025" },
-  { id: 2, name: "Hallenmeisterschaft" },
-];
+const placeholderImages = [
+  "#ccc",
+  "#bbb",
+  "#aaa",
+  "#999",
+]; // Graue Platzhalter für Swiper
 
 export default function Home() {
   const router = useRouter();
-  const [openRoute, setOpenRoute] = useState<number | null>(null);
-  const [results, setResults] = useState<Record<number, string>>({});
 
-  const handleToggle = (routeId: number, val: string | null) => {
-    if (!val) return;
-    setResults((prev) => ({ ...prev, [routeId]: val }));
+  const [openRoute, setOpenRoute] = useState<string | null>(null);
+  const [selectedTF, setSelectedTF] = useState<{ [key: string]: string | null }>({});
+  const [modalImage, setModalImage] = useState<string | null>(null);
+
+  const handleToggle = (routeId: string, value: string) => {
+    setSelectedTF((prev) => ({
+      ...prev,
+      [routeId]: prev[routeId] === value ? null : value,
+    }));
   };
 
   return (
     <Box sx={{ p: 2 }}>
       {/* Aktuelles Turnier */}
       <Card
-        sx={{ mb: 3, cursor: "pointer" }}
+        sx={{
+          mb: 4,
+          cursor: "pointer",
+          "&:hover": { boxShadow: 6 },
+        }}
         onClick={() => router.push("/tournament")}
       >
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h5" gutterBottom>
             Aktuelles Turnier
           </Typography>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Tippe auf eine Route, um Details zu sehen. Klick in den freien
-            Bereich führt zur Turnierseite.
-          </Typography>
 
-          {routes.map((route) => (
-            <Card
-              key={route.id}
-              variant="outlined"
+          {["Route 1", "Route 2", "Route 3"].map((route) => (
+            <Box
+              key={route}
               sx={{
-                my: 1,
-                p: 1,
-                "&:hover": { boxShadow: 3 },
+                mt: 2,
+                p: 2,
+                border: "1px solid #ddd",
+                borderRadius: 2,
+                backgroundColor: "#fafafa",
+                "&:hover": { boxShadow: 4 },
+                cursor: "pointer",
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                setOpenRoute(openRoute === route.id ? null : route.id);
+                setOpenRoute(openRoute === route ? null : route);
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                {/* Platzhalter Mini-Foto */}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                {/* Miniaturfoto */}
                 <Box
                   sx={{
-                    width: 50,
-                    height: 50,
-                    bgcolor: "grey.300",
+                    width: 60,
+                    height: 60,
+                    backgroundColor: "#ccc",
                     borderRadius: 1,
-                    mr: 2,
+                    cursor: "pointer",
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Optional: hier könnte ein Modal für Großansicht kommen
+                    setModalImage("#ccc"); // Beispiel, Platzhalter
                   }}
                 />
-
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography variant="subtitle1">{route.name}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Tippe für Details
-                  </Typography>
-                </Box>
-
-                {/* T/F Buttons */}
-                <ToggleButtonGroup
-                  exclusive
-                  size="small"
-                  value={results[route.id] || null}
-                  onChange={(e, val) => handleToggle(route.id, val)}
-                  sx={{
-                    "& .MuiToggleButton-root": {
-                      borderRadius: "9999px",
-                      border: "2px solid",
-                      borderColor: "success.main",
-                      px: 1.25,
-                      py: 0.25,
-                      fontWeight: 700,
-                      textTransform: "none",
-                      color: "success.main",
-                      backgroundColor: "#fff",
-                      "&.Mui-selected": {
-                        backgroundColor: "success.main",
-                        color: "#fff",
-                      },
-                    },
-                  }}
-                >
-                  <ToggleButton value="top">T</ToggleButton>
-                  <ToggleButton value="flash">F</ToggleButton>
-                </ToggleButtonGroup>
+                <Typography variant="subtitle1">{route}</Typography>
               </Box>
 
-              {/* Aufklappbereich */}
-              {openRoute === route.id && (
+              {/* Aufklappen */}
+              {openRoute === route && (
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle2">Routenbezeichnung</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Platzhaltertext zur Route – z. B. Halle, Wand, Farbe,
-                    Bewertung …
-                  </Typography>
+                  <Typography variant="body2">Routenbezeichnung: {route}</Typography>
 
-                  {/* Swiper mit Platzhaltern */}
-                  <Box sx={{ mt: 2 }}>
-                    <Swiper
-                      modules={[Pagination]}
-                      pagination={{ clickable: true }}
-                      spaceBetween={10}
-                      slidesPerView={1}
-                      style={{ borderRadius: "8px", overflow: "hidden" }}
+                  {/* Swiper für Fotos */}
+                  <Swiper
+                    pagination={{ clickable: true }}
+                    modules={[Pagination]}
+                    style={{ marginTop: 16 }}
+                  >
+                    {placeholderImages.map((color, idx) => (
+                      <SwiperSlide key={idx}>
+                        <Box
+                          sx={{
+                            width: "100%",
+                            height: 200,
+                            backgroundColor: color,
+                            borderRadius: 2,
+                          }}
+                          onClick={() => setModalImage(color)}
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+
+                  {/* T/F Buttons */}
+                  <ToggleButtonGroup
+                    value={selectedTF[route] || null}
+                    exclusive
+                    onChange={(_, value) => value && handleToggle(route, value)}
+                    sx={{ mt: 2 }}
+                  >
+                    <ToggleButton
+                      value="T"
+                      sx={{
+                        borderRadius: "50%",
+                        width: 40,
+                        height: 40,
+                        color: selectedTF[route] === "T" ? "white" : "green",
+                        backgroundColor: selectedTF[route] === "T" ? "green" : "transparent",
+                        "&:hover": { backgroundColor: "rgba(0,128,0,0.1)" },
+                      }}
                     >
-                      {[1, 2, 3].map((n) => (
-                        <SwiperSlide key={n}>
-                          <Box
-                            sx={{
-                              width: "100%",
-                              height: 180,
-                              bgcolor: "grey.300",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Typography variant="caption">
-                              Platzhalter {n}
-                            </Typography>
-                          </Box>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  </Box>
+                      T
+                    </ToggleButton>
+                    <ToggleButton
+                      value="F"
+                      sx={{
+                        borderRadius: "50%",
+                        width: 40,
+                        height: 40,
+                        color: selectedTF[route] === "F" ? "white" : "green",
+                        backgroundColor: selectedTF[route] === "F" ? "green" : "transparent",
+                        "&:hover": { backgroundColor: "rgba(0,128,0,0.1)" },
+                      }}
+                    >
+                      F
+                    </ToggleButton>
+                  </ToggleButtonGroup>
                 </Box>
               )}
-            </Card>
+            </Box>
           ))}
         </CardContent>
       </Card>
 
-      {/* Turniere in der Nähe */}
+      {/* Turniere in deiner Nähe */}
       <Card
-        sx={{ cursor: "pointer" }}
+        sx={{
+          cursor: "pointer",
+          "&:hover": { boxShadow: 6 },
+        }}
         onClick={() => router.push("/map")}
       >
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h5" gutterBottom>
             Turniere in deiner Nähe
           </Typography>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Klick in den freien Bereich öffnet die Karte.
-          </Typography>
 
-          {tournaments.map((t) => (
-            <Card
-              key={t.id}
-              variant="outlined"
+          {["Boulder Cup", "Sommer Jam"].map((tournament) => (
+            <Box
+              key={tournament}
               sx={{
-                my: 1,
-                p: 1,
-                "&:hover": { boxShadow: 3 },
+                mt: 2,
+                p: 2,
+                border: "1px solid #ddd",
+                borderRadius: 2,
+                backgroundColor: "#fafafa",
+                "&:hover": { boxShadow: 4 },
+                cursor: "pointer",
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                // Hier könnte ein Aufklapper mit Details kommen
+                setOpenRoute(openRoute === tournament ? null : tournament);
               }}
             >
-              <Typography variant="subtitle1">{t.name}</Typography>
-              <Typography variant="caption" color="text.secondary">
-                Tippe für Details
-              </Typography>
-            </Card>
+              <Typography variant="subtitle1">{tournament}</Typography>
+
+              {openRoute === tournament && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body2">
+                    Ort: Beispielhalle<br />
+                    Datum: 12.10.2025
+                  </Typography>
+                  <Box
+                    component="button"
+                    onClick={() => router.push("/tournament")}
+                    style={{
+                      marginTop: 12,
+                      backgroundColor: "green",
+                      color: "white",
+                      border: "none",
+                      padding: "6px 12px",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Zum Turnier
+                  </Box>
+                </Box>
+              )}
+            </Box>
           ))}
         </CardContent>
       </Card>
+
+      {/* Modal für großes Bild */}
+      <Modal open={!!modalImage} onClose={() => setModalImage(null)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 2,
+          }}
+        >
+          <IconButton
+            sx={{ position: "absolute", top: 8, right: 8 }}
+            onClick={() => setModalImage(null)}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Box
+            sx={{
+              width: "80vw",
+              height: "60vh",
+              backgroundColor: modalImage || "#ccc",
+              borderRadius: 2,
+            }}
+          />
+        </Box>
+      </Modal>
     </Box>
   );
 }
