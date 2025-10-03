@@ -1,4 +1,3 @@
-// pages/tournament-create.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -14,112 +13,205 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import { useRouter } from "next/router";
 
-type Route = {
-  name: string;
-  grade: string;
-  style?: string;
-  description?: string;
-};
-
-const initialRoutes: Route[] = [
-  { name: "Boulder 1", grade: "6A", style: "Sloper", description: "Technisch, balanciert" },
-  { name: "Boulder 2", grade: "6B", style: "Überhang", description: "Kraftlastig" },
-  { name: "Boulder 3", grade: "6A+", style: "Kante", description: "Präzise Tritte" },
+// Dummy Turniere
+const dummyTournaments = [
+  {
+    id: 1,
+    name: "Sommer Cup",
+    start: "2025-09-01",
+    end: "2025-09-07",
+    city: "Bochum",
+    venue: "Neoliet",
+    routes: [
+      { name: "Wand 1", color: "Rot", difficulty: "5a" },
+      { name: "Überhang", color: "Blau", difficulty: "6b" },
+      { name: "Platte", color: "Gelb", difficulty: "6a+" },
+    ],
+    participants: 42,
+  },
+  {
+    id: 2,
+    name: "Herbst Boulder Jam",
+    start: "2025-07-17",
+    end: "2025-07-17",
+    city: "Dortmund",
+    venue: "Bergwerk",
+    routes: [
+      { name: "Dachkante", color: "Grün", difficulty: "7a" },
+      { name: "Sloperwand", color: "Orange", difficulty: "6c" },
+      { name: "Platte", color: "Violett", difficulty: "5c" },
+    ],
+    participants: 35,
+  },
+  {
+    id: 3,
+    name: "Winter Masters",
+    start: "2024-12-10",
+    end: "2024-12-10",
+    city: "Berlin",
+    venue: "Boulderwelt",
+    routes: [
+      { name: "Crack", color: "Schwarz", difficulty: "7b+" },
+      { name: "Kante", color: "Rot", difficulty: "6a" },
+      { name: "Balance", color: "Gelb", difficulty: "6c+" },
+    ],
+    participants: 28,
+  },
 ];
 
-export default function TournamentCreatePage() {
+// Datumshilfe
+const formatDate = (start: string, end: string): string => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const now = new Date();
+  const currentYear = now.getFullYear();
+
+  const monthNames = [
+    "Januar","Februar","März","April","Mai","Juni",
+    "Juli","August","September","Oktober","November","Dezember",
+  ];
+
+  if (start === end) {
+    if (startDate.getFullYear() === currentYear) {
+      return `${startDate.getDate()}. ${monthNames[startDate.getMonth()]}`;
+    } else {
+      return `${String(startDate.getMonth() + 1).padStart(2, "0")}/${startDate.getFullYear()}`;
+    }
+  }
+
+  if (startDate.getFullYear() !== endDate.getFullYear()) {
+    return `${String(startDate.getMonth() + 1).padStart(2, "0")}/${startDate.getFullYear()} - ${String(
+      endDate.getMonth() + 1
+    ).padStart(2, "0")}/${endDate.getFullYear()}`;
+  }
+
+  if (startDate.getFullYear() !== currentYear) {
+    if (startDate.getMonth() === endDate.getMonth()) {
+      return `${String(startDate.getMonth() + 1).padStart(2, "0")}/${startDate.getFullYear()}`;
+    }
+    return `${String(startDate.getMonth() + 1).padStart(2, "0")}-${String(
+      endDate.getMonth() + 1
+    ).padStart(2, "0")}/${startDate.getFullYear()}`;
+  }
+
+  if (startDate.getMonth() === endDate.getMonth()) {
+    return `${startDate.getDate()}. bis ${endDate.getDate()}. ${monthNames[startDate.getMonth()]}`;
+  } else {
+    return `${startDate.getDate()}. ${monthNames[startDate.getMonth()]} – ${endDate.getDate()}. ${monthNames[endDate.getMonth()]}`;
+  }
+};
+
+const TournamentCreatePage: React.FC = () => {
+  const [openDetails, setOpenDetails] = useState<{ [key: number]: boolean }>({});
   const router = useRouter();
-  const [routes, setRoutes] = useState<Route[]>(initialRoutes);
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-
-  const addRoute = () => {
-    setRoutes((prev) => [
-      ...prev,
-      { name: `Boulder ${prev.length + 1}`, grade: "6A", style: "", description: "" },
-    ]);
-  };
-
-  const updateRoute = (index: number, patch: Partial<Route>) => {
-    setRoutes((prev) => prev.map((r, i) => (i === index ? { ...r, ...patch } : r)));
-  };
-
-  const removeRoute = (index: number) => {
-    setRoutes((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const currentPath = router.pathname;
 
+  const handleOpenDetails = (id: number) => {
+    setOpenDetails((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleAddClick = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    router.push("/tournament-define");
+  };
+
   return (
-    <Box sx={{ px: 2, pb: 10, pt: 5 }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
-        Turnier erstellen
-      </Typography>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
+      <Box sx={{ maxWidth: "95%", mx: "auto", pt: 5 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          fullWidth
+          sx={{ mb: 4, fontWeight: "bold", fontSize: "1.1rem" }}
+          onClick={() => router.push("/tournament-define")}
+        >
+          Neues Turnier anlegen
+        </Button>
 
-      <Paper elevation={2} sx={{ borderRadius: 4, p: 2, mb: 2 }}>
         <Stack spacing={2}>
-          {routes.map((route, idx) => (
-            <Paper key={idx} elevation={1} sx={{ p: 2, borderRadius: 3 }}>
-              <Stack direction="row" alignItems="center" justifyContent="space-between">
-                <Typography variant="h6">{route.name}</Typography>
-                <Stack direction="row" spacing={1}>
-                  <IconButton onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => removeRoute(idx)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-              </Stack>
-
-              <Divider sx={{ my: 1 }} />
-
-              <Typography variant="body2" color="text.secondary">
-                Grad: {route.grade} {route.style ? `• ${route.style}` : ""}
-              </Typography>
-              {route.description && (
-                <Typography variant="body2" color="text.secondary">
-                  {route.description}
+          {dummyTournaments.map((t) => (
+            <Box key={t.id}>
+              {/* Eingeklappt */}
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 2,
+                  borderRadius: 3,
+                  cursor: "pointer",
+                  "&:hover": { boxShadow: 8, bgcolor: "action.hover" },
+                }}
+                onClick={() => handleOpenDetails(t.id)}
+              >
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                  {t.name}
                 </Typography>
-              )}
-
-              <Collapse in={expandedIndex === idx} unmountOnExit>
-                <Stack spacing={1} sx={{ mt: 1 }}>
-                  <Button
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography>{t.city}</Typography>
+                  <Typography>{formatDate(t.start, t.end)}</Typography>
+                  <IconButton
                     size="small"
-                    variant="outlined"
-                    startIcon={<FolderOpenIcon />}
-                    onClick={() => updateRoute(idx, { description: "Beschreibung aktualisiert" })}
+                    onClick={(e) => handleAddClick(e, t.id)}
+                    sx={{ ml: 1 }}
+                    aria-label="Turnier duplizieren/erstellen"
                   >
-                    Details bearbeiten
-                  </Button>
+                    <AddCircleIcon fontSize="large" />
+                  </IconButton>
                 </Stack>
+              </Paper>
+
+              {/* Ausgeklappt */}
+              <Collapse in={openDetails[t.id] || false}>
+                <Paper
+                  elevation={0}
+                  sx={{ bgcolor: "background.default", p: 2, mt: 1, mb: 1 }}
+                >
+                  <Divider sx={{ mb: 2 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                    Turnier-Infos:
+                  </Typography>
+                  <Typography>Stadt: {t.city}</Typography>
+                  <Typography>Austragungsort: {t.venue}</Typography>
+                  <Typography>Datum: {formatDate(t.start, t.end)}</Typography>
+
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                    Routen:
+                  </Typography>
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    sx={{ mb: 1, maxHeight: 150, overflowY: "auto" }}
+                  >
+                    {t.routes.map((r, idx) => (
+                      <Paper key={idx} sx={{ p: 1.5, borderRadius: 2 }}>
+                        <Typography sx={{ fontWeight: "bold" }}>{r.name}</Typography>
+                        <Typography sx={{ color: "text.secondary" }}>
+                          Farbe: {r.color}
+                        </Typography>
+                        <Typography sx={{ color: "text.secondary" }}>
+                          Schwierigkeit: {r.difficulty}
+                        </Typography>
+                      </Paper>
+                    ))}
+                  </Stack>
+
+                  <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
+                    Teilnehmeranzahl:{" "}
+                    <span style={{ fontWeight: 400 }}>{t.participants}</span>
+                  </Typography>
+                </Paper>
               </Collapse>
-            </Paper>
+            </Box>
           ))}
-
-          <Button variant="contained" startIcon={<AddCircleIcon />} onClick={addRoute}>
-            Boulder hinzufügen
-          </Button>
-          <Button
-            variant="outlined"
-            endIcon={<ArrowForwardIcon />}
-            onClick={() => router.push("/tournament-define")}
-          >
-            Weiter zur Definition
-          </Button>
         </Stack>
-      </Paper>
+      </Box>
 
-      {/* Lokalen Footer ausblenden – zentraler Footer kommt aus Layout */}
+      {/* Footer */}
       <Box
         component="footer"
-        hidden
         sx={{
           position: "fixed",
           left: 0,
@@ -136,45 +228,47 @@ export default function TournamentCreatePage() {
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <IconButton
-            size="large"
-            color={currentPath === "/home" ? "primary" : "default"}
+          <Button
+            color={currentPath === "/home" ? "primary" : "inherit"}
             onClick={() => router.push("/home")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <HomeIcon />
-          </IconButton>
-          <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
-            Home
-          </Typography>
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
+              Home
+            </Typography>
+          </Button>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <IconButton
-            size="large"
-            color={currentPath === "/map" ? "primary" : "default"}
+          <Button
+            color={currentPath === "/map" ? "primary" : "inherit"}
             onClick={() => router.push("/map")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <MapIcon />
-          </IconButton>
-          <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
-            Karte
-          </Typography>
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
+              Karte
+            </Typography>
+          </Button>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <IconButton
-            size="large"
-            color={currentPath === "/tournament-overview" ? "primary" : "default"}
+          <Button
+            color={currentPath === "/tournament-overview" ? "primary" : "inherit"}
             onClick={() => router.push("/tournament-overview")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <EmojiEventsIcon />
-          </IconButton>
-          <Typography
-            variant="caption"
-            sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}
-          >
-            Turniere
-          </Typography>
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}
+            >
+              Turniere
+            </Typography>
+          </Button>
         </Box>
       </Box>
     </Box>
   );
-}
+};
+
+export default TournamentCreatePage;
