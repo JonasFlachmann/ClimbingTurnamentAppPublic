@@ -1,47 +1,179 @@
-// pages/tournament-define.tsx
 import React, { useState } from "react";
-import { Box, Paper, Typography, Stack, Divider, IconButton, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  Button,
+  TextField,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SaveIcon from "@mui/icons-material/Save";
 import { useRouter } from "next/router";
 
-export default function TournamentDefinePage() {
+const TournamentDefinePage: React.FC = () => {
   const router = useRouter();
-  const [hallName, setHallName] = useState("Kletterzentrum Mitte");
-  const [date, setDate] = useState("2025-12-12");
-  const [city, setCity] = useState("Berlin");
-
   const currentPath = router.pathname;
 
-  return (
-    <Box sx={{ px: 2, pb: 10, pt: 5 }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
-        Turnier definieren
-      </Typography>
+  // State für alle Felder
+  const [name, setName] = useState("");
+  const [indoorOutdoor, setIndoorOutdoor] = useState("Halle");
+  const [city, setCity] = useState("");
+  const [venue, setVenue] = useState("");
+  const [sport, setSport] = useState("Bouldern");
+  const [difficulty, setDifficulty] = useState("");
+  const [scoring, setScoring] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
+  const [description, setDescription] = useState("");
 
-      <Paper elevation={2} sx={{ borderRadius: 4, p: 2, mb: 2 }}>
-        <Stack spacing={2}>
-          <TextField label="Hallenname" value={hallName} onChange={(e) => setHallName(e.target.value)} />
-          <TextField type="date" label="Datum" value={date} onChange={(e) => setDate(e.target.value)} />
-          <TextField label="Ort" value={city} onChange={(e) => setCity(e.target.value)} />
-          <Stack direction="row" spacing={2}>
-            <Button startIcon={<ArrowBackIcon />} variant="outlined" onClick={() => router.push("/tournament-create")}>
-              Zurück
-            </Button>
-            <Button endIcon={<SaveIcon />} variant="contained" onClick={() => router.push("/tournament-fill")}>
-              Speichern & weiter
+  const handleContinue = () => {
+    // Optional: Hier könntest du die Daten speichern/übergeben
+    router.push("/tournament-fill");
+  };
+
+  return (
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", pb: 10 }}>
+      <Box sx={{ maxWidth: 600, mx: "auto", pt: 5 }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 4 }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold", mb: 3, textAlign: "center" }}>
+            Turnier anlegen
+          </Typography>
+          <Stack spacing={3}>
+            <TextField
+              label="Turniername"
+              variant="outlined"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              fullWidth
+              required
+            />
+
+            <Stack>
+              <Typography sx={{ mb: 1 }}>Halle / Outdoor</Typography>
+              <ToggleButtonGroup
+                exclusive
+                value={indoorOutdoor}
+                onChange={(_, value) => value && setIndoorOutdoor(value)}
+                sx={{ mb: 1 }}
+              >
+                <ToggleButton value="Halle" sx={{ px: 3 }}>Halle</ToggleButton>
+                <ToggleButton value="Outdoor" sx={{ px: 3 }}>Outdoor</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+
+            <TextField
+              label="Stadt"
+              variant="outlined"
+              value={city}
+              onChange={e => setCity(e.target.value)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Ausrichtungsort"
+              variant="outlined"
+              value={venue}
+              onChange={e => setVenue(e.target.value)}
+              fullWidth
+              required
+            />
+
+            <Stack>
+              <Typography sx={{ mb: 1 }}>Sportart</Typography>
+              <ToggleButtonGroup
+                exclusive
+                value={sport}
+                onChange={(_, value) => value && setSport(value)}
+                sx={{ mb: 1 }}
+              >
+                <ToggleButton value="Bouldern" sx={{ px: 3 }}>Bouldern</ToggleButton>
+                <ToggleButton value="Klettern" sx={{ px: 3 }}>Klettern</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+
+            <TextField
+              label="Schwierigkeit"
+              variant="outlined"
+              value={difficulty}
+              onChange={e => setDifficulty(e.target.value)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Wertungssystem"
+              variant="outlined"
+              value={scoring}
+              onChange={e => setScoring(e.target.value)}
+              fullWidth
+              required
+            />
+
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="Startdatum"
+                type="date"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                required
+                sx={{ width: "50%" }}
+              />
+              <TextField
+                label="Enddatum"
+                type="date"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                required
+                sx={{ width: "50%" }}
+              />
+            </Stack>
+
+            <Stack>
+              <Typography sx={{ mb: 1 }}>Öffentlich / Privat</Typography>
+              <ToggleButtonGroup
+                exclusive
+                value={isPublic ? "Öffentlich" : "Privat"}
+                onChange={(_, value) => {
+                  if (value) setIsPublic(value === "Öffentlich");
+                }}
+                sx={{ mb: 1 }}
+              >
+                <ToggleButton value="Öffentlich" sx={{ px: 3 }}>Öffentlich</ToggleButton>
+                <ToggleButton value="Privat" sx={{ px: 3 }}>Privat</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+
+            <TextField
+              label="Turnierbeschreibung (optional)"
+              variant="outlined"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              fullWidth
+              multiline
+              rows={3}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              sx={{ fontWeight: "bold", mt: 2 }}
+              onClick={handleContinue}
+              fullWidth
+            >
+              Weiter
             </Button>
           </Stack>
-        </Stack>
-      </Paper>
-
-      {/* Lokalen Footer ausblenden – zentraler Footer kommt aus Layout */}
+        </Paper>
+      </Box>
+      {/* Footer identisch zu home.tsx */}
       <Box
         component="footer"
-        hidden
         sx={{
           position: "fixed",
           left: 0,
@@ -58,34 +190,44 @@ export default function TournamentDefinePage() {
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <IconButton size="large" color={currentPath === "/home" ? "primary" : "default"} onClick={() => router.push("/home")}>
+          <Button
+            color={currentPath === "/home" ? "primary" : "inherit"}
+            onClick={() => router.push("/home")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
             <HomeIcon />
-          </IconButton>
-          <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
-            Home
-          </Typography>
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/home" ? "bold" : "normal" }}>
+              Home
+            </Typography>
+          </Button>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <IconButton size="large" color={currentPath === "/map" ? "primary" : "default"} onClick={() => router.push("/map")}>
+          <Button
+            color={currentPath === "/map" ? "primary" : "inherit"}
+            onClick={() => router.push("/map")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
+          >
             <MapIcon />
-          </IconButton>
-          <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
-            Karte
-          </Typography>
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/map" ? "bold" : "normal" }}>
+              Karte
+            </Typography>
+          </Button>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <IconButton
-            size="large"
-            color={currentPath === "/tournament-overview" ? "primary" : "default"}
+          <Button
+            color={currentPath === "/tournament-overview" ? "primary" : "inherit"}
             onClick={() => router.push("/tournament-overview")}
+            sx={{ minWidth: 0, p: 0, display: "flex", flexDirection: "column" }}
           >
             <EmojiEventsIcon />
-          </IconButton>
-          <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}>
-            Turniere
-          </Typography>
+            <Typography variant="caption" sx={{ fontWeight: currentPath === "/tournament-overview" ? "bold" : "normal" }}>
+              Turniere
+            </Typography>
+          </Button>
         </Box>
       </Box>
     </Box>
   );
-}
+};
+
+export default TournamentDefinePage;
