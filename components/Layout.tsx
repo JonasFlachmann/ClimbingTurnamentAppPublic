@@ -13,15 +13,15 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Paper,
-  Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SettingsIcon from "@mui/icons-material/Settings";
-import HomeIcon from "@mui/icons-material/Home";
-import EventIcon from "@mui/icons-material/Event";
-import MapIcon from "@mui/icons-material/Map";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { glass } from "../styles/theme";
+
+// Zentrale Navigation importieren
+import { BOTTOM_NAV, DRAWER_PRIMARY, DRAWER_SECONDARY } from "../lib/navigation";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -31,6 +31,7 @@ interface LayoutProps {
 export default function Layout({ children, title }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [value, setValue] = useState(0);
+  const router = useRouter();
 
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -43,6 +44,10 @@ export default function Layout({ children, title }: LayoutProps) {
       }
       setDrawerOpen(open);
     };
+
+  // Aktiven Tab anhand der aktuellen Route bestimmen
+  const currentIndex = BOTTOM_NAV.findIndex((n) => router.pathname.startsWith(n.href));
+  const bottomValue = currentIndex >= 0 ? currentIndex : value;
 
   return (
     <Box sx={{ pb: 7 }}>
@@ -96,27 +101,19 @@ export default function Layout({ children, title }: LayoutProps) {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            <ListItem button component={Link} href="/home">
-              <ListItemText primary="Home" />
-            </ListItem>
-            <ListItem button component={Link} href="/tournament-create">
-              <ListItemText primary="Turnier erstellen" />
-            </ListItem>
-            <ListItem button component={Link} href="/boulder-add">
-              <ListItemText primary="Boulder hinzufügen" />
-            </ListItem>
+            {DRAWER_PRIMARY.map((item) => (
+              <ListItem button key={item.href} component={Link} href={item.href}>
+                <ListItemText primary={item.label} />
+              </ListItem>
+            ))}
           </List>
           <Divider />
           <List>
-            <ListItem button component={Link} href="/results">
-              <ListItemText primary="Ergebnisse" />
-            </ListItem>
-            <ListItem button component={Link} href="/ranking">
-              <ListItemText primary="Ranking" />
-            </ListItem>
-            <ListItem button component={Link} href="/map">
-              <ListItemText primary="Karte" />
-            </ListItem>
+            {DRAWER_SECONDARY.map((item) => (
+              <ListItem button key={item.href} component={Link} href={item.href}>
+                <ListItemText primary={item.label} />
+              </ListItem>
+            ))}
           </List>
         </Box>
       </Drawer>
@@ -148,30 +145,23 @@ export default function Layout({ children, title }: LayoutProps) {
               color: theme.palette.common.white,
             },
           })}
-          value={value}
-          onChange={(event, newValue) => {
-            setValue(newValue);
+          value={bottomValue}
+          onChange={(_, newIndex) => {
+            setValue(newIndex);
+            const target = BOTTOM_NAV[newIndex];
+            if (target) router.push(target.href);
           }}
           showLabels
         >
-          <BottomNavigationAction
-            label="Home"
-            icon={<HomeIcon />}
-            component={Link}
-            href="/home"
-          />
-          <BottomNavigationAction
-            label="Karte"
-            icon={<MapIcon />}
-            component={Link}
-            href="/map"
-          />
-          <BottomNavigationAction
-            label="Turniere"
-            icon={<EventIcon />}
-            component={Link}
-            href="/tournament-overview"
-          />
+          {BOTTOM_NAV.map((item) => (
+            <BottomNavigationAction
+              key={item.href}
+              label={item.label}
+              icon={item.icon ? <item.icon /> : undefined}
+              component={Link}
+              href={item.href}
+            />
+          ))}
         </BottomNavigation>
       </Paper>
     </Box>
