@@ -1,3 +1,4 @@
+// pages/home.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -103,7 +104,7 @@ function HomePage() {
 
       {/* Neues Turnier anlegen */}
       <Paper sx={{ p: 2, mb: 3, textAlign: "center" }}>
-        <Button variant="contained" color="success" href="/tournament-define">
+        <Button variant="contained" color="success" href="/tournament-create">
           Neues Turnier anlegen
         </Button>
       </Paper>
