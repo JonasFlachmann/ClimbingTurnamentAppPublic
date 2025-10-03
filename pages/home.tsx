@@ -1,4 +1,3 @@
-// pages/home.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -16,7 +15,7 @@ function HomePage() {
   // Beispielrouten für aktuelles Turnier
   const [selectedResults, setSelectedResults] = useState<{ [key: number]: string }>({});
 
-  const toggleResult = (routeId: number, result: string) => {
+  const handleResultClick = (routeId: number, result: string) => {
     setSelectedResults((prev) => ({
       ...prev,
       [routeId]: prev[routeId] === result ? "" : result,
@@ -32,47 +31,71 @@ function HomePage() {
   const tournaments = [
     { id: 1, name: "Boulder Cup", city: "Bochum", location: "Neoliet", date: "1. bis 7. September" },
     { id: 2, name: "Kletter Open", city: "Dortmund", location: "Bergwerk", date: "17. Juli" },
-    { id: 3, name: "Summer Jam", city: "Berlin", location: "BertaBlock", date: "3. August" },
-  ];
-
-  const newsItems = [
-    { id: 1, title: "App-Update v0.1.0", date: "01. Okt" },
-    { id: 2, title: "Neuer Wettbewerb online", date: "15. Okt" },
-    { id: 3, title: "Sommerpause beendet", date: "01. Juli" },
+    { id: 3, name: "Summer Jam", city: "Berlin", location: "Boulderwelt", date: "06/2024" },
   ];
 
   return (
-    <Box sx={{ px: 2, pb: 10, pt: 5 }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
-        Willkommen zurück!
-      </Typography>
-
+    <Box sx={{ p: 2 }}>
       {/* Aktuelles Turnier */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Aktuelles Turnier
         </Typography>
-        <List dense>
-          {routes.map((route, index) => (
-            <React.Fragment key={route.id}>
-              <ListItem
-                secondaryAction={
-                  <ButtonGroup size="small" variant="outlined">
-                    {["Top", "Zone", "DNF"].map((t) => (
-                      <Button
-                        key={t}
-                        color={selectedResults[route.id] === t ? "success" : "inherit"}
-                        onClick={() => toggleResult(route.id, t)}
-                      >
-                        {t}
-                      </Button>
-                    ))}
-                  </ButtonGroup>
-                }
-              >
-                <ListItemText primary={`${route.name} (${route.grade})`} secondary={`Farbe: ${route.color}`} />
+        <List>
+          {routes.map((route) => (
+            <ListItem key={route.id} divider>
+              <ListItemText
+                primary={route.name}
+                secondary={`${route.color} - ${route.grade}`}
+              />
+              <ButtonGroup size="small" variant="outlined">
+                <Button
+                  color={selectedResults[route.id] === "Z" ? "success" : "inherit"}
+                  onClick={() => handleResultClick(route.id, "Z")}
+                >
+                  Z
+                </Button>
+                <Button
+                  color={selectedResults[route.id] === "T" ? "success" : "inherit"}
+                  onClick={() => handleResultClick(route.id, "T")}
+                >
+                  T
+                </Button>
+                <Button
+                  color={selectedResults[route.id] === "F" ? "success" : "inherit"}
+                  onClick={() => handleResultClick(route.id, "F")}
+                >
+                  F
+                </Button>
+              </ButtonGroup>
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+
+      {/* Turniere in deiner Nähe */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Turniere in deiner Nähe
+        </Typography>
+        <List>
+          {tournaments.map((t) => (
+            <React.Fragment key={t.id}>
+              <ListItem alignItems="flex-start">
+                <ListItemText
+                  primary={t.name}
+                  secondary={
+                    <>
+                      <Typography component="span" variant="body2" color="text.primary">
+                        {t.city} – {t.location}
+                      </Typography>
+                      <br />
+                      {t.date}
+                    </>
+                  }
+                />
               </ListItem>
-              {index < routes.length - 1 && <Divider component="li" />}
+              <Divider component="li" />
             </React.Fragment>
           ))}
         </List>
@@ -80,26 +103,9 @@ function HomePage() {
 
       {/* Neues Turnier anlegen */}
       <Paper sx={{ p: 2, mb: 3, textAlign: "center" }}>
-        <Button variant="contained" color="success" href="/tournament-create">
+        <Button variant="contained" color="success" href="/tournament-define">
           Neues Turnier anlegen
         </Button>
-      </Paper>
-
-      {/* Turniere in deiner Nähe (Dummy) */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Turniere in deiner Nähe
-        </Typography>
-        <List dense>
-          {tournaments.map((t, idx) => (
-            <React.Fragment key={t.id}>
-              <ListItem>
-                <ListItemText primary={t.name} secondary={`${t.city} • ${t.location} • ${t.date}`} />
-              </ListItem>
-              {idx < tournaments.length - 1 && <Divider component="li" />}
-            </React.Fragment>
-          ))}
-        </List>
       </Paper>
 
       {/* News */}
@@ -107,22 +113,15 @@ function HomePage() {
         <Typography variant="h6" gutterBottom>
           News
         </Typography>
-        <List dense>
-          {newsItems.map((n, idx) => (
-            <React.Fragment key={n.id}>
-              <ListItem>
-                <ListItemText primary={n.title} secondary={n.date} />
-              </ListItem>
-              {idx < newsItems.length - 1 && <Divider component="li" />}
-            </React.Fragment>
-          ))}
-        </List>
+        <Typography variant="body2">
+          Hinweis: Dies ist eine Test-Version der App.
+        </Typography>
       </Paper>
     </Box>
   );
 }
 
-// Titel für den globalen Header
-(HomePage as any).title = "Home";
+// 👇 Titel für den globalen Header festlegen
+HomePage.title = "Home";
 
 export default HomePage;
