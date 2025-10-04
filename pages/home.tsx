@@ -1,5 +1,5 @@
 // pages/home.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -17,12 +17,6 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import dynamic from "next/dynamic";
-
-// Swiper nur clientseitig laden (vermeidet window-Fehler/Client-Exception)
-const DynamicSwiper: any = dynamic(() => import("../components/SwiperCarousel").then(m => m.default || m), {
-  ssr: false,
-});
 
 function HomePage() {
   // Ergebnisse pro Route (Z/T/F)
@@ -34,6 +28,15 @@ function HomePage() {
   // Vollbild-Preview Zustände
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewRouteId, setPreviewRouteId] = useState<number | null>(null);
+  // Swiper-Komponente (on-demand)
+  const [SwiperView, setSwiperView] = useState<any>(null);
+
+  useEffect(() => {
+    // Swiper nur laden, wenn der Dialog geöffnet wird (Client-only)
+    if (previewOpen && !SwiperView) {
+      import("../components/SwiperCarousel").then((m) => setSwiperView(m.default || m));
+    }
+  }, [previewOpen, SwiperView]);
 
   const handleResultClick = (routeId: number, result: string) => {
     setSelectedResults((prev) => ({
@@ -165,22 +168,35 @@ function HomePage() {
                     Bezeichnung (Halle): {route.gymName}
                   </Typography>
 
-                  {/* Miniatur – als <img>, sichtbar & klickbar */}
+                  {/* Quadratische Miniatur – Wrapper mit 1:1-Aspect über paddingTop */}
                   <Box
-                    component="img"
-                    src={routeImages[route.id][0]}
-                    alt={`${route.name} Miniatur`}
+                    role="button"
+                    aria-label="Route-Foto öffnen"
                     onClick={() => openPreview(route.id)}
                     sx={{
+                      position: "relative",
                       width: "100%",
-                      height: 160,
-                      objectFit: "cover",
+                      pt: "100%", // 1:1
                       borderRadius: 2,
+                      overflow: "hidden",
                       boxShadow: 1,
                       transition: "transform .15s ease, box-shadow .15s ease",
                       "&:hover": { transform: "translateY(-1px)", boxShadow: 3, cursor: "zoom-in" },
                     }}
-                  />
+                  >
+                    <Box
+                      component="img"
+                      src={routeImages[route.id][0]}
+                      alt={`${route.name} Miniatur`}
+                      sx={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </Box>
                 </Box>
               </Collapse>
 
@@ -282,12 +298,22 @@ function HomePage() {
       {/* Vollbild-Dialog mit globalem Swiper */}
       <Dialog fullScreen open={previewOpen} onClose={closePreview}>
         <DialogContent sx={{ p: 0 }}>
-          {previewRouteId != null && (
-            <DynamicSwiper
-              // Prop-Varianten abdecken (je nach Implementierung von SwiperCarousel)
-              images={routeImages[previewRouteId]}
-              slides={routeImages[previewRouteId].map((src, i) => ({ src, alt: `Route ${previewRouteId} Bild ${i + 1}` }))}
-            />
+          {previewRouteId != null && SwiperView ? (
+            <SwiperView images={routeImages[previewRouteId]} />
+          ) : (
+            // Fallback: Bilder untereinander anzeigen, bis Swiper geladen ist
+            <Box>
+              {previewRouteId != null &&
+                routeImages[previewRouteId].map((src, i) => (
+                  <Box
+                    key={i}
+                    component="img"
+                    src={src}
+                    alt={`Route ${previewRouteId} Bild ${i + 1}`}
+                    sx={{ width: "100%", height: "auto", display: "block" }}
+                  />
+                ))}
+            </Box>
           )}
         </DialogContent>
       </Dialog>
