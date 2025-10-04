@@ -13,16 +13,18 @@ import {
   Collapse,
   Dialog,
   DialogContent,
+  IconButton,
 } from "@mui/material";
 import Link from "next/link";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SwiperCarousel from "../components/SwiperCarousel";
 
 function HomePage() {
-  // Beispielrouten für aktuelles Turnier
+  // Ergebnisse pro Route (Z/T/F)
   const [selectedResults, setSelectedResults] = useState<{ [key: number]: string }>({});
   // Auf-/Zuklappen der Detailsektion pro Route (Buttons bleiben immer sichtbar)
   const [detailsOpen, setDetailsOpen] = useState<{ [key: number]: boolean }>({});
-  // Auf-/Zuklappen für Turniere-in-der-Nähe
+  // Auf-/Zuklappen für „Turniere in deiner Nähe“
   const [nearOpen, setNearOpen] = useState<{ [key: number]: boolean }>({});
   // Vollbild-Preview Zustände
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -59,11 +61,11 @@ function HomePage() {
     setPreviewRouteId(null);
   };
 
-  // Platzhalter-Grafik (graues Rechteck) als Data-URL (svg)
-  const grayDataUrl = (w: number, h: number) =>
+  // Platzhalter-Grafik (graues Rechteck) als Data-URL
+  const rect = (w: number, h: number, fill: string) =>
     `data:image/svg+xml;utf8,` +
     encodeURIComponent(
-      `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'><rect width='100%' height='100%' fill='#BDBDBD'/></svg>`
+      `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'><rect width='100%' height='100%' fill='${fill}'/></svg>`
     );
 
   const routes = [
@@ -72,20 +74,27 @@ function HomePage() {
     { id: 3, name: "Route 3", color: "Rot", grade: "6b+", wall: "Wand C (Nord)", gymName: "Rot 6b+ – Kante" },
   ];
 
+  // Je Route zwei Platzhalterbilder (unterschiedliche Grautöne)
+  const routeImages: Record<number, string[]> = {
+    1: [rect(1600, 1000, "#BDBDBD"), rect(1600, 1000, "#9E9E9E")],
+    2: [rect(1600, 1000, "#BDBDBD"), rect(1600, 1000, "#9E9E9E")],
+    3: [rect(1600, 1000, "#BDBDBD"), rect(1600, 1000, "#9E9E9E")],
+  };
+
   const tournaments = [
     { id: 1, name: "Boulder Cup", city: "Bochum", location: "Neoliet", date: "1. bis 7. September" },
     { id: 2, name: "Kletter Open", city: "Dortmund", location: "Bergwerk", date: "17. Juli" },
     { id: 3, name: "Summer Jam", city: "Berlin", location: "Boulderwelt", date: "06/2024" },
   ];
 
-  // Zusatzinfos für Dummy-Turniere (nur Anzeigezweck)
+  // Zusatzinfos für Dummy-Turniere (Anzeige)
   const tournamentMeta: Record<number, { routes: number; participants: number }> = {
     1: { routes: 12, participants: 34 },
     2: { routes: 10, participants: 20 },
     3: { routes: 8, participants: 15 },
   };
 
-  // Gemeinsamer Kartenstil (Schatten + Hover)
+  // Kartenstil (Schatten + Hover)
   const cardSx = {
     p: 2,
     mb: 3,
@@ -94,9 +103,6 @@ function HomePage() {
     transition: "transform .15s ease, box-shadow .15s ease",
     "&:hover": { transform: "translateY(-2px)", boxShadow: 6 },
   } as const;
-
-  // Swiper-Slides (Platzhalter-Bilder) – Nutzung der globalen Swiper-Komponente
-  const placeholderSlides = [grayDataUrl(1600, 1000), grayDataUrl(1600, 1000), grayDataUrl(1600, 1000)];
 
   return (
     <Box sx={{ p: 2 }}>
@@ -163,7 +169,7 @@ function HomePage() {
                       width: "100%",
                       height: 160,
                       borderRadius: 2,
-                      backgroundImage: `url(${grayDataUrl(800, 500)})`,
+                      backgroundImage: `url(${routeImages[route.id][0]})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       boxShadow: 1,
@@ -182,14 +188,7 @@ function HomePage() {
 
       {/* Turniere in deiner Nähe */}
       <Paper sx={cardSx}>
-        <Typography
-          variant="h6"
-          gutterBottom
-          component={Link}
-          href="/map"
-          style={{ textDecoration: "none", color: "inherit" }}
-          sx={{ "&:hover": { textDecoration: "underline", cursor: "pointer" } }}
-        >
+        <Typography variant="h6" gutterBottom>
           Turniere in deiner Nähe
         </Typography>
 
@@ -204,17 +203,28 @@ function HomePage() {
                   transition: "background-color .15s ease",
                   "&:hover": { bgcolor: "action.hover", cursor: "pointer" },
                 }}
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    component={Link}
+                    href="/tournament"
+                    onClick={(e) => e.stopPropagation()}
+                    sx={{
+                      bgcolor: "success.main",
+                      color: "common.white",
+                      "&:hover": { bgcolor: "success.dark" },
+                      width: 36,
+                      height: 36,
+                    }}
+                    aria-label="Zum Turnier"
+                  >
+                    <ArrowForwardIosIcon fontSize="small" />
+                  </IconButton>
+                }
               >
                 <ListItemText
                   primary={
-                    <Typography
-                      component={Link}
-                      href="/tournament"
-                      color="text.primary"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ textDecoration: "none" }}
-                      sx={{ "&:hover": { textDecoration: "underline", cursor: "pointer" } }}
-                    >
+                    <Typography color="text.primary" sx={{ fontWeight: 500 }}>
                       {t.name}
                     </Typography>
                   }
@@ -248,7 +258,7 @@ function HomePage() {
         </List>
       </Paper>
 
-      {/* Neues Turnier anlegen (Link unverändert lassen) */}
+      {/* Neues Turnier anlegen */}
       <Paper sx={{ ...cardSx, textAlign: "center" }}>
         <Button variant="contained" color="success" href="/tournament-define">
           Neues Turnier anlegen
@@ -268,9 +278,9 @@ function HomePage() {
       {/* Vollbild-Dialog mit globalem Swiper */}
       <Dialog fullScreen open={previewOpen} onClose={closePreview}>
         <DialogContent sx={{ p: 0 }}>
-          {(() => {
+          {previewRouteId != null && (() => {
             const AnySwiper: any = SwiperCarousel;
-            return <AnySwiper images={placeholderSlides} />;
+            return <AnySwiper images={routeImages[previewRouteId]} />;
           })()}
         </DialogContent>
       </Dialog>
