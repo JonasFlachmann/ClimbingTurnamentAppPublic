@@ -1,5 +1,5 @@
 // pages/home.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -18,6 +18,9 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import CloseIcon from "@mui/icons-material/Close";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 function HomePage() {
   // Ergebnisse pro Route (nur T/F)
@@ -26,16 +29,10 @@ function HomePage() {
   const [detailsOpen, setDetailsOpen] = useState<{ [key: number]: boolean }>({});
   // Auf-/Zuklappen für „Turniere in deiner Nähe“
   const [nearOpen, setNearOpen] = useState<{ [key: number]: boolean }>({});
-  // Vollbild-Preview
+  // Vollbild-Viewer
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewRouteId, setPreviewRouteId] = useState<number | null>(null);
-  const [SwiperView, setSwiperView] = useState<any>(null);
-
-  useEffect(() => {
-    if (previewOpen && !SwiperView) {
-      import("../components/SwiperCarousel").then((m) => setSwiperView(m.default || m));
-    }
-  }, [previewOpen, SwiperView]);
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   const handleResultClick = (routeId: number, result: "T" | "F") => {
     setSelectedResults((prev) => ({
@@ -52,14 +49,16 @@ function HomePage() {
     setNearOpen((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const openPreview = (routeId: number) => {
+  const openPreview = (routeId: number, index = 0) => {
     setPreviewRouteId(routeId);
+    setPreviewIndex(index);
     setPreviewOpen(true);
   };
 
   const closePreview = () => {
     setPreviewOpen(false);
     setPreviewRouteId(null);
+    setPreviewIndex(0);
   };
 
   // Platzhalter-Bilder
@@ -101,6 +100,18 @@ function HomePage() {
     transition: "transform .15s ease, box-shadow .15s ease",
     "&:hover": { transform: "translateY(-2px)", boxShadow: 6 },
   } as const;
+
+  const nextImage = () => {
+    if (previewRouteId == null) return;
+    const imgs = routeImages[previewRouteId];
+    setPreviewIndex((i) => (i + 1) % imgs.length);
+  };
+
+  const prevImage = () => {
+    if (previewRouteId == null) return;
+    const imgs = routeImages[previewRouteId];
+    setPreviewIndex((i) => (i - 1 + imgs.length) % imgs.length);
+  };
 
   return (
     <Box sx={{ p: 2 }}>
@@ -157,7 +168,7 @@ function HomePage() {
                     <Box
                       role="button"
                       aria-label="Route-Foto öffnen"
-                      onClick={() => openPreview(route.id)}
+                      onClick={() => openPreview(route.id, 0)}
                       sx={{
                         position: "relative",
                         width: 96,
@@ -273,24 +284,51 @@ function HomePage() {
         <Typography variant="body2">Hinweis: Dies ist eine Test-Version der App.</Typography>
       </Paper>
 
-      {/* Vollbild-Dialog mit globalem Swiper */}
+      {/* Vollbild-Dialog – stabiler, einfacher Viewer */}
       <Dialog fullScreen open={previewOpen} onClose={closePreview}>
-        <DialogContent sx={{ p: 0 }}>
-          {previewRouteId != null && SwiperView ? (
-            <SwiperView images={routeImages[previewRouteId]} />
-          ) : (
-            <Box>
-              {previewRouteId != null &&
-                routeImages[previewRouteId].map((src, i) => (
-                  <Box
-                    key={i}
-                    component="img"
-                    src={src}
-                    alt={`Route ${previewRouteId} Bild ${i + 1}`}
-                    sx={{ width: "100%", height: "auto", display: "block" }}
-                  />
-                ))}
-            </Box>
+        <DialogContent
+          sx={{
+            p: 0,
+            bgcolor: "common.black",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+          }}
+        >
+          <IconButton
+            aria-label="Schließen"
+            onClick={closePreview}
+            sx={{ position: "absolute", top: 8, right: 8, color: "common.white", bgcolor: "rgba(255,255,255,0.12)" }}
+          >
+            <CloseIcon />
+          </IconButton>
+
+          {previewRouteId != null && (
+            <>
+              <IconButton
+                aria-label="Vorheriges Bild"
+                onClick={prevImage}
+                sx={{ position: "absolute", left: 8, color: "common.white", bgcolor: "rgba(255,255,255,0.12)" }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+
+              <Box
+                component="img"
+                src={routeImages[previewRouteId][previewIndex]}
+                alt={`Route ${previewRouteId} Bild ${previewIndex + 1}`}
+                sx={{ maxWidth: "100%", maxHeight: "100vh", objectFit: "contain" }}
+              />
+
+              <IconButton
+                aria-label="Nächstes Bild"
+                onClick={nextImage}
+                sx={{ position: "absolute", right: 8, color: "common.white", bgcolor: "rgba(255,255,255,0.12)" }}
+              >
+                <ChevronRightIcon />
+              </IconButton>
+            </>
           )}
         </DialogContent>
       </Dialog>
