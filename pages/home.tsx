@@ -17,7 +17,12 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import SwiperCarousel from "../components/SwiperCarousel";
+import dynamic from "next/dynamic";
+
+// Swiper nur clientseitig laden (vermeidet window-Fehler/Client-Exception)
+const DynamicSwiper: any = dynamic(() => import("../components/SwiperCarousel").then(m => m.default || m), {
+  ssr: false,
+});
 
 function HomePage() {
   // Ergebnisse pro Route (Z/T/F)
@@ -160,18 +165,17 @@ function HomePage() {
                     Bezeichnung (Halle): {route.gymName}
                   </Typography>
 
-                  {/* Miniatur – graues Rechteck, klickbar für Vollbild */}
+                  {/* Miniatur – als <img>, sichtbar & klickbar */}
                   <Box
-                    role="button"
-                    aria-label="Route-Foto öffnen"
+                    component="img"
+                    src={routeImages[route.id][0]}
+                    alt={`${route.name} Miniatur`}
                     onClick={() => openPreview(route.id)}
                     sx={{
                       width: "100%",
                       height: 160,
+                      objectFit: "cover",
                       borderRadius: 2,
-                      backgroundImage: `url(${routeImages[route.id][0]})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
                       boxShadow: 1,
                       transition: "transform .15s ease, box-shadow .15s ease",
                       "&:hover": { transform: "translateY(-1px)", boxShadow: 3, cursor: "zoom-in" },
@@ -278,10 +282,13 @@ function HomePage() {
       {/* Vollbild-Dialog mit globalem Swiper */}
       <Dialog fullScreen open={previewOpen} onClose={closePreview}>
         <DialogContent sx={{ p: 0 }}>
-          {previewRouteId != null && (() => {
-            const AnySwiper: any = SwiperCarousel;
-            return <AnySwiper images={routeImages[previewRouteId]} />;
-          })()}
+          {previewRouteId != null && (
+            <DynamicSwiper
+              // Prop-Varianten abdecken (je nach Implementierung von SwiperCarousel)
+              images={routeImages[previewRouteId]}
+              slides={routeImages[previewRouteId].map((src, i) => ({ src, alt: `Route ${previewRouteId} Bild ${i + 1}` }))}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </Box>
