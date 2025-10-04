@@ -14,31 +14,30 @@ import {
   Dialog,
   DialogContent,
   IconButton,
+  Stack,
 } from "@mui/material";
 import Link from "next/link";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 function HomePage() {
-  // Ergebnisse pro Route (Z/T/F)
-  const [selectedResults, setSelectedResults] = useState<{ [key: number]: string }>({});
-  // Auf-/Zuklappen der Detailsektion pro Route (Buttons bleiben immer sichtbar)
+  // Ergebnisse pro Route (nur T/F)
+  const [selectedResults, setSelectedResults] = useState<{ [key: number]: "T" | "F" | "" }>({});
+  // Auf-/Zuklappen der Detailsektion pro Route
   const [detailsOpen, setDetailsOpen] = useState<{ [key: number]: boolean }>({});
   // Auf-/Zuklappen für „Turniere in deiner Nähe“
   const [nearOpen, setNearOpen] = useState<{ [key: number]: boolean }>({});
-  // Vollbild-Preview Zustände
+  // Vollbild-Preview
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewRouteId, setPreviewRouteId] = useState<number | null>(null);
-  // Swiper-Komponente (on-demand)
   const [SwiperView, setSwiperView] = useState<any>(null);
 
   useEffect(() => {
-    // Swiper nur laden, wenn der Dialog geöffnet wird (Client-only)
     if (previewOpen && !SwiperView) {
       import("../components/SwiperCarousel").then((m) => setSwiperView(m.default || m));
     }
   }, [previewOpen, SwiperView]);
 
-  const handleResultClick = (routeId: number, result: string) => {
+  const handleResultClick = (routeId: number, result: "T" | "F") => {
     setSelectedResults((prev) => ({
       ...prev,
       [routeId]: prev[routeId] === result ? "" : result,
@@ -46,17 +45,11 @@ function HomePage() {
   };
 
   const toggleDetails = (routeId: number) => {
-    setDetailsOpen((prev) => ({
-      ...prev,
-      [routeId]: !prev[routeId],
-    }));
+    setDetailsOpen((prev) => ({ ...prev, [routeId]: !prev[routeId] }));
   };
 
   const toggleNear = (id: number) => {
-    setNearOpen((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setNearOpen((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const openPreview = (routeId: number) => {
@@ -69,7 +62,7 @@ function HomePage() {
     setPreviewRouteId(null);
   };
 
-  // Platzhalter-Grafik (graues Rechteck) als Data-URL
+  // Platzhalter-Bilder
   const rect = (w: number, h: number, fill: string) =>
     `data:image/svg+xml;utf8,` +
     encodeURIComponent(
@@ -82,11 +75,10 @@ function HomePage() {
     { id: 3, name: "Route 3", color: "Rot", grade: "6b+", wall: "Wand C (Nord)", gymName: "Rot 6b+ – Kante" },
   ];
 
-  // Je Route zwei Platzhalterbilder (unterschiedliche Grautöne)
   const routeImages: Record<number, string[]> = {
-    1: [rect(1600, 1000, "#BDBDBD"), rect(1600, 1000, "#9E9E9E")],
-    2: [rect(1600, 1000, "#BDBDBD"), rect(1600, 1000, "#9E9E9E")],
-    3: [rect(1600, 1000, "#BDBDBD"), rect(1600, 1000, "#9E9E9E")],
+    1: [rect(1600, 1600, "#BDBDBD"), rect(1600, 1600, "#9E9E9E")],
+    2: [rect(1600, 1600, "#BDBDBD"), rect(1600, 1600, "#9E9E9E")],
+    3: [rect(1600, 1600, "#BDBDBD"), rect(1600, 1600, "#9E9E9E")],
   };
 
   const tournaments = [
@@ -95,14 +87,12 @@ function HomePage() {
     { id: 3, name: "Summer Jam", city: "Berlin", location: "Boulderwelt", date: "06/2024" },
   ];
 
-  // Zusatzinfos für Dummy-Turniere (Anzeige)
   const tournamentMeta: Record<number, { routes: number; participants: number }> = {
     1: { routes: 12, participants: 34 },
     2: { routes: 10, participants: 20 },
     3: { routes: 8, participants: 15 },
   };
 
-  // Kartenstil (Schatten + Hover)
   const cardSx = {
     p: 2,
     mb: 3,
@@ -132,25 +122,17 @@ function HomePage() {
                 }}
               >
                 <ListItemText primary={route.name} secondary={`${route.color} - ${route.grade}`} />
-                <ButtonGroup
-                  size="small"
-                  variant="outlined"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <ButtonGroup size="small" variant="outlined" onClick={(e) => e.stopPropagation()}>
                   <Button
-                    color={selectedResults[route.id] === "Z" ? "success" : "inherit"}
-                    onClick={() => handleResultClick(route.id, "Z")}
-                  >
-                    Z
-                  </Button>
-                  <Button
-                    color={selectedResults[route.id] === "T" ? "success" : "inherit"}
+                    variant={selectedResults[route.id] === "T" ? "contained" : "outlined"}
+                    color="success"
                     onClick={() => handleResultClick(route.id, "T")}
                   >
                     T
                   </Button>
                   <Button
-                    color={selectedResults[route.id] === "F" ? "success" : "inherit"}
+                    variant={selectedResults[route.id] === "F" ? "contained" : "outlined"}
+                    color="success"
                     onClick={() => handleResultClick(route.id, "F")}
                   >
                     F
@@ -161,42 +143,41 @@ function HomePage() {
               {/* Ausklappbare Details unterhalb der Route */}
               <Collapse in={!!detailsOpen[route.id]} timeout="auto" unmountOnExit>
                 <Box sx={{ px: 2, py: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Wand/Ort: {route.wall}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Bezeichnung (Halle): {route.gymName}
-                  </Typography>
+                  <Stack direction="row" spacing={2} alignItems="flex-start">
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Wand: {route.wall}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Routenbezeichnung: {route.gymName}
+                      </Typography>
+                    </Box>
 
-                  {/* Quadratische Miniatur – Wrapper mit 1:1-Aspect über paddingTop */}
-                  <Box
-                    role="button"
-                    aria-label="Route-Foto öffnen"
-                    onClick={() => openPreview(route.id)}
-                    sx={{
-                      position: "relative",
-                      width: "100%",
-                      pt: "100%", // 1:1
-                      borderRadius: 2,
-                      overflow: "hidden",
-                      boxShadow: 1,
-                      transition: "transform .15s ease, box-shadow .15s ease",
-                      "&:hover": { transform: "translateY(-1px)", boxShadow: 3, cursor: "zoom-in" },
-                    }}
-                  >
+                    {/* Kleine, quadratische Miniatur rechts */}
                     <Box
-                      component="img"
-                      src={routeImages[route.id][0]}
-                      alt={`${route.name} Miniatur`}
+                      role="button"
+                      aria-label="Route-Foto öffnen"
+                      onClick={() => openPreview(route.id)}
                       sx={{
-                        position: "absolute",
-                        inset: 0,
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
+                        position: "relative",
+                        width: 96,
+                        height: 96,
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        boxShadow: 1,
+                        transition: "transform .15s ease, box-shadow .15s ease",
+                        "&:hover": { transform: "translateY(-1px)", boxShadow: 3, cursor: "zoom-in" },
+                        flexShrink: 0,
                       }}
-                    />
-                  </Box>
+                    >
+                      <Box
+                        component="img"
+                        src={routeImages[route.id][0]}
+                        alt={`${route.name} Miniatur`}
+                        sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    </Box>
+                  </Stack>
                 </Box>
               </Collapse>
 
@@ -260,7 +241,6 @@ function HomePage() {
                 />
               </ListItem>
 
-              {/* Ausklappbare Zusatzinfos */}
               <Collapse in={!!nearOpen[t.id]} timeout="auto" unmountOnExit>
                 <Box sx={{ px: 2, py: 1 }}>
                   <Typography variant="body2" color="text.secondary">
@@ -290,9 +270,7 @@ function HomePage() {
         <Typography variant="h6" gutterBottom>
           News
         </Typography>
-        <Typography variant="body2">
-          Hinweis: Dies ist eine Test-Version der App.
-        </Typography>
+        <Typography variant="body2">Hinweis: Dies ist eine Test-Version der App.</Typography>
       </Paper>
 
       {/* Vollbild-Dialog mit globalem Swiper */}
@@ -301,7 +279,6 @@ function HomePage() {
           {previewRouteId != null && SwiperView ? (
             <SwiperView images={routeImages[previewRouteId]} />
           ) : (
-            // Fallback: Bilder untereinander anzeigen, bis Swiper geladen ist
             <Box>
               {previewRouteId != null &&
                 routeImages[previewRouteId].map((src, i) => (
