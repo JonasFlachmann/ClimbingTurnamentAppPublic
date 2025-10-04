@@ -14,6 +14,7 @@ import {
   Dialog,
   DialogContent,
 } from "@mui/material";
+import Link from "next/link";
 import SwiperCarousel from "../components/SwiperCarousel";
 
 function HomePage() {
@@ -21,6 +22,8 @@ function HomePage() {
   const [selectedResults, setSelectedResults] = useState<{ [key: number]: string }>({});
   // Auf-/Zuklappen der Detailsektion pro Route (Buttons bleiben immer sichtbar)
   const [detailsOpen, setDetailsOpen] = useState<{ [key: number]: boolean }>({});
+  // Auf-/Zuklappen für Turniere-in-der-Nähe
+  const [nearOpen, setNearOpen] = useState<{ [key: number]: boolean }>({});
   // Vollbild-Preview Zustände
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewRouteId, setPreviewRouteId] = useState<number | null>(null);
@@ -36,6 +39,13 @@ function HomePage() {
     setDetailsOpen((prev) => ({
       ...prev,
       [routeId]: !prev[routeId],
+    }));
+  };
+
+  const toggleNear = (id: number) => {
+    setNearOpen((prev) => ({
+      ...prev,
+      [id]: !prev[id],
     }));
   };
 
@@ -67,6 +77,13 @@ function HomePage() {
     { id: 2, name: "Kletter Open", city: "Dortmund", location: "Bergwerk", date: "17. Juli" },
     { id: 3, name: "Summer Jam", city: "Berlin", location: "Boulderwelt", date: "06/2024" },
   ];
+
+  // Zusatzinfos für Dummy-Turniere (nur Anzeigezweck)
+  const tournamentMeta: Record<number, { routes: number; participants: number }> = {
+    1: { routes: 12, participants: 34 },
+    2: { routes: 10, participants: 20 },
+    3: { routes: 8, participants: 15 },
+  };
 
   // Gemeinsamer Kartenstil (Schatten + Hover)
   const cardSx = {
@@ -165,22 +182,42 @@ function HomePage() {
 
       {/* Turniere in deiner Nähe */}
       <Paper sx={cardSx}>
-        <Typography variant="h6" gutterBottom>
+        <Typography
+          variant="h6"
+          gutterBottom
+          component={Link}
+          href="/map"
+          style={{ textDecoration: "none", color: "inherit" }}
+          sx={{ "&:hover": { textDecoration: "underline", cursor: "pointer" } }}
+        >
           Turniere in deiner Nähe
         </Typography>
+
         <List>
           {tournaments.map((t) => (
             <React.Fragment key={t.id}>
               <ListItem
                 alignItems="flex-start"
+                onClick={() => toggleNear(t.id)}
                 sx={{
                   borderRadius: 2,
                   transition: "background-color .15s ease",
-                  "&:hover": { bgcolor: "action.hover" },
+                  "&:hover": { bgcolor: "action.hover", cursor: "pointer" },
                 }}
               >
                 <ListItemText
-                  primary={t.name}
+                  primary={
+                    <Typography
+                      component={Link}
+                      href="/tournament"
+                      color="text.primary"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ textDecoration: "none" }}
+                      sx={{ "&:hover": { textDecoration: "underline", cursor: "pointer" } }}
+                    >
+                      {t.name}
+                    </Typography>
+                  }
                   secondary={
                     <>
                       <Typography component="span" variant="body2" color="text.primary">
@@ -192,6 +229,19 @@ function HomePage() {
                   }
                 />
               </ListItem>
+
+              {/* Ausklappbare Zusatzinfos */}
+              <Collapse in={!!nearOpen[t.id]} timeout="auto" unmountOnExit>
+                <Box sx={{ px: 2, py: 1 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Anzahl Routen: {tournamentMeta[t.id]?.routes ?? "-"}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Teilnehmerzahl: {tournamentMeta[t.id]?.participants ?? "-"}
+                  </Typography>
+                </Box>
+              </Collapse>
+
               <Divider component="li" />
             </React.Fragment>
           ))}
@@ -218,8 +268,6 @@ function HomePage() {
       {/* Vollbild-Dialog mit globalem Swiper */}
       <Dialog fullScreen open={previewOpen} onClose={closePreview}>
         <DialogContent sx={{ p: 0 }}>
-          {/* Wir nutzen den globalen Swiper-Wrapper; Übergabe von Platzhalter-Bildern */}
-          {/* Typenflexibel, falls die Prop-Signatur abweicht */}
           {(() => {
             const AnySwiper: any = SwiperCarousel;
             return <AnySwiper images={placeholderSlides} />;
